@@ -1,0 +1,108 @@
+@extends('layouts.app')
+@section('title', 'Edit Petugas')
+
+@push('styles')
+<style>
+    :root {
+        --c-primary:#005baa; --c-primary-dk:#004080;
+        --c-success:#0F6E56; --c-success-dk:#085041;
+        --c-border:#E2E8F0; --c-surface:#F8FAFC;
+        --c-muted:#64748B; --radius:12px; --radius-sm:8px;
+        --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.06);
+    }
+    .page-wrap { max-width:600px; padding:24px 20px 48px; }
+    .form-card { background:#fff;border:1px solid var(--c-border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden; }
+    .form-card-hdr { padding:16px 22px;border-bottom:1px solid var(--c-border);display:flex;align-items:center;gap:12px; }
+    .form-icon { width:38px;height:38px;border-radius:var(--radius-sm);background:#EAF3DE;color:#0F6E56;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+    .form-icon svg { width:18px;height:18px; }
+    .form-card-hdr h2 { font-size:1rem;font-weight:700;margin:0 0 1px; }
+    .form-card-hdr p  { font-size:.8125rem;color:var(--c-muted);margin:0; }
+    .form-body { padding:22px; }
+    .fg { margin-bottom:14px; }
+    .fg label { display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--c-muted);margin-bottom:5px; }
+    .fg input,.fg select { width:100%;height:38px;padding:0 12px;border:1px solid var(--c-border);border-radius:var(--radius-sm);font-size:.875rem;background:#F8FAFC;color:#1E293B;outline:none;transition:border-color .15s; }
+    .fg input:focus,.fg select:focus { border-color:var(--c-primary);background:#fff; }
+    .fg-row { display:grid;grid-template-columns:1fr 1fr;gap:14px; }
+    .form-footer { padding:14px 22px;border-top:1px solid var(--c-border);background:var(--c-surface);display:flex;align-items:center;justify-content:space-between; }
+    .btn-back { display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-sm);border:1px solid var(--c-border);background:#fff;font-size:.875rem;color:var(--c-muted);text-decoration:none;transition:background .15s; }
+    .btn-back:hover { background:var(--c-surface);color:#1E293B; }
+    .btn-back svg { width:14px;height:14px; }
+    .btn-update { display:inline-flex;align-items:center;gap:7px;padding:8px 22px;border-radius:var(--radius-sm);border:none;background:var(--c-success);color:#fff;font-size:.875rem;font-weight:600;cursor:pointer;transition:background .15s; }
+    .btn-update:hover { background:var(--c-success-dk); }
+    .btn-update svg { width:15px;height:15px; }
+</style>
+@endpush
+
+@section('content')
+<div class="container-fluid page-wrap">
+    <div class="form-card">
+        <div class="form-card-hdr">
+            <div class="form-icon">
+                <svg fill="none" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+                <h2>Edit Petugas</h2>
+                <p>Ubah data petugas: <strong>{{ $petugas->nama }}</strong></p>
+            </div>
+        </div>
+
+        <div class="form-body">
+            @if($errors->any())
+            <div class="alert alert-danger small py-2 mb-3">
+                @foreach($errors->all() as $e)<div>{{ $e }}</div>@endforeach
+            </div>
+            @endif
+
+            <form method="POST" action="/datapetugas/update/{{ $petugas->id }}">
+                @csrf
+
+                <div class="fg-row">
+                    <div class="fg">
+                        <label>Kode Petugas</label>
+                        <input type="text" name="kode_petugas"
+                               value="{{ old('kode_petugas', $petugas->kode_petugas) }}" required>
+                    </div>
+                    <div class="fg">
+                        <label>Status</label>
+                        <select name="status">
+                            <option value="aktif"    @selected(old('status',$petugas->status)=='aktif')>Aktif</option>
+                            <option value="nonaktif" @selected(old('status',$petugas->status)=='nonaktif')>Nonaktif</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="fg">
+                    <label>Nama Lengkap</label>
+                    <input type="text" name="nama"
+                           value="{{ old('nama', $petugas->nama) }}" required>
+                </div>
+
+                <div class="fg">
+                    <label>Email</label>
+                    <input type="email" name="email"
+                           value="{{ old('email', $petugas->email) }}" required>
+                </div>
+
+                <div class="fg">
+                    <label>Wilayah</label>
+                    <input type="text" name="wilayah"
+                           value="{{ old('wilayah', $petugas->wilayah) }}" required>
+                </div>
+
+        </div>
+
+        <div class="form-footer">
+            <a href="/datapetugas" class="btn-back">
+                <svg fill="none" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Kembali
+            </a>
+            <button type="submit" class="btn-update">
+                <svg fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Update
+            </button>
+        </div>
+
+            </form>
+    </div>
+</div>
+@endsection
