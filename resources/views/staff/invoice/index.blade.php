@@ -186,12 +186,6 @@
 @section('content')
 <div class="px-4 py-4">
 
-    <div class="breadcrumb-bar">
-        <a href="/dashboard">Dashboard</a>
-        <span class="sep">›</span>
-        <span>Invoice</span>
-    </div>
-
     <div class="page-header">
         <div class="page-header-text">
             <h1>Daftar Invoice</h1>

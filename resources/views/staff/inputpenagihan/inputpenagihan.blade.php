@@ -141,7 +141,7 @@
             </form>
             <div class="u-format-info">
                 <i class="bi bi-info-circle" style="flex-shrink:0"></i>
-                Kolom wajib: <strong>IDPEL, Nama, Daya, Lembar, RPTA</strong> · Maks. 10 MB
+                Kolom wajib: <strong>IDPEL, Nama, Daya, Lembar, RPTAG </strong> · Maks. 10 MB
             </div>
         </div>
     </div>
