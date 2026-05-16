@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Session;
 use App\Services\PelangganImportService;
 use App\Http\Controllers\PenilaianController;
 use App\Http\Controllers\RankingController;
+use App\Http\Controllers\PenagihanController;
+use App\Http\Controllers\MonitoringController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\StaffDashboardController;
+use App\Http\Controllers\SupervisorDashboardController;
 
 /* ================= ROOT ================= */
 Route::get('/', function () {
@@ -59,7 +64,8 @@ Route::post('/login', function (Request $request) {
 });
 
 /* ================= DASHBOARD ================= */
-Route::get('/dashboard', function () {
+
+    Route::get('/dashboard', function () {
 
     if (!Session::has('user')) {
         return redirect('/login');
@@ -67,10 +73,31 @@ Route::get('/dashboard', function () {
 
     $role = Session::get('role');
 
-    return view('dashboard', compact('role'));
+    if ($role == 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+
+    if ($role == 'supervisor') {
+        return redirect()->route('supervisor.dashboard');
+    }
+
+    if ($role == 'staff') {
+        return redirect()->route('staff.dashboard');
+    }
+
+    return redirect('/login');
 });
 
 /* ================= MENU ADMIN ================= */
+
+// ADMIN DASHBOARD
+Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+
+// SUPERVISOR DASHBOARD
+Route::get('/supervisor/dashboard', [SupervisorDashboardController::class, 'index'])->name('supervisor.dashboard');
+
+// STAFF DASHBOARD
+Route::get('/staff/dashboard', [StaffDashboardController::class, 'index'])->name('staff.dashboard');
 
 // ROLES
 Route::get('/roles', function () {
@@ -546,75 +573,41 @@ Route::post('/datapelanggan/reset', function () {
 
 Route::prefix('penagihan')->group(function () {
 
-    // HALAMAN UTAMA
-    Route::get('/', function () {
-        return view('staff.inputpenagihan.inputpenagihan', [
-            'preview'   => [],
-            'errorList' => [],
-            'stats'     => [
-                'total' => 0,
-                'error_rows' => 0,
-            ],
-            'fatal' => null,
-        ]);
-    })->name('inputpenagihan.penagihan');
+    /*
+    |--------------------------------------------------------------------------
+    | HALAMAN INPUT PENAGIHAN
+    |--------------------------------------------------------------------------
+    */
 
+    Route::get('/', [PenagihanController::class, 'index'])
+        ->name('penagihan.index');
 
-    // UPLOAD FILE
-    Route::post('/upload', function (\Illuminate\Http\Request $request) {
+    /*
+    |--------------------------------------------------------------------------
+    | UPLOAD CSV
+    |--------------------------------------------------------------------------
+    */
 
-        $request->validate([
-            'csv_file' => 'required|file|max:10240',
-        ]);
+    Route::post('/upload', [PenagihanController::class, 'upload'])
+        ->name('penagihan.upload');
 
-        $preview = [
-            [
-                '_row' => 1,
-                'idpel' => '12345',
-                'nama' => 'Budi',
-                'daya' => '900',
-                'lembar' => '1',
-                'rptag' => '100000',
-                'rpbk'  => '3000',
-                '_status' => 'valid',
-                '_errors' => [],
-            ],
-            [
-                '_row' => 2,
-                'idpel' => '',
-                'nama' => 'Ani',
-                'daya' => '1300',
-                'lembar' => '1',
-                'rptag' => '120000',
-                'rpbk'  => '3000',
-                '_status' => 'error',
-                '_errors' => ['IDPEL kosong'],
-            ],
-        ];
+    /*
+    |--------------------------------------------------------------------------
+    | SIMPAN KE DATABASE
+    |--------------------------------------------------------------------------
+    */
 
-        $errorList = [
-            'Baris 2 - IDPEL kosong',
-        ];
+    Route::post('/save', [PenagihanController::class, 'save'])
+        ->name('penagihan.save');
 
-        $stats = [
-            'total' => count($preview),
-            'error_rows' => 1,
-        ];
+    /*
+    |--------------------------------------------------------------------------
+    | RESET IMPORT
+    |--------------------------------------------------------------------------
+    */
 
-        return view('staff.inputpenagihan.penagihan', compact('preview', 'errorList', 'stats'))
-            ->with('active_tab', 'preview');
-
-    })->name('penagihan.upload');
-
-
-    // SIMPAN DATA
-    Route::post('/save', function () {
-
-        return redirect()
-            ->route('penagihan.penagihan')
-            ->with('save_success', 'Data berhasil disimpan!');
-
-    })->name('penagihan.save');
+    Route::post('/reset', [PenagihanController::class, 'reset'])
+        ->name('penagihan.reset');
 });
 
 /* ================================================================
@@ -639,363 +632,34 @@ Route::prefix('ranking')->name('hasilranking.')->group(function () {
    URL: /monitoringkinerja
 ================================================================ */
 
-Route::get('/monitoring', function (Request $request) {
+Route::get('/monitoringkinerja', [MonitoringController::class, 'index'])
+    ->name('monitoring.index');
 
-    if (!Session::has('user')) {
-        return redirect('/login');
-    }
-
-    $bulan   = $request->get('bulan', date('Y-m'));
-    $wilayah = $request->get('wilayah', '');
-
-    // ── 1. Daftar wilayah untuk filter dropdown ──────────────────
-    $wilayahList = DB::table('petugas')
-        ->select('wilayah')->distinct()->orderBy('wilayah')->get();
-
-    // ── 2. Query kinerja per petugas ─────────────────────────────
-    $query = DB::table('petugas')
-        ->leftJoin('penagihan', function ($join) use ($bulan) {
-            $join->on('penagihan.petugas_id', '=', 'petugas.id')
-                 ->where('penagihan.bulan', $bulan);
-        })
-        ->leftJoin('pelanggan', 'pelanggan.idpel', '=', 'penagihan.idpel')
-        ->where('petugas.status', 'aktif')
-        ->select(
-            'petugas.id',
-            'petugas.nama',
-            'petugas.wilayah',
-            'petugas.kode_petugas',
-   DB::raw('COUNT(DISTINCT penagihan.idpel) as total_ditagih'),
-DB::raw('SUM(CASE WHEN penagihan.status = "sudah" THEN 1 ELSE 0 END) as sudah_tagih'),
-DB::raw('SUM(CASE WHEN penagihan.status = "belum" THEN 1 ELSE 0 END) as belum_tagih'),
-
-/*
-|--------------------------------------------------------------------------
-| TOTAL NOMINAL TUNGGAKAN
-|--------------------------------------------------------------------------
-*/
-DB::raw('COALESCE(SUM(pelanggan.rptag), 0) as total_rptag'),
-DB::raw('COALESCE(SUM(pelanggan.rpbk),0) as total_rpbk'),
-
-/*
-|--------------------------------------------------------------------------
-| TOTAL BERHASIL DITAGIH
-|--------------------------------------------------------------------------
-*/
-DB::raw('COALESCE(SUM(
-    CASE 
-        WHEN penagihan.status = "sudah" 
-        THEN penagihan.jumlah_bayar 
-        ELSE 0 
-    END
-), 0) as total_tagih'),
-
-/*
-|--------------------------------------------------------------------------
-| SISA TUNGGAKAN
-|--------------------------------------------------------------------------
-*/
-DB::raw('
-    COALESCE(SUM(pelanggan.rptag), 0)
-    -
-    COALESCE(SUM(
-        CASE 
-            WHEN penagihan.status = "sudah"
-            THEN penagihan.jumlah_bayar
-            ELSE 0
-        END
-    ), 0)
-    as sisa_saldo
-')
-)
-->groupBy(
-    'petugas.id',
-    'petugas.nama',
-    'petugas.wilayah',
-    'petugas.kode_petugas'
-);
-
-    if (!empty($wilayah)) {
-        $query->where('petugas.wilayah', $wilayah);
-    }
-
-    $kinerja = $query->orderByDesc('sudah_tagih')->get();
-
-    // ── 3. Hitung persentase & kategori ─────────────────────────
-    $kinerja = $kinerja->map(function ($row) {
-        $row->persen = $row->total_ditagih > 0
-            ? round(($row->sudah_tagih / $row->total_ditagih) * 100, 1)
-            : 0;
-
-        $row->kategori = match(true) {
-            $row->persen >= 80 => 'Baik',
-            $row->persen >= 60 => 'Cukup',
-            default            => 'Kurang',
-        };
-
-        return $row;
-    });
-
-   // ── 4. Summary keseluruhan ───────────────────────────────────
-$summary = [
-
-    'total_petugas'  => $kinerja->count(),
-
-    'avg_kinerja' =>
-        $kinerja->count() > 0
-            ? round($kinerja->avg('persen'), 1)
-            : 0,
-
-    'total_target' =>
-        $kinerja->sum('total_ditagih'),
-
-    'total_sudah' =>
-        $kinerja->sum('sudah_tagih'),
-
-    'total_belum' =>
-        $kinerja->sum('belum_tagih'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | TOTAL NOMINAL TAGIHAN
-    |--------------------------------------------------------------------------
-    */
-    'total_rptag' =>
-        $kinerja->sum('total_rptag'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | TOTAL RPBK
-    |--------------------------------------------------------------------------
-    */
-    'total_rpbk' =>
-        $kinerja->sum('total_rpbk'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | TOTAL BERHASIL DITAGIH
-    |--------------------------------------------------------------------------
-    */
-    'total_tagih' =>
-        $kinerja->sum('total_tagih'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | TOTAL SISA SALDO
-    |--------------------------------------------------------------------------
-    */
-    'total_sisa' =>
-        $kinerja->sum('sisa_saldo'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | KATEGORI PETUGAS
-    |--------------------------------------------------------------------------
-    */
-    'petugas_baik' =>
-        $kinerja->where('kategori', 'Baik')->count(),
-
-    'petugas_cukup' =>
-        $kinerja->where('kategori', 'Cukup')->count(),
-
-    'petugas_kurang' =>
-        $kinerja->where('kategori', 'Kurang')->count(),
-];
-
-    // ── 5. Data chart (untuk JS) ─────────────────────────────────
-    $chartData = $kinerja->map(fn($r) => [
-        'nama'    => $r->nama,
-        'persen'  => $r->persen,
-        'sudah'   => $r->sudah_tagih,
-        'belum'   => $r->belum_tagih,
-        'tagih'   => $r->total_tagih,
-        'sisa'    => $r->sisa_saldo,
-    ])->values()->all();
-
-    return view('supervisor.monitoringkinerja', compact(
-        'kinerja', 'summary', 'chartData',
-        'bulan', 'wilayah', 'wilayahList'
-    ));
-});
-
-// ── Detail drill-down per petugas ────────────────────────────────
-Route::get('/monitoringkinerja/detail/{id}', function (Request $request, $id) {
-
-    if (!Session::has('user')) {
-        return redirect('/login');
-    }
-
-    $bulan   = $request->get('bulan', date('Y-m'));
-    $petugas = DB::table('petugas')->where('id', $id)->first();
-
-    if (!$petugas) {
-        return redirect('/monitoringkinerja')->with('error', 'Data petugas tidak ditemukan.');
-    }
-
-    // Semua pelanggan beserta status penagihan petugas ini bulan ini
-    $detail = DB::table('pelanggan')
-        ->leftJoin('penagihan', function ($join) use ($id, $bulan) {
-            $join->on('penagihan.idpel', '=', 'pelanggan.idpel')
-                 ->where('penagihan.petugas_id', $id)
-                 ->where('penagihan.bulan', $bulan);
-        })
-        ->select(
-            'pelanggan.idpel',
-            'pelanggan.nama',
-            'pelanggan.daya',
-            'pelanggan.lembar',
-            'pelanggan.rptag',
-'pelanggan.rpbk',
-            DB::raw('COALESCE(penagihan.status, "belum") as status'),
-            'penagihan.created_at as tgl_tagih',
-           'penagihan.jumlah_bayar as jumlah_tagih',
-            'penagihan.keterangan'
-        )
-        ->orderByRaw('COALESCE(penagihan.status, "belum") ASC') // belum duluan
-        ->get();
-
-    $stats = [
-        'total'       => $detail->count(),
-        'sudah'       => $detail->where('status', 'sudah')->count(),
-        'belum'       => $detail->where('status', 'belum')->count(),
-        'total_tagih' => $detail->sum('jumlah_tagih'),
-       'sisa_saldo'  => $detail->sum('rptag') - $detail->sum('jumlah_tagih'),
-        'persen'      => $detail->count() > 0
-            ? round(($detail->where('status', 'sudah')->count() / $detail->count()) * 100, 1)
-            : 0,
-    ];
-
-    return view('supervisor.detailkinerja', compact('petugas', 'detail', 'stats', 'bulan'));
-});
+Route::get('/monitoringkinerja/detail/{id}', [MonitoringController::class, 'detail'])
+    ->name('monitoring.detail');
  
-/* ================================================================
-   CETAK INVOICE
-   /invoice          → halaman daftar + filter sebelum cetak
-   /invoice/print    → halaman cetak (2 per A4, tanpa layout)
-================================================================ */
- 
-// ── Halaman pilih filter sebelum cetak ──────────────────────────
-Route::get('/invoice', function (Request $request) {
- 
-    if (!Session::has('user')) {
-        return redirect('/login');
-    }
- 
-    $bulan   = $request->get('bulan', date('Y-m'));
-    $search  = $request->get('search', '');
- 
-    // Ambil daftar petugas untuk filter
-    $petugasList = DB::table('petugas')
-        ->where('status', 'aktif')
-        ->orderBy('nama')
-        ->get();
- 
-    $petugasId = $request->get('petugas_id', '');
- 
-    // Query data penagihan + pelanggan
-    $query = DB::table('penagihan')
-        ->join('pelanggan', 'pelanggan.idpel', '=', 'penagihan.idpel')
-        ->join('petugas',   'petugas.id',      '=', 'penagihan.petugas_id')
-        ->select(
-            'penagihan.id as tagih_id',
-            'penagihan.status',
-            'penagihan.jumlah_bayar',
-            'penagihan.tanggal_tagih',
-            'pelanggan.idpel',
-            'pelanggan.nama',
-            'pelanggan.daya',
-            'pelanggan.lembar',
-            'pelanggan.rptag',
-            'pelanggan.rpbk',
-            'pelanggan.alamat',
-            'petugas.id as petugas_id',
-            'petugas.nama as nama_petugas',
-            'petugas.wilayah'
-        );
- 
-    // Filter bulan dari kolom tanggal_tagih atau created_at
-    if ($bulan) {
-        $query->whereRaw("DATE_FORMAT(penagihan.tanggal_tagih, '%Y-%m') = ?", [$bulan]);
-    }
- 
-    if ($petugasId) {
-        $query->where('penagihan.petugas_id', $petugasId);
-    }
- 
-    if ($search) {
-        $query->where(function($q) use ($search) {
-            $q->where('pelanggan.nama', 'like', "%{$search}%")
-              ->orWhere('pelanggan.idpel', 'like', "%{$search}%");
-        });
-    }
- 
-    $tagihan = $query->orderBy('petugas.nama')->orderBy('pelanggan.nama')->paginate(20)->withQueryString();
- 
-    return view('staff.cetakinvoice.cetakinvoice', compact(
-        'tagihan', 'petugasList', 'bulan', 'petugasId', 'search'
-    ));
-});
- 
-// ── Halaman cetak — tanpa layout, 2 invoice per A4 ──────────────
-Route::get('/invoice/print', function (Request $request) {
- 
-    if (!Session::has('user')) {
-        return redirect('/login');
-    }
- 
-    $bulan     = $request->get('bulan', date('Y-m'));
-    $petugasId = $request->get('petugas_id', '');
-    $ids       = $request->get('ids', ''); // comma-separated tagih_id
- 
-    $query = DB::table('penagihan')
-        ->join('pelanggan', 'pelanggan.idpel', '=', 'penagihan.idpel')
-        ->join('petugas',   'petugas.id',      '=', 'penagihan.petugas_id')
-        ->select(
-            'penagihan.id as tagih_id',
-            'penagihan.status',
-            'penagihan.jumlah_bayar',
-            'penagihan.tanggal_tagih',
-            'pelanggan.idpel',
-            'pelanggan.nama',
-            'pelanggan.daya',
-            'pelanggan.lembar',
-            'pelanggan.rptag',
-            'pelanggan.alamat',
-            'petugas.nama as nama_petugas',
-            'petugas.wilayah'
-        );
- 
-    // Jika ada ids spesifik (cetak pilihan)
-    if ($ids) {
-        $idArray = array_filter(explode(',', $ids));
-        $query->whereIn('penagihan.id', $idArray);
-    } else {
-        // Cetak semua hasil filter
-        if ($bulan) {
-            $query->whereRaw("DATE_FORMAT(penagihan.tanggal_tagih, '%Y-%m') = ?", [$bulan]);
-        }
-        if ($petugasId) {
-            $query->where('penagihan.petugas_id', $petugasId);
-        }
-    }
- 
-    $tagihan = $query->orderBy('pelanggan.nama')->get();
- 
-    // Bulan untuk ditampilkan di invoice (format: MARET 2026)
-    $bulanLabel = $bulan
-        ? strtoupper(\Carbon\Carbon::createFromFormat('Y-m', $bulan)->translatedFormat('F Y'))
-        : strtoupper(now()->translatedFormat('F Y'));
- 
-    // Nomor urut tagihan untuk No TAG
-    $tagihan = $tagihan->map(function ($item, $idx) use ($bulan) {
-        $item->no_tag = 'PAAANAG' . str_pad($idx + 1, 4, '0', STR_PAD_LEFT)
-            . '/01/AGA.01.01/'
-            . now()->format('dmY');
-        return $item;
-    });
- 
-    return view('staff.cetakinvoice.print', compact('tagihan', 'bulanLabel', 'bulan'));
-});
+
+/* ================= INVOICE (SPK RANKING) ================= */
+
+// Index - Daftar Invoice
+Route::get('/invoices', [App\Http\Controllers\InvoiceController::class, 'index'])
+    ->name('invoice.index');
+
+// Generate - Buat Invoice dari Ranking
+Route::post('/invoices/generate', [App\Http\Controllers\InvoiceController::class, 'generate'])
+    ->name('invoice.generate');
+
+// Print - Preview Cetak Invoice (dengan filter & bulk print)
+Route::get('/invoices/print', [App\Http\Controllers\InvoiceController::class, 'print'])
+    ->name('invoice.print');
+
+// Export PDF - Export Invoice ke PDF
+Route::get('/invoices/export-pdf', [App\Http\Controllers\InvoiceController::class, 'exportPdf'])
+    ->name('invoice.exportPdf');
+
+// Delete - Hapus Invoice
+Route::delete('/invoices/{id}', [App\Http\Controllers\InvoiceController::class, 'destroy'])
+    ->name('invoice.destroy');
 
 /* ================= LOGOUT ================= */
 Route::get('/logout', function () {

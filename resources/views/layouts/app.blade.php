@@ -380,6 +380,74 @@
     }
 
     /* ================================================================
+       TOPBAR DROPDOWN
+    ================================================================ */
+    .topbar-dropdown .dropdown-menu {
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-md);
+        padding: 8px 0;
+        min-width: 220px;
+        margin-top: 12px !important;
+        animation: fadeIn 0.2s ease-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .topbar-dropdown .dropdown-item {
+        padding: 8px 20px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: background var(--transition), color var(--transition);
+    }
+    .topbar-dropdown .dropdown-item i {
+        font-size: 16px;
+        color: var(--text-muted);
+        transition: color var(--transition);
+    }
+    .topbar-dropdown .dropdown-item:hover {
+        background: var(--pln-blue-light);
+        color: var(--pln-blue);
+    }
+    .topbar-dropdown .dropdown-item:hover i {
+        color: var(--pln-blue);
+    }
+    .topbar-dropdown .dropdown-item-danger {
+        color: #DC2626 !important;
+    }
+    .topbar-dropdown .dropdown-item-danger i {
+        color: #DC2626 !important;
+    }
+    .topbar-dropdown .dropdown-item-danger:hover {
+        background: #FEF2F2 !important;
+        color: #B91C1C !important;
+    }
+    .topbar-dropdown .dropdown-divider {
+        border-color: var(--border);
+        margin: 6px 0;
+    }
+    .topbar-dropdown .dropdown-user-info {
+        padding: 8px 20px 8px;
+    }
+    .topbar-dropdown .dropdown-user-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-primary);
+        line-height: 1.2;
+    }
+    .topbar-dropdown .dropdown-user-role {
+        font-size: 12px;
+        color: var(--text-muted);
+        text-transform: capitalize;
+        margin-top: 4px;
+    }
+
+    /* ================================================================
        PAGE CONTENT
     ================================================================ */
     .page-content {
@@ -779,12 +847,12 @@
             @endif
 
             @if(in_array('cetak_invoice', $permissions))
-            <a href="/invoice"
-               class="nav-item {{ request()->is('invoice*') ? 'active' : '' }}">
-                <i class="bi bi-receipt nav-icon"></i>
-                Cetak Invoice
-            </a>
-            @endif
+<a href="{{ route('invoice.index') }}"
+   class="nav-item {{ request()->is('invoices*') ? 'active' : '' }}">
+    <i class="bi bi-receipt nav-icon"></i>
+    Cetak Invoice
+</a>
+@endif
 
             @if(in_array('data_penilaian', $permissions) || in_array('hasil_ranking', $permissions))
             <div class="sidebar-label">SPK &amp; Analitik</div>
@@ -807,28 +875,15 @@
             @endif
 
             @if(in_array('monitoring', $permissions))
-            <a href="/monitoring"
-               class="nav-item {{ request()->is('monitoring*') ? 'active' : '' }}">
-                <i class="bi bi-graph-up-arrow nav-icon"></i>
-                Monitoring Kinerja
-            </a>
+            <a href="{{ route('monitoring.index') }}"
+   class="nav-item {{ request()->is('monitoringkinerja*') ? 'active' : '' }}">
+    <i class="bi bi-graph-up-arrow nav-icon"></i>
+    Monitoring Kinerja
+</a>
             @endif
 
         </div>
 
-        <!-- Footer -->
-        <div class="sidebar-footer">
-            <div class="sidebar-user">
-                <div class="sidebar-avatar">{{ $userInitial }}</div>
-                <div class="sidebar-user-info">
-                    <div class="sidebar-user-name">{{ $userName }}</div>
-                    <div class="sidebar-user-role">{{ $role }}</div>
-                </div>
-                <a href="/logout" class="sidebar-logout" title="Logout">
-                    <i class="bi bi-box-arrow-right"></i>
-                </a>
-            </div>
-        </div>
 
     </aside>
 
@@ -856,16 +911,28 @@
             <div class="topbar-right">
                 <span class="topbar-badge">
                     <i class="bi bi-building" style="font-size:11px"></i>
-                    PLN UP3
+                    PLN ULP RIVAI
                 </span>
-                <div class="topbar-divider"></div>
-                <div class="topbar-notif" title="Notifikasi">
-                    <i class="bi bi-bell"></i>
-                </div>
-                <div class="topbar-user">
-                    <div class="topbar-avatar">{{ $userInitial }}</div>
-                    <span class="topbar-username">{{ $userName }}</span>
-                    <i class="bi bi-chevron-down" style="font-size:10px;color:var(--text-muted)"></i>
+
+                <div class="dropdown topbar-dropdown">
+                    <div class="topbar-user" data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                        <div class="topbar-avatar">{{ $userInitial }}</div>
+                        <span class="topbar-username">{{ $userName }}</span>
+                        <i class="bi bi-chevron-down" style="font-size:10px;color:var(--text-muted)"></i>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li class="dropdown-user-info">
+                            <div class="dropdown-user-name">{{ $userName }}</div>
+                            <div class="dropdown-user-role">{{ $role }}</div>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item dropdown-item-danger" href="/logout">
+                                <i class="bi bi-box-arrow-right"></i>
+                                Logout
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </header>

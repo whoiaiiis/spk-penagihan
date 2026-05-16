@@ -21,10 +21,15 @@ class RankingController extends Controller
                 'ranking.ranking',
                 'ranking.updated_at',
                 'pelanggan.nama',
+                'pelanggan.status_penagihan',
                 'penilaian.norm_c1', 'penilaian.norm_c2',
                 'penilaian.norm_c3', 'penilaian.norm_c4',
                 'penilaian.kategori'
-            );
+            )
+            ->where(function ($q) {
+                $q->whereNull('pelanggan.status_penagihan')
+                  ->orWhere('pelanggan.status_penagihan', '!=', 'sudah');
+            });
 
         // Filter: kategori
         $kategoriFilter = $request->get('kategori');
@@ -74,7 +79,15 @@ class RankingController extends Controller
             set_time_limit(300);
             DB::beginTransaction();
 
-            $penilaian = DB::table('penilaian')->orderBy('idpel')->get();
+            $penilaian = DB::table('penilaian')
+                ->join('pelanggan', 'penilaian.idpel', '=', 'pelanggan.idpel')
+                ->where(function ($q) {
+                    $q->whereNull('pelanggan.status_penagihan')
+                      ->orWhere('pelanggan.status_penagihan', '!=', 'sudah');
+                })
+                ->select('penilaian.*')
+                ->orderBy('penilaian.idpel')
+                ->get();
 
             if ($penilaian->isEmpty()) {
                 return redirect()->route('hasilranking.index')

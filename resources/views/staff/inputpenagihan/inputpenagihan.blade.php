@@ -196,31 +196,45 @@
                             <tr>
                                 <th style="width:44px">#</th>
                                 <th>IDPEL</th>
-                                <th>Nama</th>
-                                <th style="width:80px">Daya</th>
-                                <th style="width:72px">Lembar</th>
-                                <th style="width:80px">RPTA</th>
-                                <th style="width:96px">Status</th>
+                                <th>NAMA</th>
+                                <th>DAYA/LBR</th>
+                                <th>NO SURAT</th>
+                                <th>RANKING</th>
+                                <th>NILAI SPK</th>
+                                <th>STATUS</th>
+                                <th>JUMLAH BAYAR</th>
+                                <th>VALIDASI</th>
+<th>VALIDASI</th>
                             </tr>
                         </thead>
                         <tbody>
                         @foreach($preview as $row)
                             <tr class="{{ $row['_status'] == 'error' ? 'u-row-error' : '' }}">
                                 <td style="color:#9AAABB;font-size:12px">{{ $row['_row'] }}</td>
-                                <td>{{ $row['idpel'] ?? '-' }}</td>
-                                <td>{{ $row['nama'] ?? '-' }}</td>
-                                <td>{{ $row['daya'] ?? '-' }}</td>
-                                <td>{{ $row['lembar'] ?? '-' }}</td>
-                                <td>{{ $row['rpta'] ?? '-' }}</td>
+                                <td>{{ $row['idpel'] }}</td>
+                                <td style="font-weight:500">{{ $row['nama'] }}</td>
+                                <td>{{ $row['daya'] }} / {{ $row['lembar'] }}</td>
+                                <td>{{ $row['nomor_surat'] }}</td>
+                                <td class="mono">{{ $row['ranking_awal'] ?? '-' }}</td>
+                                <td class="mono">{{ $row['nilai_spk'] ?? '-' }}</td>
                                 <td>
-                                    @if($row['_status'] == 'valid')
-                                        <span class="u-badge u-badge-ok">Valid</span>
+                                    @if($row['status'] == 'sudah')
+                                        <span class="u-badge u-badge-ok">SUDAH</span>
                                     @else
-                                        <span class="u-tooltip">
-                                            <span class="u-badge u-badge-err">Error</span>
-                                            <span class="u-tooltip-box">{{ implode(' · ', $row['_errors'] ?? []) }}</span>
-                                        </span>
+                                        <span class="u-badge u-badge-err">BELUM</span>
                                     @endif
+                                </td>
+                                <td class="right mono">Rp {{ number_format($row['jumlah_bayar'], 0, ',', '.') }}</td>
+
+<td>
+    @if($row['_status'] == 'valid')
+        <span class="badge bg-success">Valid</span>
+    @else
+        <span class="badge bg-danger">Error</span>
+    @endif
+</td>
+</td>
+                                
                                 </td>
                             </tr>
                         @endforeach

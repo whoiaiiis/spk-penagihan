@@ -265,7 +265,7 @@
                 <svg fill="none" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 Tampilkan
             </button>
-            <a href="/monitoringkinerja" class="btn btn-outline">Reset</a>
+            <a href="{{ route('monitoring.index') }}" class="btn btn-outline">Reset</a>
         </div>
     </form>
 
@@ -314,13 +314,13 @@
 
     {{-- ── Saldo row ─────────────────────────────────────────────────────── --}}
     @php
-        $pctTagih = $summary['total_rpta'] > 0 ? ($summary['total_tagih'] / $summary['total_rpta']) * 100 : 0;
-        $pctSisa  = $summary['total_rpta'] > 0 ? ($summary['total_sisa']  / $summary['total_rpta']) * 100 : 0;
+        $pctTagih = $summary['total_rptag'] > 0 ? ($summary['total_tagih'] / $summary['total_rptag']) * 100 : 0;
+        $pctSisa  = $summary['total_rptag'] > 0 ? ($summary['total_sisa']  / $summary['total_rptag']) * 100 : 0;
     @endphp
     <div class="saldo-row">
         <div class="saldo-card rpta">
-            <div class="s-label">Total RPTA (Target Tagihan)</div>
-            <div class="s-value">Rp {{ number_format($summary['total_rpta'], 0, ',', '.') }}</div>
+            <div class="s-label">Total RPTAG (Target Tagihan)</div>
+            <div class="s-value">Rp {{ number_format($summary['total_rptag'], 0, ',', '.') }}</div>
             <div class="s-bar"><div class="s-fill" style="width:100%;background:var(--c-border)"></div></div>
         </div>
         <div class="saldo-card tagih">
@@ -404,12 +404,12 @@
                                 <span class="progress-pct {{ $pClass }}">{{ $p->persen }}%</span>
                             </div>
                         </td>
-                        <td class="right mono" style="font-size:.8rem">{{ number_format($p->total_rpta, 0, ',', '.') }}</td>
+                        <td class="right mono" style="font-size:.8rem">{{ number_format($p->total_rptag, 0, ',', '.') }}</td>
                         <td class="right mono" style="font-size:.8rem;color:var(--c-success)">{{ number_format($p->total_tagih, 0, ',', '.') }}</td>
                         <td class="right mono" style="font-size:.8rem;color:var(--c-danger)">{{ number_format($p->sisa_saldo, 0, ',', '.') }}</td>
                         <td><span class="pill {{ $pPill }}">{{ $p->kategori }}</span></td>
                         <td>
-                            <a href="/monitoringkinerja/detail/{{ $p->id }}?bulan={{ $bulan }}"
+                            <a href="{{ route('monitoring.detail', ['id' => $p->id, 'bulan' => $bulan]) }}"
                                class="btn btn-outline btn-sm">
                                 Detail
                             </a>

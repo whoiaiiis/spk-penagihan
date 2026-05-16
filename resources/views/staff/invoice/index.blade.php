@@ -1,7 +1,7 @@
-{{-- resources/views/staff/cetakinvoice/cetakinvoice.blade.php --}}
+{{-- resources/views/staff/invoice/index.blade.php --}}
 @extends('layouts.app')
 
-@section('title', 'Cetak Invoice')
+@section('title', 'Daftar Invoice')
 
 @push('styles')
 <style>
@@ -31,7 +31,7 @@
     }
 
     body { background: var(--c-bg); }
-    .page-wrap { max-width: 1100px; padding: 24px 20px 40px; }
+    .page-wrap { max-width: 1200px; padding: 24px 20px 40px; }
 
     .breadcrumb-bar {
         font-size: .8125rem; color: var(--c-muted);
@@ -40,9 +40,10 @@
     .breadcrumb-bar a { color: var(--c-primary); text-decoration: none; }
     .breadcrumb-bar .sep { color: var(--c-light); }
 
-    .page-header { margin-bottom: 20px; }
-    .page-header h1 { font-size: 1.375rem; font-weight: 700; margin: 0 0 2px; letter-spacing: -.02em; }
-    .page-header p  { font-size: .875rem; color: var(--c-muted); margin: 0; }
+    .page-header { margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px; }
+    .page-header-text h1 { font-size: 1.375rem; font-weight: 700; margin: 0 0 2px; letter-spacing: -.02em; }
+    .page-header-text p  { font-size: .875rem; color: var(--c-muted); margin: 0; }
+    .page-header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
     /* Filter card */
     .filter-card {
@@ -60,7 +61,7 @@
         height: 38px; padding: 0 12px; border: 1px solid var(--c-border);
         border-radius: var(--radius-sm); font-size: .875rem; color: var(--c-text);
         background: #F8FAFC; outline: none; font-family: var(--font);
-        transition: border-color .15s; min-width: 160px;
+        transition: border-color .15s; min-width: 140px;
     }
     .fg select:focus, .fg input:focus { border-color: var(--c-primary); background: #fff; }
 
@@ -140,8 +141,8 @@
         accent-color: var(--c-primary);
     }
 
-    /* Print action bar */
-    .print-bar {
+    /* Sticky action bar */
+    .action-bar {
         display: none; position: sticky; bottom: 16px;
         background: var(--c-primary); color: #fff;
         border-radius: var(--radius); padding: 14px 20px;
@@ -149,16 +150,24 @@
         align-items: center; justify-content: space-between; gap: 12px;
         z-index: 100; margin-top: 12px;
     }
-    .print-bar.visible { display: flex; }
-    .print-bar span { font-size: .9375rem; font-weight: 600; }
+    .action-bar.visible { display: flex; }
+    .action-bar span { font-size: .9375rem; font-weight: 600; }
     .btn-white {
         background: #fff; color: var(--c-primary); border: none;
-        padding: 8px 18px; border-radius: var(--radius-sm);
+        padding: 8px 16px; border-radius: var(--radius-sm);
         font-size: .875rem; font-weight: 700; cursor: pointer;
         display: inline-flex; align-items: center; gap: 6px;
         transition: background .15s;
     }
     .btn-white:hover { background: #EFF6FF; }
+
+    .alert {
+        padding: 12px 16px; border-radius: var(--radius-sm); margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+    }
+    .alert-success { background: var(--c-success-lt); color: var(--c-success); border: 1px solid var(--c-success-bd); }
+    .alert-error { background: var(--c-danger-lt); color: var(--c-danger); border: 1px solid var(--c-danger-bd); }
+    .alert-warning { background: var(--c-warning-lt); color: var(--c-warning); border: 1px solid #FDE68A; }
+    .alert svg { width: 18px; height: 18px; flex-shrink: 0; }
 
     .empty-state { padding: 48px 24px; text-align: center; color: var(--c-muted); }
     .empty-state svg { opacity: .3; margin: 0 auto 12px; display: block; }
@@ -167,6 +176,9 @@
     @media (max-width: 640px) {
         .filter-row { flex-direction: column; }
         .fg select, .fg input { min-width: 100%; }
+        .page-header { flex-direction: column; align-items: stretch; }
+        .page-header-actions { width: 100%; }
+        .page-header-actions .btn { width: 100%; justify-content: center; }
     }
 </style>
 @endpush
@@ -177,98 +189,134 @@
     <div class="breadcrumb-bar">
         <a href="/dashboard">Dashboard</a>
         <span class="sep">›</span>
-        <span>Cetak Invoice</span>
+        <span>Invoice</span>
     </div>
 
     <div class="page-header">
-        <h1>Cetak Invoice Tagihan</h1>
-        <p>Pilih data penagihan yang ingin dicetak, 2 invoice per lembar A4</p>
+        <div class="page-header-text">
+            <h1>Daftar Invoice</h1>
+            <p>Kelola invoice dari hasil ranking pelanggan SPK</p>
+        </div>
+        <div class="page-header-actions">
+            <form action="{{ route('invoice.generate') }}" method="POST" onsubmit="return confirm('Generate semua invoice dari ranking?')">
+                @csrf
+                <button type="submit" class="btn btn-primary">
+                    <svg fill="none" viewBox="0 0 24 24"><path d="M12 5v14m7-7H5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    Generate Semua Invoice
+                </button>
+            </form>
+        </div>
     </div>
+
+    {{-- Alerts --}}
+    @if(session('success'))
+    <div class="alert alert-success">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+        <span>{{ session('success') }}</span>
+    </div>
+    @endif
+    @if(session('error'))
+    <div class="alert alert-error">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        <span>{{ session('error') }}</span>
+    </div>
+    @endif
+    @if(session('warning'))
+    <div class="alert alert-warning">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+        <span>{{ session('warning') }}</span>
+    </div>
+    @endif
 
     {{-- Filter --}}
     <div class="filter-card">
-        <form method="GET" action="/invoice" id="filter-form">
+        <form method="GET" action="{{ route('invoice.index') }}" id="filter-form">
             <div class="filter-row">
                 <div class="fg">
-                    <label>Bulan Tagih</label>
-                    <input type="month" name="bulan" value="{{ $bulan }}">
+                    <label>Cari Pelanggan</label>
+                    <input type="text" name="search" value="{{ request('search', '') }}" placeholder="Nama / IDPEL...">
                 </div>
+
                 <div class="fg">
-                    <label>Petugas</label>
-                    <select name="petugas_id">
-                        <option value="">Semua Petugas</option>
-                        @foreach($petugasList as $p)
-                            <option value="{{ $p->id }}" {{ $petugasId == $p->id ? 'selected' : '' }}>
-                                {{ $p->nama }}
-                            </option>
-                        @endforeach
+                    <label>Status Cetak</label>
+                    <select name="status_cetak">
+                        <option value="">Semua Status</option>
+                        <option value="belum" {{ request('status_cetak') === 'belum' ? 'selected' : '' }}>Belum Cetak</option>
+                        <option value="sudah" {{ request('status_cetak') === 'sudah' ? 'selected' : '' }}>Sudah Cetak</option>
                     </select>
                 </div>
+
                 <div class="fg">
-                    <label>Cari Pelanggan</label>
-                    <input type="text" name="search" value="{{ $search }}" placeholder="Nama / ID Pelanggan...">
+                    <label>Ranking (dari)</label>
+                    <input type="number" name="ranking_min" min="1" value="{{ request('ranking_min', '') }}" placeholder="Min">
                 </div>
+
+                <div class="fg">
+                    <label>Ranking (sampai)</label>
+                    <input type="number" name="ranking_max" min="1" value="{{ request('ranking_max', '') }}" placeholder="Max">
+                </div>
+
                 <button type="submit" class="btn btn-primary">
                     <svg fill="none" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                     Filter
                 </button>
-                <a href="/invoice" class="btn btn-outline">Reset</a>
+                <a href="{{ route('invoice.index') }}" class="btn btn-outline">Reset</a>
             </div>
         </form>
     </div>
 
     {{-- Stats --}}
-    @if($tagihan->total() > 0)
+    @if($invoice->count() > 0)
     <div class="stats-bar">
         <div class="stat-chip blue">
             <div>
-                <div class="sc-val">{{ $tagihan->total() }}</div>
-                <div class="sc-lbl">Total Tagihan</div>
+                <div class="sc-val">{{ $invoice->total() }}</div>
+                <div class="sc-lbl">Total Ranking</div>
             </div>
         </div>
         <div class="stat-chip">
             <div>
                 <div class="sc-val" style="color:var(--c-success)">
-                    {{ $tagihan->where('status','sudah')->count() }}
+                    {{ $invoice->where('status_cetak','sudah')->count() }}
                 </div>
-                <div class="sc-lbl">Sudah Bayar</div>
+                <div class="sc-lbl">Sudah Cetak</div>
             </div>
         </div>
         <div class="stat-chip">
             <div>
                 <div class="sc-val" style="color:var(--c-warning)">
-                    {{ $tagihan->where('status','belum')->count() }}
+                    {{ $invoice->filter(function($i) { return empty($i->status_cetak) || $i->status_cetak === 'belum'; })->count() }}
                 </div>
-                <div class="sc-lbl">Belum Bayar</div>
+                <div class="sc-lbl">Belum Cetak</div>
             </div>
         </div>
     </div>
     @endif
 
     {{-- Table --}}
-    <form id="print-form" method="GET" action="/invoice/print" target="_blank">
-        <input type="hidden" name="bulan"      value="{{ $bulan }}">
-        <input type="hidden" name="petugas_id" value="{{ $petugasId }}">
-        <input type="hidden" name="ids"        id="selected-ids" value="">
-
+    <form id="action-form">
         <div class="table-card">
             <div class="table-card-header">
-                <h3>Daftar Tagihan</h3>
+                <h3>Hasil Ranking Pelanggan ({{ $invoice->count() }})</h3>
                 <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
                     <label style="font-size:.8125rem;color:var(--c-muted);display:flex;align-items:center;gap:6px;cursor:pointer">
                         <input type="checkbox" id="check-all" onchange="toggleAll(this)"> Pilih Semua
                     </label>
-                    <button type="button" class="btn btn-success btn-sm" onclick="printAll()">
+                    <button type="button" class="btn btn-success btn-sm" onclick="bulkPrint()">
                         <svg fill="none" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                        Cetak Semua
+                        Cetak Pilihan
+                    </button>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="bulkExportPdf()">
+                        <svg fill="none" viewBox="0 0 24 24"><path d="M12 2v16M7 13l5 5 5-5M4 20h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        Export PDF
                     </button>
                 </div>
             </div>
 
-            @if($tagihan->isEmpty())
+            @if($invoice->isEmpty())
             <div class="empty-state">
                 <svg width="52" height="52" fill="none" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                <p>Tidak ada data tagihan untuk filter ini.</p>
+                <p>Data ranking belum tersedia. Silakan generate ranking terlebih dahulu.</p>
             </div>
             @else
             <div class="tbl-wrap">
@@ -279,49 +327,53 @@
                                 <input type="checkbox" id="check-all-head" onchange="toggleAll(this)">
                             </th>
                             <th>ID Pelanggan</th>
-                            <th>Nama</th>
-                            <th>Alamat</th>
-                            <th>Petugas</th>
-                            <th class="right">Daya</th>
-                            <th class="right">RPTA (Rp)</th>
-                            <th>Tgl Tagih</th>
-                            <th>Status</th>
+                            <th>Nama Pelanggan</th>
+                            <th class="right">Nilai Akhir (SAW)</th>
+                            <th class="right">Ranking</th>
+                            <th class="right">RPTAG (Rp)</th>
+                            <th>Status Cetak</th>
                             <th class="center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($tagihan as $t)
+                        @foreach($invoice as $inv)
                         <tr>
                             <td class="center">
                                 <div class="cb-wrap">
-                                    <input type="checkbox" class="row-cb" value="{{ $t->tagih_id }}"
-                                           onchange="updateSelection()">
+                                    <input type="checkbox" class="row-cb" value="{{ $inv->ranking_id }}" onchange="updateSelection()">
                                 </div>
                             </td>
-                            <td class="mono">{{ $t->idpel }}</td>
-                            <td style="font-weight:500">{{ $t->nama }}</td>
-                            <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;color:var(--c-muted);font-size:.82rem">
-                                {{ $t->alamat ?: '—' }}
-                            </td>
-                            <td style="font-size:.82rem;color:var(--c-muted)">{{ $t->nama_petugas }}</td>
-                            <td class="right mono">{{ number_format($t->daya) }}</td>
+                            <td class="mono">{{ $inv->idpel }}</td>
+                            <td style="font-weight:500">{{ $inv->nama }}</td>
+                            <td class="right mono">{{ number_format($inv->nilai_akhir, 6) }}</td>
+                            <td class="right mono" style="font-weight:600">{{ $inv->ranking }}</td>
                             <td class="right mono" style="font-weight:600">
-                                {{ number_format($t->rpta, 0, ',', '.') }}
-                            </td>
-                            <td class="mono" style="color:var(--c-muted)">
-                                {{ $t->tanggal_tagih ? \Carbon\Carbon::parse($t->tanggal_tagih)->format('d/m/Y') : '—' }}
+                                {{ number_format($inv->rptag, 0, ',', '.') }}
                             </td>
                             <td>
-                                <span class="pill {{ $t->status }}">
-                                    {{ $t->status === 'sudah' ? 'Sudah' : 'Belum' }}
-                                </span>
+                                @if($inv->status_cetak === 'sudah')
+                                    <span class="pill sudah">Sudah</span>
+                                @else
+                                    <span class="pill belum">Belum</span>
+                                @endif
                             </td>
-                            <td class="center">
-                                <a href="/invoice/print?ids={{ $t->tagih_id }}&bulan={{ $bulan }}"
-                                   target="_blank" class="btn btn-outline btn-sm">
-                                    <svg fill="none" viewBox="0 0 24 24" width="13" height="13"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                                    Cetak
-                                </a>
+                            <td class="center" style="white-space:normal;">
+                                <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
+                                    <a href="{{ route('invoice.print') }}?idpel={{ $inv->idpel }}" target="_blank" class="btn btn-outline btn-sm">
+                                        <svg fill="none" viewBox="0 0 24 24" width="13" height="13"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                                        Cetak
+                                    </a>
+                                    @if($inv->invoice_id)
+                                    <form action="{{ route('invoice.destroy', $inv->invoice_id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus invoice ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline btn-sm" style="color:var(--c-danger);border-color:var(--c-danger-bd);">
+                                            <svg fill="none" viewBox="0 0 24 24" width="13" height="13"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                                            Hapus
+                                        </button>
+                                    </form>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                         @endforeach
@@ -331,22 +383,26 @@
 
             {{-- Pagination --}}
             <div style="padding:14px 20px;border-top:1px solid var(--c-border);">
-                {{ $tagihan->links() }}
+                {{ $invoice->links() }}
             </div>
             @endif
         </div>
     </form>
 
-    {{-- Sticky print bar --}}
-    <div class="print-bar" id="print-bar">
+    {{-- Sticky action bar --}}
+    <div class="action-bar" id="action-bar">
         <span id="selected-count">0 invoice dipilih</span>
-        <div style="display:flex;gap:10px;">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
             <button type="button" class="btn-white" onclick="clearSelection()">
                 Batal Pilih
             </button>
-            <button type="button" class="btn-white" onclick="printSelected()">
+            <button type="button" class="btn-white" onclick="bulkPrint()">
                 <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 Cetak Pilihan
+            </button>
+            <button type="button" class="btn-white" onclick="bulkExportPdf()">
+                <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M12 2v16M7 13l5 5 5-5M4 20h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                Export PDF
             </button>
         </div>
     </div>
@@ -361,27 +417,26 @@ let selectedIds = new Set();
 function toggleAll(cb) {
     document.querySelectorAll('.row-cb').forEach(c => {
         c.checked = cb.checked;
-        if (cb.checked) selectedIds.add(c.value);
-        else selectedIds.delete(c.value);
+        if (cb.checked) selectedIds.add(parseInt(c.value));
+        else selectedIds.delete(parseInt(c.value));
     });
-    // sync both check-all boxes
     document.querySelectorAll('#check-all, #check-all-head').forEach(c => c.checked = cb.checked);
     updateBar();
 }
 
 function updateSelection() {
     selectedIds.clear();
-    document.querySelectorAll('.row-cb:checked').forEach(c => selectedIds.add(c.value));
+    document.querySelectorAll('.row-cb:checked').forEach(c => selectedIds.add(parseInt(c.value)));
     updateBar();
 }
 
 function updateBar() {
-    const bar   = document.getElementById('print-bar');
+    const bar   = document.getElementById('action-bar');
     const count = document.getElementById('selected-count');
     const n     = selectedIds.size;
     if (n > 0) {
         bar.classList.add('visible');
-        count.textContent = n + ' invoice dipilih (' + Math.ceil(n / 2) + ' lembar A4)';
+        count.textContent = n + ' pelanggan dipilih';
     } else {
         bar.classList.remove('visible');
     }
@@ -393,17 +448,22 @@ function clearSelection() {
     updateBar();
 }
 
-function printSelected() {
-    if (selectedIds.size === 0) return;
+function bulkPrint() {
+    if (selectedIds.size === 0) {
+        alert('Pilih minimal 1 pelanggan');
+        return;
+    }
     const ids = Array.from(selectedIds).join(',');
-    const bulan = document.querySelector('input[name="bulan"]').value;
-    window.open('/invoice/print?ids=' + ids + '&bulan=' + bulan, '_blank');
+    window.open('{{ route("invoice.print") }}?ids=' + ids, '_blank');
 }
 
-function printAll() {
-    const bulan     = '{{ $bulan }}';
-    const petugasId = '{{ $petugasId }}';
-    window.open('/invoice/print?bulan=' + bulan + '&petugas_id=' + petugasId, '_blank');
+function bulkExportPdf() {
+    if (selectedIds.size === 0) {
+        alert('Pilih minimal 1 pelanggan');
+        return;
+    }
+    const ids = Array.from(selectedIds).join(',');
+    window.location.href = '{{ route("invoice.exportPdf") }}?ids=' + ids;
 }
 </script>
 @endpush

@@ -167,7 +167,7 @@
     <div class="breadcrumb-bar">
         <a href="/dashboard">Dashboard</a>
         <span class="sep">›</span>
-        <a href="/monitoringkinerja?bulan={{ $bulan }}">Monitoring Kinerja</a>
+        <a href="{{ route('monitoring.index', ['bulan' => $bulan]) }}">Monitoring Kinerja</a>
         <span class="sep">›</span>
         <span>{{ $petugas->nama }}</span>
     </div>
@@ -187,7 +187,7 @@
                 </div>
             </div>
         </div>
-        <a href="/monitoringkinerja?bulan={{ $bulan }}" class="btn btn-outline">
+        <a href="{{ route('monitoring.index', ['bulan' => $bulan]) }}" class="btn btn-outline">
             <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             Kembali
         </a>
@@ -195,7 +195,7 @@
 
     {{-- Kinerja meter --}}
     @php
-        $persen   = $stats['persen'];
+        $persen   = $stats['persen'] ?? 0;
         $pilColor = $persen >= 80 ? '#16A34A' : ($persen >= 60 ? '#D97706' : '#DC2626');
         $kategori = $persen >= 80 ? 'Baik' : ($persen >= 60 ? 'Cukup' : 'Kurang');
         // SVG circle params
@@ -223,15 +223,15 @@
             <div class="meter-stats">
                 <div class="ms-item blue">
                     <div class="ms-label">Total Target</div>
-                    <div class="ms-val">{{ number_format($stats['total']) }}</div>
+                    <div class="ms-val">{{ number_format($stats['total'] ?? 0) }}</div>
                 </div>
                 <div class="ms-item green">
                     <div class="ms-label">Sudah</div>
-                    <div class="ms-val">{{ number_format($stats['sudah']) }}</div>
+                    <div class="ms-val">{{ number_format($stats['sudah'] ?? 0) }}</div>
                 </div>
                 <div class="ms-item red">
                     <div class="ms-label">Belum</div>
-                    <div class="ms-val">{{ number_format($stats['belum']) }}</div>
+                    <div class="ms-val">{{ number_format($stats['belum'] ?? 0) }}</div>
                 </div>
             </div>
         </div>
@@ -241,15 +241,15 @@
     <div class="saldo-grid">
         <div class="sc rpta">
             <div class="sc-label">Total RPTA (Target)</div>
-            <div class="sc-val">Rp {{ number_format($stats['total_rpta'], 0, ',', '.') }}</div>
+            <div class="sc-val">Rp {{ number_format($stats['total_rptag'] ?? 0, 0, ',', '.') }}</div>
         </div>
         <div class="sc tagih">
             <div class="sc-label">Berhasil Ditagih</div>
-            <div class="sc-val">Rp {{ number_format($stats['total_tagih'], 0, ',', '.') }}</div>
+            <div class="sc-val">Rp {{ number_format($stats['total_tagih'] ?? 0, 0, ',', '.') }}</div>
         </div>
         <div class="sc sisa">
             <div class="sc-label">Sisa Saldo Belum Tertagih</div>
-            <div class="sc-val">Rp {{ number_format($stats['sisa_saldo'], 0, ',', '.') }}</div>
+            <div class="sc-val">Rp {{ number_format($stats['sisa_saldo'] ?? 0, 0, ',', '.') }}</div>
         </div>
     </div>
 
@@ -258,9 +258,9 @@
         <div class="table-card-header">
             <h3>Detail Pelanggan</h3>
             <div class="pill-tabs">
-                <button class="pill-tab active" onclick="filterTable('semua', this)">Semua ({{ $stats['total'] }})</button>
-                <button class="pill-tab" onclick="filterTable('sudah', this)">Sudah ({{ $stats['sudah'] }})</button>
-                <button class="pill-tab" onclick="filterTable('belum', this)">Belum ({{ $stats['belum'] }})</button>
+                <button class="pill-tab active" onclick="filterTable('semua', this)">Semua ({{ $stats['total'] ?? 0 }})</button>
+                <button class="pill-tab" onclick="filterTable('sudah', this)">Sudah ({{ $stats['sudah'] ?? 0 }})</button>
+                <button class="pill-tab" onclick="filterTable('belum', this)">Belum ({{ $stats['belum'] ?? 0 }})</button>
             </div>
         </div>
         <div class="tbl-wrap">
@@ -283,19 +283,19 @@
                     @foreach($detail as $row)
                     <tr class="{{ $row->status === 'belum' ? 'row-belum' : '' }}" data-status="{{ $row->status }}">
                         <td class="mono">{{ $row->idpel }}</td>
-                        <td style="font-weight:500">{{ $row->nama }}</td>
-                        <td class="right mono">{{ number_format($row->daya) }}</td>
-                        <td class="right mono">{{ number_format($row->lembar) }}</td>
-                        <td class="right mono">{{ number_format($row->rpta, 0, ',', '.') }}</td>
+                        <td style="font-weight:500">{{ $row->nama ?? '—' }}</td>
+                        <td class="right mono">{{ number_format($row->daya ?? 0) }}</td>
+                        <td class="right mono">{{ number_format($row->lembar ?? 0) }}</td>
+                        <td class="right mono">{{ number_format($row->rptag ?? 0, 0, ',', '.') }}</td>
                         <td class="right mono" style="color:{{ $row->status === 'sudah' ? 'var(--c-success)' : 'var(--c-light)' }};font-weight:{{ $row->status === 'sudah' ? '600' : '400' }}">
-                            {{ $row->status === 'sudah' ? number_format($row->jumlah_tagih, 0, ',', '.') : '—' }}
+                            {{ $row->status === 'sudah' ? number_format($row->jumlah_tagih ?? 0, 0, ',', '.') : '—' }}
                         </td>
                         <td class="right mono" style="color:var(--c-danger)">
-                            @php $sisa = $row->rpta - ($row->jumlah_tagih ?? 0); @endphp
+                            @php $sisa = ($row->rptag ?? 0) - ($row->jumlah_tagih ?? 0); @endphp
                             {{ $sisa > 0 ? number_format($sisa, 0, ',', '.') : '—' }}
                         </td>
                         <td class="mono" style="color:var(--c-muted)">
-                            {{ $row->tgl_tagih ? \Carbon\Carbon::parse($row->tgl_tagih)->format('d/m/Y') : '—' }}
+                            {{ !empty($row->tgl_tagih) ? \Carbon\Carbon::parse($row->tgl_tagih)->format('d/m/Y') : '—' }}
                         </td>
                         <td>
                             <span class="pill {{ $row->status }}">
