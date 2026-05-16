@@ -106,21 +106,14 @@
         border-bottom: 1px solid rgba(255,255,255,.08);
         flex-shrink: 0;
     }
-    .sidebar-brand-logo {
-        width: 36px;
-        height: 36px;
-        background: var(--pln-yellow);
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 13px;
-        color: var(--pln-blue-deeper);
-        letter-spacing: -.5px;
-        flex-shrink: 0;
-        box-shadow: 0 2px 8px rgba(245,166,35,.4);
-    }
+   .sidebar-brand-logo-img{
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    border-radius: 6px;
+    background: white;
+    padding: 2px;
+}
     .sidebar-brand-text {
         line-height: 1.25;
     }
@@ -771,10 +764,10 @@
 
         <!-- Brand -->
         <div class="sidebar-brand">
-            <div class="sidebar-brand-logo">PLN</div>
+            <img src="{{ asset('images/logo_pln.png') }}" alt="PLN" class="sidebar-brand-logo-img">
             <div class="sidebar-brand-text">
-                <div class="sidebar-brand-name">SPK Penagihan</div>
-                <div class="sidebar-brand-sub">Sistem Pendukung Keputusan</div>
+                <div class="sidebar-brand-name">PLN</div>
+                <div class="sidebar-brand-sub">Smart Collection</div>
             </div>
         </div>
 

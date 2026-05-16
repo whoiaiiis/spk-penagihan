@@ -278,22 +278,7 @@ class PenagihanImportService
             'fatal'   => $fatalError,
         ];
     }
+    
 }
-     */
-    private function emptyResult(string $fatalError = ''): array
-    {
-        return [
-            'preview'   => [],
-            'valid'     => [],
-            'errors'    => $fatalError ? [$fatalError] : [],
-            'errorList' => $fatalError ? [$fatalError] : [],
-            'stats'     => [
-                'total'      => 0,
-                'valid'      => 0,
-                'error'      => 0,
-                'error_rows' => 0,
-            ],
-            'fatal'     => $fatalError,
-        ];
-    }
-}
+
+  
