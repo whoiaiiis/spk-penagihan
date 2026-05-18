@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * PelangganImportService
@@ -208,31 +209,98 @@ class PelangganImportService
     }
 
     /**
-     * Batch-insert valid rows into the database.
+     * Batch-upsert valid rows into the database (INSERT or UPDATE).
+     * Returns array with statistics: inserted, updated, total
      */
-    public function saveToDatabase(array $validRows): int
+    public function saveToDatabase(array $validRows, array $importMeta = []): array
     {
         if (empty($validRows)) {
-            return 0;
+            return [
+                'inserted' => 0,
+                'updated' => 0,
+                'total' => 0,
+                'import_log_id' => null,
+            ];
         }
 
-        $now    = now();
-        $insert = array_map(fn($r) => [
-            'idpel'      => $r['idpel'],
-            'nama'       => $r['nama'],
-            'daya'       => (int) $r['daya'],
-            'lembar'     => (int) $r['lembar'],
-           'rptag' => (float) ($r['rptag'] ?? 0),
-'rpbk'  => (float) ($r['rpbk'] ?? 0),
-            'created_at' => $now,
-            'updated_at' => $now,
-        ], $validRows);
+        DB::beginTransaction();
 
-        foreach (array_chunk($insert, 500) as $chunk) {
-            DB::table('pelanggan')->insert($chunk);
+        try {
+            $now = now();
+            $inserted = 0;
+            $updated = 0;
+
+            // ────────────────────────────────────────────────────────────
+            // Prepare import log
+            // ────────────────────────────────────────────────────────────
+            $importLog = DB::table('import_logs')->insertGetId([
+                'type' => 'pelanggan',
+                'filename' => $importMeta['filename'] ?? 'import_' . now()->format('YmdHis'),
+                'imported_by' => $importMeta['imported_by'] ?? 'system',
+                'import_date' => $importMeta['import_date'] ?? now(),
+                'total_rows' => count($validRows),
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+
+            // ────────────────────────────────────────────────────────────
+            // Upsert data per row
+            // ────────────────────────────────────────────────────────────
+            foreach ($validRows as $row) {
+                $data = [
+                    'idpel' => $row['idpel'],
+                    'nama' => $row['nama'],
+                    'daya' => (int) $row['daya'],
+                    'lembar' => (int) $row['lembar'],
+                    'rptag' => (float) ($row['rptag'] ?? 0),
+                    'rpbk' => (float) ($row['rpbk'] ?? 0),
+                    'updated_at' => $now,
+                ];
+
+                // Check if idpel exists
+                $existing = DB::table('pelanggan')
+                    ->where('idpel', $row['idpel'])
+                    ->first();
+
+                if ($existing) {
+                    // UPDATE
+                    DB::table('pelanggan')
+                        ->where('idpel', $row['idpel'])
+                        ->update($data);
+                    $updated++;
+                } else {
+                    // INSERT
+                    $data['created_at'] = $now;
+                    DB::table('pelanggan')->insert([$data]);
+                    $inserted++;
+                }
+            }
+
+            // ────────────────────────────────────────────────────────────
+            // Update import log with stats
+            // ────────────────────────────────────────────────────────────
+            DB::table('import_logs')
+                ->where('id', $importLog)
+                ->update([
+                    'inserted' => $inserted,
+                    'updated' => $updated,
+                    'failed' => 0,
+                    'notes' => "Inserted: {$inserted}, Updated: {$updated}",
+                ]);
+
+            DB::commit();
+
+            return [
+                'inserted' => $inserted,
+                'updated' => $updated,
+                'total' => $inserted + $updated,
+                'import_log_id' => $importLog,
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Gagal save import pelanggan: ' . $e->getMessage());
+            throw $e;
         }
-
-        return count($validRows);
     }
 
     // ────────────────────────────────────────────────────────────────────────

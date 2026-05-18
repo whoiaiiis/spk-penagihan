@@ -226,13 +226,6 @@
 @section('content')
 <div class="px-4 py-4">
 
-    {{-- Breadcrumb --}}
-    <div class="breadcrumb-bar">
-        <a href="/dashboard">Dashboard</a>
-        <span class="sep">›</span>
-        <span>Monitoring Kinerja</span>
-    </div>
-
     {{-- Page header --}}
     <div class="page-header">
         <div>

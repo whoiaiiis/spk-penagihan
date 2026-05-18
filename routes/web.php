@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use App\Services\PelangganImportService;
+use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\PenilaianController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\PenagihanController;
@@ -418,151 +419,38 @@ Route::post('/datakriteria/delete/{id}', function ($id) {
 });
 
 /* ================================================================
-   DATA PELANGGAN — Import CSV (FINAL FIX)
+   DATA PELANGGAN — Master Data & Import Management
    ================================================================ */
 
-// 🔹 HALAMAN UTAMA
-Route::get('/pelanggan', function () {
+Route::prefix('pelanggan')->group(function () {
 
-    if (!Session::has('user')) {
-        return redirect('/login');
-    }
+    // Halaman utama (master data, import, error logs)
+    Route::get('/', [PelangganController::class, 'index'])->name('pelanggan.index');
 
-   return view('staff.datapelanggan.datapelanggan', [
-    'preview'   => session('import_preview', []),
-    'errorList' => session('import_errors', []), 
-    'stats'     => session('import_stats', [
-        'total' => 0,
-        'valid' => 0,
-        'error_rows' => 0,
-    ]),
-    'fatal'     => session('import_fatal', null),
-]);
+    // Upload CSV
+    Route::post('/upload', [PelangganController::class, 'upload'])->name('pelanggan.upload');
+
+    // Simpan ke database (UPSERT)
+    Route::post('/save', [PelangganController::class, 'save'])->name('pelanggan.save');
+
+    // Reset preview import
+    Route::post('/reset', [PelangganController::class, 'reset'])->name('pelanggan.reset');
+
+    // Detail pelanggan (JSON)
+    Route::get('/show/{id}', [PelangganController::class, 'show'])->name('pelanggan.show');
+
+    // Edit pelanggan form (JSON)
+    Route::get('/edit/{id}', [PelangganController::class, 'edit'])->name('pelanggan.edit');
+
+    // Update pelanggan
+    Route::put('/update/{id}', [PelangganController::class, 'update'])->name('pelanggan.update');
+
+    // Hapus pelanggan
+    Route::delete('/destroy/{id}', [PelangganController::class, 'destroy'])->name('pelanggan.destroy');
+
+    // Export ke CSV
+    Route::get('/export', [PelangganController::class, 'export'])->name('pelanggan.export');
 });
-
-
-// 🔹 UPLOAD CSV
-Route::post('/datapelanggan/upload', function (Request $request, PelangganImportService $service) {
-
-    if (!Session::has('user')) {
-        return redirect('/login');
-    }
-
-    // VALIDASI
-    $request->validate([
-        'csv_file' => 'required|file|mimes:csv,txt|max:5120',
-    ], [
-        'csv_file.required' => 'Pilih file CSV terlebih dahulu.',
-        'csv_file.mimes'    => 'File harus berformat CSV.',
-        'csv_file.max'      => 'Ukuran file maksimal 5 MB.',
-    ]);
-
-    try {
-
-        $file = $request->file('csv_file');
-
-        if (!$file->isValid()) {
-            return back()->with('import_fatal', 'File upload gagal / corrupt');
-        }
-
-        $path = $file->getRealPath();
-
-        if (!file_exists($path)) {
-            return back()->with('import_fatal', 'File tidak ditemukan di server');
-        }
-
-        // 🔥 PROSES FILE
-        $result = $service->processFile($path);
-
-        // 🔥 VALIDASI RESULT
-        if (!$result || !isset($result['preview'])) {
-            return back()->with('import_fatal', 'Gagal membaca isi file CSV');
-        }
-
-        // 🔥 SIMPAN SESSION
-        Session::put('import_preview', $result['preview'] ?? []);
-        Session::put('import_valid',   $result['valid'] ?? []);
-        Session::put('import_errors',  $result['errors'] ?? []);
-        Session::put('import_stats',   $result['stats'] ?? [
-            'total' => 0,
-            'valid' => 0,
-            'error' => 0,
-            'error_rows' => 0
-        ]);
-        Session::put('import_fatal',   $result['fatal'] ?? null);
-
-        return redirect('/pelanggan')
-            ->with('upload_success', true)
-            ->with('active_tab', empty($result['preview']) ? 'import' : 'preview');
-
-    } catch (\Exception $e) {
-
-        return back()->with('import_fatal', 'Terjadi error saat membaca file: ' . $e->getMessage());
-    }
-
-})->name('datapelanggan.upload');
-
-
-// 🔹 SIMPAN KE DATABASE
-Route::post('/datapelanggan/save', function (PelangganImportService $service) {
-
-    if (!Session::has('user')) {
-        return redirect('/login');
-    }
-
-    $validRows = Session::get('import_valid', []);
-
-    if (empty($validRows)) {
-        return redirect('/pelanggan')
-            ->with('save_error', 'Tidak ada data valid yang bisa disimpan.')
-            ->with('active_tab', 'preview');
-    }
-
-    try {
-
-        $count = $service->saveToDatabase($validRows);
-
-        // 🔥 HAPUS SESSION
-        Session::forget([
-            'import_preview',
-            'import_valid',
-            'import_errors',
-            'import_stats',
-            'import_fatal'
-        ]);
-
-        return redirect('/pelanggan')
-            ->with('save_success', "{$count} data berhasil disimpan")
-            ->with('active_tab', 'import');
-
-    } catch (\Exception $e) {
-
-        return redirect('/pelanggan')
-            ->with('save_error', 'Gagal simpan: ' . $e->getMessage())
-            ->with('active_tab', 'preview');
-    }
-
-})->name('datapelanggan.save');
-
-
-// 🔹 RESET
-Route::post('/datapelanggan/reset', function () {
-
-    if (!Session::has('user')) {
-        return redirect('/login');
-    }
-
-    Session::forget([
-        'import_preview',
-        'import_valid',
-        'import_errors',
-        'import_stats',
-        'import_fatal'
-    ]);
-
-    return redirect('/pelanggan')->with('active_tab', 'import');
-
-})->name('datapelanggan.reset');
 
 
 /*
