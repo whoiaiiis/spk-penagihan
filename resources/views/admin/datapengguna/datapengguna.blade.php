@@ -100,10 +100,12 @@
             <h1>Data Pengguna</h1>
             <p>Kelola akun pengguna sistem</p>
         </div>
+        @permission('users:create')
         <a href="/datapengguna/create" class="btn-add">
             <svg fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
             Tambah User
         </a>
+        @endpermission
     </div>
 
     @if(session('success'))
@@ -166,9 +168,12 @@
                     </td>
 
                     <td class="pe-4">
+                        @permission('users:edit')
                         <a href="/datapengguna/edit/{{ $user->id }}" class="act-btn" title="Edit">
                             <svg fill="none" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         </a>
+                        @endpermission
+                        @permission('users:delete')
                         <form action="/datapengguna/delete/{{ $user->id }}" method="POST" style="display:inline">
                             @csrf
                             <button type="submit" class="act-btn del" title="Hapus"
@@ -176,6 +181,7 @@
                                 <svg fill="none" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
                             </button>
                         </form>
+                        @endpermission
                     </td>
                 </tr>
                 @empty

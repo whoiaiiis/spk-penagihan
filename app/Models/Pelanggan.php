@@ -11,16 +11,25 @@ class Pelanggan extends Model
     public $timestamps = true;
 
     protected $fillable = [
-        'idpel',
-        'nama',
-        'daya',
-        'lembar',
-        'rptag',
-        'rpbk',
-        'status_penagihan',
-        'created_at',
-        'updated_at'
-    ];
+    'idpel',
+    'nama',
+    'unitap',
+    'kode_petugas',
+    'daya',
+    'lembar',
+    'rptag',
+    'rpbk',
+    'petugas_id',
+    'status_penagihan',
+];
+
+    /**
+     * Relasi ke Petugas menggunakan petugas_id sebagai foreign key
+     */
+    public function petugas()
+    {
+        return $this->belongsTo(Petugas::class, 'petugas_id');
+    }
 
     protected $casts = [
         'daya' => 'integer',

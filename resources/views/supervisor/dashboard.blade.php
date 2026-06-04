@@ -12,9 +12,9 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 32px;
+        margin-bottom: 12px; /* dikurangi dari 18px */
         flex-wrap: wrap;
-        gap: 16px;
+        gap: 12px;
     }
 
     .supervisor-header h1 {
@@ -27,7 +27,7 @@
     .dashboard-subtitle {
         font-size: 13px;
         color: var(--text-muted);
-        margin-top: 4px;
+        margin-top: 2px; /* dikurangi dari 4px */
     }
 
     .dashboard-actions {
@@ -65,17 +65,54 @@
         background: var(--pln-blue-light);
     }
 
+    /* ================================================================
+       FILTER + REFRESH SEJAJAR (satu baris)
+    ================================================================ */
+    .filter-refresh-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--bg-body);
+        padding: 10px 16px;
+        border-radius: var(--radius-lg);
+        margin-bottom: 16px; /* dikurangi dari 32px */
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .filter-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+    }
+
+    .filter-input {
+        padding: 6px 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        background: white;
+        font-family: var(--font-sans);
+    }
+
     /* KPI CARDS */
     .kpi-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 16px;
-        margin-bottom: 32px;
+        gap: 14px;
+        margin-bottom: 20px; /* dikurangi dari 32px */
     }
 
     .kpi-card {
         background: white;
-        padding: 20px;
+        padding: 18px 20px; /* sedikit dikurangi dari 20px */
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-sm);
         transition: all var(--transition);
@@ -93,14 +130,15 @@
         color: var(--text-muted);
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        margin-bottom: 8px;
+        margin-bottom: 6px; /* dikurangi dari 8px */
     }
 
     .kpi-value {
         font-size: 28px;
         font-weight: 700;
         color: var(--text-primary);
-        margin-bottom: 4px;
+        margin-bottom: 2px; /* dikurangi dari 4px */
+        line-height: 1.2;
     }
 
     .kpi-detail {
@@ -113,7 +151,7 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 16px;
-        margin-bottom: 32px;
+        margin-bottom: 20px; /* dikurangi dari 32px */
     }
 
     .chart-card {
@@ -133,17 +171,17 @@
     /* TABLE SECTIONS */
     .table-section {
         background: white;
-        padding: 24px;
+        padding: 20px 24px; /* top/bottom dikurangi dari 24px */
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-sm);
-        margin-bottom: 32px;
+        margin-bottom: 20px; /* dikurangi dari 32px */
     }
 
     .table-title {
         font-size: 16px;
         font-weight: 600;
         color: var(--text-primary);
-        margin-bottom: 16px;
+        margin-bottom: 14px; /* dikurangi dari 16px */
     }
 
     .supervisor-table {
@@ -158,7 +196,7 @@
     }
 
     .supervisor-table th {
-        padding: 12px 16px;
+        padding: 10px 16px; /* dikurangi dari 12px */
         text-align: left;
         font-weight: 600;
         color: var(--text-secondary);
@@ -168,7 +206,7 @@
     }
 
     .supervisor-table td {
-        padding: 14px 16px;
+        padding: 12px 16px; /* dikurangi dari 14px */
         border-bottom: 1px solid var(--border);
         color: var(--text-primary);
     }
@@ -247,78 +285,75 @@
         font-size: 14px;
     }
 
-    /* FILTER SECTION */
-    .filter-section {
-        background: var(--bg-body);
-        padding: 16px 20px;
-        border-radius: var(--radius-lg);
-        margin-bottom: 24px;
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-
-    .filter-group {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    .filter-label {
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--text-secondary);
-        text-transform: uppercase;
-    }
-
-    .filter-input {
-        padding: 6px 12px;
-        border: 1px solid var(--border);
-        border-radius: var(--radius-md);
-        font-size: 13px;
-        background: white;
-        font-family: var(--font-sans);
+    /* ================================================================
+       RESPONSIVE
+    ================================================================ */
+    @media (max-width: 1024px) {
+        .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+        .supervisor-header h1 { font-size: 24px; }
+        .supervisor-table { font-size: 12px; }
     }
 
     @media (max-width: 768px) {
         .supervisor-header {
             flex-direction: column;
             align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .supervisor-header h1 { font-size: 20px; }
+
+        .filter-refresh-bar {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
         }
 
         .kpi-grid {
             grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
-        .charts-grid {
-            grid-template-columns: 1fr;
-        }
+        .kpi-card { padding: 14px 16px; }
+        .kpi-value { font-size: 24px; }
 
-        .supervisor-table {
-            font-size: 12px;
-        }
-
+        .supervisor-table { font-size: 11px; }
         .supervisor-table th,
-        .supervisor-table td {
-            padding: 10px 12px;
-        }
+        .supervisor-table td { padding: 8px 10px; }
 
-        .filter-section {
-            flex-direction: column;
-        }
+        .filter-group { width: 100%; }
+        .filter-input { width: 100%; height: 40px; font-size: 12px; }
 
-        .filter-group {
-            width: 100%;
-        }
+        .dashboard-actions { flex-wrap: wrap; gap: 8px; }
+        .btn-action { padding: 7px 12px; font-size: 12px; }
 
-        .filter-input {
-            width: 100%;
-        }
+        h1 { font-size: 18px !important; }
+    }
+
+    @media (max-width: 576px) {
+        .kpi-grid { gap: 10px; }
+        .kpi-card { padding: 12px; }
+        .kpi-value { font-size: 20px; }
+        .supervisor-table { font-size: 10px; }
+        .supervisor-table th,
+        .supervisor-table td { padding: 6px 8px; }
+        .btn-action { padding: 6px 10px; font-size: 11px; }
+        h1 { font-size: 16px !important; }
+        .filter-input { height: 36px; font-size: 11px; }
+    }
+
+    @media (max-width: 400px) {
+        .kpi-card { padding: 10px; }
+        .kpi-value { font-size: 18px; }
+        .supervisor-table { font-size: 9px; }
+        .supervisor-table th,
+        .supervisor-table td { padding: 5px 6px; }
+        h1 { font-size: 14px !important; }
     }
 </style>
 
-<div class="container-fluid" style="padding: 24px 32px;">
+<div class="container-fluid" style="padding: 20px 32px;">
 
     <!-- ========== HEADER ========== -->
     <div class="supervisor-header">
@@ -328,18 +363,18 @@
                 Periode: <strong>{{ \Carbon\Carbon::createFromFormat('Y-m', $bulan)->translatedFormat('F Y') }}</strong>
             </p>
         </div>
+    </div>
+
+    <!-- ========== FILTER + REFRESH SEJAJAR ========== -->
+    <div class="filter-refresh-bar">
+        <div class="filter-group">
+            <span class="filter-label">Filter Bulan:</span>
+            <input type="month" class="filter-input" id="filterBulan" value="{{ $bulan }}" onchange="filterByBulan(this.value)">
+        </div>
         <div class="dashboard-actions">
             <button class="btn-action btn-secondary" onclick="location.reload()">
                 <i class="bi bi-arrow-clockwise"></i> Refresh
             </button>
-        </div>
-    </div>
-
-    <!-- ========== FILTER ========== -->
-    <div class="filter-section">
-        <div class="filter-group">
-            <span class="filter-label">Filter Bulan:</span>
-            <input type="month" class="filter-input" id="filterBulan" value="{{ $bulan }}" onchange="filterByBulan(this.value)">
         </div>
     </div>
 

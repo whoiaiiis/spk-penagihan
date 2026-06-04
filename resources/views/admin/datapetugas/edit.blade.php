@@ -78,12 +78,6 @@
                 </div>
 
                 <div class="fg">
-                    <label>Email</label>
-                    <input type="email" name="email"
-                           value="{{ old('email', $petugas->email) }}" required>
-                </div>
-
-                <div class="fg">
                     <label>Wilayah</label>
                     <input type="text" name="wilayah"
                            value="{{ old('wilayah', $petugas->wilayah) }}" required>

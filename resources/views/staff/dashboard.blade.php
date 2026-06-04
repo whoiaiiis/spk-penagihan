@@ -12,22 +12,23 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 32px;
+        margin-bottom: 12px; /* dikurangi dari 32px */
         flex-wrap: wrap;
-        gap: 16px;
+        gap: 12px;
     }
-    
+
     .staff-dashboard-header h1 {
-        font-size: 26px;
+        font-size: 22px;
         font-weight: 700;
         color: var(--text-primary);
         margin: 0;
+        line-height: 1.3;
     }
 
     .dashboard-subtitle {
         font-size: 13px;
         color: var(--text-muted);
-        margin-top: 4px;
+        margin-top: 2px;
     }
 
     .dashboard-actions {
@@ -51,9 +52,7 @@
         font-family: var(--font-sans);
     }
 
-    .btn-action:hover {
-        background: var(--pln-blue-dark);
-    }
+    .btn-action:hover { background: var(--pln-blue-dark); }
 
     .btn-secondary {
         background: transparent;
@@ -61,21 +60,56 @@
         border: 1px solid var(--pln-blue);
     }
 
-    .btn-secondary:hover {
-        background: var(--pln-blue-light);
+    .btn-secondary:hover { background: var(--pln-blue-light); }
+
+    /* ================================================================
+       FILTER + REFRESH SEJAJAR
+    ================================================================ */
+    .filter-refresh-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--bg-body);
+        padding: 10px 16px;
+        border-radius: var(--radius-lg);
+        margin-bottom: 16px;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .filter-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+    }
+
+    .filter-input {
+        padding: 6px 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        background: white;
+        font-family: var(--font-sans);
     }
 
     /* KPI CARDS */
     .kpi-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
-        margin-bottom: 32px;
+        gap: 14px;
+        margin-bottom: 20px;
     }
 
     .kpi-card {
         background: white;
-        padding: 20px;
+        padding: 18px 20px;
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-sm);
         transition: all var(--transition);
@@ -93,14 +127,15 @@
         color: var(--text-muted);
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
 
     .kpi-value {
         font-size: 28px;
         font-weight: 700;
         color: var(--text-primary);
-        margin-bottom: 4px;
+        margin-bottom: 2px;
+        line-height: 1.2;
     }
 
     .kpi-detail {
@@ -111,24 +146,24 @@
     /* PROGRESS SECTION */
     .progress-section {
         background: white;
-        padding: 24px;
+        padding: 20px 24px;
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-sm);
-        margin-bottom: 32px;
+        margin-bottom: 20px;
     }
 
     .progress-section-title {
         font-size: 14px;
         font-weight: 600;
         color: var(--text-primary);
-        margin-bottom: 16px;
+        margin-bottom: 14px;
     }
 
     .progress-stats {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         gap: 12px;
-        margin-bottom: 16px;
+        margin-bottom: 14px;
     }
 
     .progress-stat {
@@ -138,9 +173,7 @@
         font-size: 13px;
     }
 
-    .progress-stat-label {
-        color: var(--text-secondary);
-    }
+    .progress-stat-label { color: var(--text-secondary); }
 
     .progress-stat-value {
         font-weight: 600;
@@ -172,7 +205,7 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 16px;
-        margin-bottom: 32px;
+        margin-bottom: 20px;
     }
 
     .chart-card {
@@ -192,17 +225,17 @@
     /* TABLE SECTIONS */
     .table-section {
         background: white;
-        padding: 24px;
+        padding: 20px 24px;
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-sm);
-        margin-bottom: 32px;
+        margin-bottom: 20px;
     }
 
     .table-title {
         font-size: 16px;
         font-weight: 600;
         color: var(--text-primary);
-        margin-bottom: 16px;
+        margin-bottom: 14px;
     }
 
     .staff-table {
@@ -217,7 +250,7 @@
     }
 
     .staff-table th {
-        padding: 12px 16px;
+        padding: 10px 16px;
         text-align: left;
         font-weight: 600;
         color: var(--text-secondary);
@@ -227,14 +260,12 @@
     }
 
     .staff-table td {
-        padding: 14px 16px;
+        padding: 12px 16px;
         border-bottom: 1px solid var(--border);
         color: var(--text-primary);
     }
 
-    .staff-table tbody tr:hover {
-        background: var(--bg-body);
-    }
+    .staff-table tbody tr:hover { background: var(--bg-body); }
 
     .badge-status {
         display: inline-block;
@@ -245,27 +276,12 @@
         text-transform: uppercase;
     }
 
-    .badge-success {
-        background: #E8F8F0;
-        color: #1A7A4A;
-    }
+    .badge-success { background: #E8F8F0; color: #1A7A4A; }
+    .badge-pending { background: #FEF3E2; color: #B35400; }
 
-    .badge-pending {
-        background: #FEF3E2;
-        color: #B35400;
-    }
-
-    .text-right {
-        text-align: right;
-    }
-
-    .text-muted {
-        color: var(--text-muted);
-    }
-
-    .mono {
-        font-family: var(--font-mono);
-    }
+    .text-right { text-align: right; }
+    .text-muted { color: var(--text-muted); }
+    .mono { font-family: var(--font-mono); }
 
     /* EMPTY STATE */
     .empty-state {
@@ -278,88 +294,75 @@
         text-align: center;
     }
 
-    .empty-state-icon {
-        font-size: 48px;
-        margin-bottom: 16px;
-        opacity: 0.5;
-    }
+    .empty-state-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+    .empty-state-text { font-size: 14px; }
 
-    .empty-state-text {
-        font-size: 14px;
-    }
-
-    /* FILTER SECTION */
-    .filter-section {
-        background: var(--bg-body);
-        padding: 16px 20px;
-        border-radius: var(--radius-lg);
-        margin-bottom: 24px;
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-
-    .filter-group {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    .filter-label {
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--text-secondary);
-        text-transform: uppercase;
-    }
-
-    .filter-input {
-        padding: 6px 12px;
-        border: 1px solid var(--border);
-        border-radius: var(--radius-md);
-        font-size: 13px;
-        background: white;
-        font-family: var(--font-sans);
+    /* ================================================================
+       RESPONSIVE
+    ================================================================ */
+    @media (max-width: 1024px) {
+        .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+        .staff-dashboard-header h1 { font-size: 20px; }
     }
 
     @media (max-width: 768px) {
         .staff-dashboard-header {
             flex-direction: column;
             align-items: flex-start;
+            margin-bottom: 12px;
         }
 
-        .kpi-grid {
-            grid-template-columns: 1fr;
-        }
+        .staff-dashboard-header h1 { font-size: 18px; }
 
-        .charts-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .staff-table {
-            font-size: 12px;
-        }
-
-        .staff-table th,
-        .staff-table td {
-            padding: 10px 12px;
-        }
-
-        .filter-section {
+        .filter-refresh-bar {
             flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
         }
 
-        .filter-group {
-            width: 100%;
-        }
+        .kpi-grid { grid-template-columns: 1fr; gap: 12px; margin-bottom: 16px; }
+        .kpi-card { padding: 14px 16px; }
+        .kpi-value { font-size: 22px; }
 
-        .filter-input {
-            width: 100%;
-        }
+        .charts-grid { grid-template-columns: 1fr; }
+
+        .staff-table { font-size: 12px; }
+        .staff-table th,
+        .staff-table td { padding: 8px 10px; }
+
+        .filter-group { width: 100%; }
+        .filter-input { width: 100%; }
+
+        .progress-stats { grid-template-columns: 1fr; gap: 8px; }
+    }
+
+    @media (max-width: 576px) {
+        .staff-dashboard-header h1 { font-size: 16px; }
+        .kpi-grid { gap: 10px; }
+        .kpi-card { padding: 12px; }
+        .kpi-value { font-size: 20px; }
+        .charts-grid { gap: 12px; }
+        .chart-card { padding: 12px; }
+        .table-section { padding: 14px 16px; }
+        .staff-table { font-size: 11px; }
+        .staff-table th,
+        .staff-table td { padding: 7px 8px; }
+        .filter-label { font-size: 11px; }
+        .filter-input { font-size: 12px; padding: 5px 10px; }
+    }
+
+    @media (max-width: 400px) {
+        .staff-dashboard-header h1 { font-size: 14px; }
+        .kpi-card { padding: 10px; }
+        .kpi-value { font-size: 18px; }
+        .staff-table { font-size: 10px; }
+        .staff-table th,
+        .staff-table td { padding: 6px 8px; }
+        .chart-card { padding: 10px; }
     }
 </style>
 
-<div class="container-fluid" style="padding: 24px 32px;">
+<div class="container-fluid" style="padding: 20px 32px;">
 
     <!-- ========== HEADER ========== -->
     <div class="staff-dashboard-header">
@@ -369,6 +372,14 @@
                 Periode: <strong>{{ \Carbon\Carbon::createFromFormat('Y-m', $bulan)->translatedFormat('F Y') }}</strong>
             </p>
         </div>
+    </div>
+
+    <!-- ========== FILTER + REFRESH SEJAJAR ========== -->
+    <div class="filter-refresh-bar">
+        <div class="filter-group">
+            <span class="filter-label">Filter Bulan:</span>
+            <input type="month" class="filter-input" id="filterBulan" value="{{ $bulan }}" onchange="filterByBulan(this.value)">
+        </div>
         <div class="dashboard-actions">
             <button class="btn-action btn-secondary" onclick="location.reload()">
                 <i class="bi bi-arrow-clockwise"></i> Refresh
@@ -376,17 +387,8 @@
         </div>
     </div>
 
-    <!-- ========== FILTER ========== -->
-    <div class="filter-section">
-        <div class="filter-group">
-            <span class="filter-label">Filter Bulan:</span>
-            <input type="month" class="filter-input" id="filterBulan" value="{{ $bulan }}" onchange="filterByBulan(this.value)">
-        </div>
-    </div>
-
     <!-- ========== KPI CARDS ========== -->
     <div class="kpi-grid">
-        <!-- Total Pelanggan -->
         <div class="kpi-card">
             <div class="kpi-label">
                 <i class="bi bi-person-check" style="margin-right: 6px;"></i> Total Pelanggan
@@ -395,7 +397,6 @@
             <div class="kpi-detail">Pelanggan terdaftar</div>
         </div>
 
-        <!-- Total Tagihan -->
         <div class="kpi-card">
             <div class="kpi-label">
                 <i class="bi bi-cash-coin" style="margin-right: 6px;"></i> Target Tagihan
@@ -404,7 +405,6 @@
             <div class="kpi-detail">Total rptag</div>
         </div>
 
-        <!-- Total Tertagih -->
         <div class="kpi-card">
             <div class="kpi-label">
                 <i class="bi bi-check-circle" style="margin-right: 6px;"></i> Tertagih
@@ -413,7 +413,6 @@
             <div class="kpi-detail">Bulan {{ \Carbon\Carbon::createFromFormat('Y-m', $bulan)->translatedFormat('F') }}</div>
         </div>
 
-        <!-- Persentase Keberhasilan -->
         <div class="kpi-card">
             <div class="kpi-label">
                 <i class="bi bi-percent" style="margin-right: 6px;"></i> Keberhasilan
@@ -451,7 +450,6 @@
 
     <!-- ========== CHARTS ========== -->
     <div class="charts-grid">
-        <!-- Line Chart: Trend 6 Bulan -->
         <div class="chart-card">
             <div class="chart-title">
                 <i class="bi bi-graph-up-arrow"></i> Tren Penagihan 6 Bulan
@@ -459,7 +457,6 @@
             <canvas id="trendChart" height="80"></canvas>
         </div>
 
-        <!-- Pie Chart: Status Penagihan -->
         <div class="chart-card">
             <div class="chart-title">
                 <i class="bi bi-pie-chart"></i> Status Penagihan Bulan Ini
@@ -562,12 +559,18 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 
 <script>
+    const isMobile = window.innerWidth <= 768;
+    const isSmallDevice = window.innerWidth <= 576;
+
     // ================================================================
     // LINE CHART - Trend 6 Bulan
     // ================================================================
     const trendCtx = document.getElementById('trendChart');
     if (trendCtx) {
         const trendData = @json($trendChartData);
+
+        trendCtx.parentElement.style.position = 'relative';
+        trendCtx.parentElement.style.height = isMobile ? '250px' : '300px';
 
         new Chart(trendCtx, {
             type: 'line',
@@ -582,7 +585,7 @@
                         borderWidth: 2,
                         tension: 0.4,
                         fill: true,
-                        pointRadius: 4,
+                        pointRadius: isSmallDevice ? 3 : 4,
                         pointBackgroundColor: '#0055A5',
                         pointBorderColor: '#fff',
                         pointBorderWidth: 2,
@@ -595,7 +598,7 @@
                         borderWidth: 2,
                         tension: 0.4,
                         fill: true,
-                        pointRadius: 4,
+                        pointRadius: isSmallDevice ? 3 : 4,
                         pointBackgroundColor: '#1A7A4A',
                         pointBorderColor: '#fff',
                         pointBorderWidth: 2,
@@ -604,13 +607,14 @@
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
+                devicePixelRatio: 2,
                 plugins: {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            padding: 16,
-                            font: { size: 12 },
+                            padding: isSmallDevice ? 8 : 16,
+                            font: { size: isSmallDevice ? 10 : 12 },
                             color: '#5A6A7E'
                         }
                     }
@@ -620,14 +624,17 @@
                         beginAtZero: true,
                         ticks: {
                             color: '#5A6A7E',
+                            font: { size: isSmallDevice ? 9 : 11 },
                             callback: function(value) {
+                                if (value >= 1000000000) return 'Rp' + (value/1000000000).toFixed(1) + 'M';
+                                if (value >= 1000000) return 'Rp' + (value/1000000).toFixed(1) + 'J';
                                 return 'Rp' + value.toLocaleString('id-ID');
                             }
                         },
                         grid: { color: '#E2E9F1' }
                     },
                     x: {
-                        ticks: { color: '#5A6A7E' },
+                        ticks: { color: '#5A6A7E', font: { size: isSmallDevice ? 9 : 11 } },
                         grid: { display: false }
                     }
                 }
@@ -645,6 +652,9 @@
             belum: {{ $statusChart['belum'] ?? 0 }}
         };
 
+        statusCtx.parentElement.style.position = 'relative';
+        statusCtx.parentElement.style.height = isMobile ? '250px' : '300px';
+
         new Chart(statusCtx, {
             type: 'doughnut',
             data: {
@@ -658,13 +668,14 @@
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
+                devicePixelRatio: 2,
                 plugins: {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            padding: 16,
-                            font: { size: 12 },
+                            padding: isSmallDevice ? 8 : 16,
+                            font: { size: isSmallDevice ? 10 : 12 },
                             color: '#5A6A7E'
                         }
                     }

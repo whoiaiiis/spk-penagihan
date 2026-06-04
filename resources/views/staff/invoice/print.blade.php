@@ -173,6 +173,10 @@
                             <div class="detail-value">{{ $pair[0]->nama }}</div>
                         </div>
                         <div class="detail-group">
+                            <div class="detail-label">Petugas & RBM</div>
+                            <div class="detail-value">{{ $pair[0]->nama_petugas ?: '-' }} ({{ $pair[0]->rbm ?: '-' }})</div>
+                        </div>
+                        <div class="detail-group">
                             <div class="detail-label">Daya Terpasang (VA)</div>
                             <div class="detail-value big">{{ number_format($pair[0]->daya) }}</div>
                         </div>
@@ -277,6 +281,10 @@
                         <div class="detail-group">
                             <div class="detail-label">Nama Pelanggan</div>
                             <div class="detail-value">{{ $pair[1]->nama }}</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Petugas & RBM</div>
+                            <div class="detail-value">{{ $pair[1]->nama_petugas ?: '-' }} ({{ $pair[1]->rbm ?: '-' }})</div>
                         </div>
                         <div class="detail-group">
                             <div class="detail-label">Daya Terpasang (VA)</div>

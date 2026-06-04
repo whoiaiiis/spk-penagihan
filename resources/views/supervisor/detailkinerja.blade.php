@@ -269,6 +269,7 @@
                     <tr>
                         <th>ID Pelanggan</th>
                         <th>Nama</th>
+                        <th>RBM</th>
                         <th class="right">Daya</th>
                         <th class="right">Lembar</th>
                         <th class="right">RPTA</th>
@@ -284,6 +285,7 @@
                     <tr class="{{ $row->status === 'belum' ? 'row-belum' : '' }}" data-status="{{ $row->status }}">
                         <td class="mono">{{ $row->idpel }}</td>
                         <td style="font-weight:500">{{ $row->nama ?? '—' }}</td>
+                        <td class="mono" style="font-weight:600"><span class="badge badge-success">{{ $row->rbm ?: '-' }}</span></td>
                         <td class="right mono">{{ number_format($row->daya ?? 0) }}</td>
                         <td class="right mono">{{ number_format($row->lembar ?? 0) }}</td>
                         <td class="right mono">{{ number_format($row->rptag ?? 0, 0, ',', '.') }}</td>

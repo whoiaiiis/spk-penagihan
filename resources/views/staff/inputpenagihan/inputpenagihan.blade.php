@@ -41,10 +41,6 @@
 .u-table tr:last-child td{border-bottom:none}
 .u-table tr:hover td{background:#F8FAFE}
 .u-row-error td{background:#FFF5F5!important}
-/* ── TOOLTIP ── */
-.u-tooltip{position:relative;display:inline-flex}
-.u-tooltip-box{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#0D1B2E;color:#fff;padding:6px 10px;border-radius:6px;font-size:11px;white-space:nowrap;z-index:100;pointer-events:none}
-.u-tooltip:hover .u-tooltip-box{display:block}
 /* ── BADGES ── */
 .u-badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:600}
 .u-badge-ok{background:#E8F8F0;color:#1A7A4A}
@@ -75,34 +71,32 @@
 {{-- HEADER --}}
 <div class="page-header">
     <h1>Input Hasil Penagihan</h1>
-    <p>Upload file spreadsheet, pratinjau data, dan simpan ke database.</p>
+    <p>Upload file hasil pembayaran PLN, pratinjau data, dan simpan ke database.</p>
 </div>
 
 {{-- ALERTS --}}
-@if(session('save_success'))
+@if(session('success'))
     <div class="pln-alert pln-alert-success">
-        <i class="bi bi-check-circle-fill"></i> {{ session('save_success') }}
+        <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
     </div>
 @endif
-@if(session('save_error'))
+@if(session('error'))
     <div class="pln-alert pln-alert-danger">
-        <i class="bi bi-exclamation-triangle-fill"></i> {{ session('save_error') }}
+        <i class="bi bi-exclamation-triangle-fill"></i> {{ session('error') }}
     </div>
 @endif
-@isset($fatal)
-    @if($fatal)
-        <div class="pln-alert pln-alert-danger">
-            <i class="bi bi-exclamation-triangle-fill"></i> {{ $fatal }}
-        </div>
-    @endif
-@endisset
+@if(!empty($fatal))
+    <div class="pln-alert pln-alert-danger">
+        <i class="bi bi-exclamation-triangle-fill"></i> {{ $fatal }}
+    </div>
+@endif
 
 {{-- CARD --}}
 <div class="card" style="overflow:hidden">
 
     <div class="utab-bar">
         <button id="ip-tab-import" class="utab-btn">
-            <i class="bi bi-upload"></i> Import Spreadsheet
+            <i class="bi bi-upload"></i> Import File
         </button>
         <button id="ip-tab-preview" class="utab-btn">
             <i class="bi bi-table"></i> Preview
@@ -121,10 +115,10 @@
             <form id="ip-upload-form" method="POST" action="{{ route('penagihan.upload') }}" enctype="multipart/form-data">
                 @csrf
                 <div id="ip-drop-zone" class="u-drop-zone">
-                    <input type="file" name="csv_file" id="ip-file-input" accept=".csv,.xlsx,.xls,.txt" style="display:none">
+                    <input type="file" name="csv_file" id="ip-file-input" accept=".csv,.txt" style="display:none">
                     <div class="u-drop-icon"><i class="bi bi-file-earmark-arrow-up"></i></div>
                     <p class="u-drop-title">Drag &amp; drop file di sini</p>
-                    <p class="u-drop-sub">Format yang didukung: CSV, XLSX, XLS</p>
+                    <p class="u-drop-sub">Format: CSV · Maks. 10 MB</p>
                     <span class="u-drop-or">— atau —</span><br>
                     <button type="button" class="u-btn" style="margin-top:4px"
                             onclick="document.getElementById('ip-file-input').click()">
@@ -139,9 +133,15 @@
                     <div class="pln-alert pln-alert-danger" style="margin-top:10px">{{ $message }}</div>
                 @enderror
             </form>
+
+            {{-- Info format kolom yang dibutuhkan --}}
             <div class="u-format-info">
                 <i class="bi bi-info-circle" style="flex-shrink:0"></i>
-                Kolom wajib: <strong>IDPEL, Nama, Daya, Lembar, RPTAG </strong> · Maks. 10 MB
+                <span>
+                    Kolom yang dibaca: <strong>Kolom B = TglBuku</strong> (format YYYYMMDD, contoh: <code>20260302</code>)
+                    &nbsp;·&nbsp; <strong>Kolom D = IDPEL</strong> (contoh: <code>141000020529</code>).
+                    Kolom lain diabaikan.
+                </span>
             </div>
         </div>
     </div>
@@ -149,18 +149,26 @@
     {{-- TAB PREVIEW --}}
     <div id="ip-pane-preview" class="utab-pane">
         <div class="utab-body">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px">
                 <p class="utab-sec-title" style="margin:0">Pratinjau Data</p>
-                @isset($preview)
-                    @if(!empty($preview))
-                        <form method="POST" action="{{ route('penagihan.save') }}" id="ip-save-form" style="display:inline">
+                @if(!empty($preview))
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <form method="POST" action="{{ route('penagihan.reset') }}" style="display:inline">
                             @csrf
-                            <button class="u-btn" id="ip-save-btn">
-                                <i class="bi bi-cloud-check"></i> Simpan ke DB
+                            <button type="submit" class="u-btn" style="background:#E2E9F1;color:#5A6A7E">
+                                <i class="bi bi-x-circle"></i> Batal
                             </button>
                         </form>
-                    @endif
-                @endisset
+                        <form method="POST" action="{{ route('penagihan.save') }}" id="ip-save-form" style="display:inline">
+                            @csrf
+                            <button class="u-btn" id="ip-save-btn"
+                                    {{ ($stats['valid'] ?? 0) == 0 ? 'disabled' : '' }}>
+                                <i class="bi bi-cloud-check"></i>
+                                Simpan {{ $stats['valid'] ?? 0 }} Data Valid
+                            </button>
+                        </form>
+                    </div>
+                @endif
             </div>
 
             @php $preview = $preview ?? []; @endphp
@@ -171,6 +179,7 @@
                     <p>Belum ada data. Silakan upload file terlebih dahulu.</p>
                 </div>
             @else
+                {{-- Stats row --}}
                 <div class="u-stats-row">
                     <div class="u-stat-chip">
                         <span class="u-stat-label">Total Baris</span>
@@ -178,7 +187,7 @@
                     </div>
                     <div class="u-stat-chip">
                         <span class="u-stat-label">Valid</span>
-                        <span class="u-stat-val" style="color:#1A7A4A">{{ ($stats['total'] ?? 0) - ($stats['error_rows'] ?? 0) }}</span>
+                        <span class="u-stat-val" style="color:#1A7A4A">{{ $stats['valid'] ?? 0 }}</span>
                     </div>
                     <div class="u-stat-chip">
                         <span class="u-stat-label">Error</span>
@@ -186,63 +195,66 @@
                     </div>
                     <div class="u-stat-chip">
                         <span class="u-stat-label">Siap Disimpan</span>
-                        <span class="u-stat-val" style="color:#0055A5">{{ ($stats['total'] ?? 0) - ($stats['error_rows'] ?? 0) }}</span>
+                        <span class="u-stat-val" style="color:#0055A5">{{ $stats['valid'] ?? 0 }}</span>
                     </div>
                 </div>
 
+                {{-- Tabel preview — hanya kolom yang ada di data baru --}}
                 <div class="u-table-wrap">
                     <table class="u-table">
-                        <thead>
-                            <tr>
-                                <th style="width:44px">#</th>
-                                <th>IDPEL</th>
-                                <th>NAMA</th>
-                                <th>DAYA/LBR</th>
-                                <th>NO SURAT</th>
-                                <th>RANKING</th>
-                                <th>NILAI SPK</th>
-                                <th>STATUS</th>
-                                <th>JUMLAH BAYAR</th>
-                                <th>VALIDASI</th>
-<th>VALIDASI</th>
-                            </tr>
-                        </thead>
+                      <thead>
+<tr>
+    <th>#</th>
+    <th>IDPEL</th>
+    <th>TGL BUKU</th>
+    <th>STATUS</th>
+    <th>KETERANGAN</th>
+</tr>
+</thead>
                         <tbody>
                         @foreach($preview as $row)
-                            <tr class="{{ $row['_status'] == 'error' ? 'u-row-error' : '' }}">
+                            <tr class="{{ $row['_status'] === 'error' ? 'u-row-error' : '' }}">
                                 <td style="color:#9AAABB;font-size:12px">{{ $row['_row'] }}</td>
-                                <td>{{ $row['idpel'] }}</td>
-                                <td style="font-weight:500">{{ $row['nama'] }}</td>
-                                <td>{{ $row['daya'] }} / {{ $row['lembar'] }}</td>
-                                <td>{{ $row['nomor_surat'] }}</td>
-                                <td class="mono">{{ $row['ranking_awal'] ?? '-' }}</td>
-                                <td class="mono">{{ $row['nilai_spk'] ?? '-' }}</td>
+
+                                {{-- IDPEL --}}
+                                <td style="font-family:monospace;font-weight:500">
+                                    {{ $row['idpel'] !== '' ? $row['idpel'] : '<em style="color:#9AAABB">kosong</em>' }}
+                                </td>
+
+                                {{-- TglBuku mentah dari CSV --}}
+                                <td style="font-family:monospace">{{ $row['tgl_buku'] ?: '-' }}</td>
+
+                                {{-- Status valid / error --}}
                                 <td>
-                                    @if($row['status'] == 'sudah')
-                                        <span class="u-badge u-badge-ok">SUDAH</span>
+                                    @if($row['_status'] === 'valid')
+                                        <span class="u-badge u-badge-ok">
+                                            <i class="bi bi-check-circle" style="margin-right:3px"></i> Valid
+                                        </span>
                                     @else
-                                        <span class="u-badge u-badge-err">BELUM</span>
+                                        <span class="u-badge u-badge-err">
+                                            <i class="bi bi-x-circle" style="margin-right:3px"></i> Error
+                                        </span>
                                     @endif
                                 </td>
-                                <td class="right mono">Rp {{ number_format($row['jumlah_bayar'], 0, ',', '.') }}</td>
 
-<td>
-    @if($row['_status'] == 'valid')
-        <span class="badge bg-success">Valid</span>
-    @else
-        <span class="badge bg-danger">Error</span>
-    @endif
-</td>
-</td>
-                                
+                                {{-- Pesan error jika ada --}}
+                                <td style="font-size:12px;color:#C0392B">
+                                    @if(!empty($row['_errors']))
+                                        {{ implode('; ', $row['_errors']) }}
+                                    @else
+                                        <span style="color:#1A7A4A">—</span>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
                         </tbody>
                     </table>
                 </div>
+
                 <p style="font-size:12px;color:#9AAABB">
-                    <i class="bi bi-info-circle"></i> Hanya baris <strong>valid</strong> yang akan disimpan.
+                    <i class="bi bi-info-circle"></i>
+                    Hanya baris <strong>valid</strong> yang akan disimpan ke database.
+                    Baris error (latar merah) akan dilewati.
                 </p>
             @endif
         </div>
@@ -278,6 +290,8 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
+    // ── Tab switching ────────────────────────────────────────────────────────
     function switchTab(name) {
         document.querySelectorAll('.utab-pane').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.utab-btn').forEach(b => b.classList.remove('active'));
@@ -288,10 +302,12 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.utab-btn').forEach(btn => {
         btn.addEventListener('click', () => switchTab(btn.id.replace('ip-tab-', '')));
     });
-    const server = @json(session('active_tab', null));
-    switchTab(server || sessionStorage.getItem('ip-tab') || 'import');
+    // Prioritas: server → sessionStorage → default 'import'
+    const serverTab = @json(session('active_tab', null));
+    switchTab(serverTab || sessionStorage.getItem('ip-tab') || 'import');
 
-    const zone = document.getElementById('ip-drop-zone');
+    // ── Drop zone & file picker ──────────────────────────────────────────────
+    const zone  = document.getElementById('ip-drop-zone');
     const input = document.getElementById('ip-file-input');
     const chip  = document.getElementById('ip-file-chip');
     const label = document.getElementById('ip-file-name');
@@ -299,25 +315,45 @@ document.addEventListener('DOMContentLoaded', function () {
     const load  = document.getElementById('pln-loading');
 
     if (zone && input) {
-        zone.addEventListener('click', () => input.click());
-        ['dragover','dragenter'].forEach(e => zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.add('dragover'); }));
-        ['dragleave','drop'].forEach(e => zone.addEventListener(e, () => zone.classList.remove('dragover')));
-        zone.addEventListener('drop', e => { e.preventDefault(); if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]); });
-        input.addEventListener('change', () => { if (input.files[0]) setFile(input.files[0]); });
+        zone.addEventListener('click', e => {
+            // Jangan trigger saat klik tombol "Pilih File" (sudah punya onclick sendiri)
+            if (e.target.closest('button')) return;
+            input.click();
+        });
+
+        ['dragover','dragenter'].forEach(e =>
+            zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.add('dragover'); })
+        );
+        ['dragleave','drop'].forEach(e =>
+            zone.addEventListener(e, () => zone.classList.remove('dragover'))
+        );
+        zone.addEventListener('drop', e => {
+            e.preventDefault();
+            if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);
+        });
+        input.addEventListener('change', () => {
+            if (input.files[0]) setFile(input.files[0]);
+        });
+
         function setFile(file) {
             label.textContent = file.name;
             chip.style.display = 'inline-flex';
-            const dt = new DataTransfer(); dt.items.add(file); input.files = dt.files;
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            input.files = dt.files;
+            // Delay kecil agar chip sempat muncul sebelum submit
             setTimeout(() => { load.classList.add('show'); form.submit(); }, 350);
         }
     }
 
+    // ── Save form ────────────────────────────────────────────────────────────
     const saveForm = document.getElementById('ip-save-form');
     const saveBtn  = document.getElementById('ip-save-btn');
-    if (saveForm) {
+    if (saveForm && saveBtn) {
         saveForm.addEventListener('submit', () => {
-            if (saveBtn) { saveBtn.disabled = true; saveBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Menyimpan...'; }
-            load.classList.add('show');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Menyimpan...';
+            load?.classList.add('show');
         });
     }
 });

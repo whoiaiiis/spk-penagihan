@@ -51,7 +51,8 @@
     .filter-bar {
         background: var(--c-surface); border: 1px solid var(--c-border);
         border-radius: var(--radius); padding: 16px 20px;
-        display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap;
+        display: flex; align-items: flex-end; justify-content: flex-start;
+        gap: 16px; flex-wrap: wrap;
         box-shadow: var(--shadow); margin-bottom: 24px;
     }
     .filter-group { display: flex; flex-direction: column; gap: 5px; }
@@ -66,6 +67,13 @@
     .filter-group select:focus,
     .filter-group input[type="month"]:focus { border-color: var(--c-primary); background: #fff; }
 
+    /* ── Filter actions (tombol-tombol sejajar) ──────────────────────────── */
+    .filter-actions {
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+    }
+
     .btn {
         display: inline-flex; align-items: center; gap: 7px;
         padding: 9px 18px; border-radius: var(--radius-sm);
@@ -78,6 +86,8 @@
     .btn-primary:hover { background: var(--c-primary-dk); }
     .btn-outline  { background: #fff; color: var(--c-muted); border-color: var(--c-border); }
     .btn-outline:hover { background: #F8FAFC; color: var(--c-text); }
+    .btn-danger   { background: var(--c-danger); color: #fff; border-color: var(--c-danger); }
+    .btn-danger:hover { background: #B91C1C; }
     .btn-sm { padding: 6px 12px; font-size: .8125rem; height: auto; }
 
     /* ── Summary cards ───────────────────────────────────────────────────── */
@@ -218,6 +228,7 @@
     @media (max-width: 600px) {
         .summary-grid { grid-template-columns: 1fr 1fr; }
         .filter-bar   { flex-direction: column; align-items: stretch; }
+        .filter-actions { flex-wrap: wrap; }
         .page-header  { flex-direction: column; align-items: flex-start; }
     }
 </style>
@@ -239,26 +250,33 @@
     {{-- ── Filter bar ──────────────────────────────────────────────────── --}}
     <form method="GET" action="/monitoringkinerja">
         <div class="filter-bar">
+
             <div class="filter-group">
                 <label>Bulan</label>
                 <input type="month" name="bulan" value="{{ $bulan }}">
             </div>
-            <div class="filter-group">
-                <label>Wilayah</label>
-                <select name="wilayah">
-                    <option value="">Semua Wilayah</option>
-                    @foreach($wilayahList as $w)
-                        <option value="{{ $w->wilayah }}" {{ $wilayah === $w->wilayah ? 'selected' : '' }}>
-                            {{ $w->wilayah }}
-                        </option>
-                    @endforeach
-                </select>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">
+                    <svg fill="none" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    Tampilkan
+                </button>
+
+                <a href="{{ route('monitoring.index') }}" class="btn btn-outline">
+                    Reset
+                </a>
+
+                <a href="{{ route('monitoring.exportPdf', ['bulan' => $bulan]) }}"
+                   class="btn btn-danger"
+                   target="_blank">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.6a.5.5 0 0 0 .5.5h12a.5.5 0 0 0 .5-.5v-2.6a.5.5 0 0 1 1 0v2.6A1.5 1.5 0 0 1 13.5 14h-12A1.5 1.5 0 0 1 0 12.5v-2.6a.5.5 0 0 1 .5-.5z"/>
+                        <path d="M5.354 5.646a.5.5 0 1 0-.708.708L7.5 9.207V1.5a.5.5 0 0 1 1 0v7.707l2.854-2.853a.5.5 0 0 1 .708.708l-3.707 3.707a.5.5 0 0 1-.708 0L5.354 5.646z"/>
+                    </svg>
+                    Export PDF
+                </a>
             </div>
-            <button type="submit" class="btn btn-primary">
-                <svg fill="none" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                Tampilkan
-            </button>
-            <a href="{{ route('monitoring.index') }}" class="btn btn-outline">Reset</a>
+
         </div>
     </form>
 

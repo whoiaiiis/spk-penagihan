@@ -79,13 +79,6 @@
                 </div>
 
                 <div class="fg">
-                    <label>Email</label>
-                    <input type="email" name="email"
-                           value="{{ old('email') }}"
-                           placeholder="contoh@email.com" required>
-                </div>
-
-                <div class="fg">
                     <label>Wilayah</label>
                     <input type="text" name="wilayah"
                            value="{{ old('wilayah') }}"

@@ -151,10 +151,12 @@
             <h1>Data Petugas</h1>
             <p>Kelola data petugas lapangan</p>
         </div>
+        @permission('petugas:create')
         <a href="/datapetugas/create" class="btn-add">
             <svg fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
             Tambah Petugas
         </a>
+        @endpermission
     </div>
 
     @if(session('success'))
@@ -174,18 +176,33 @@
                            value="{{ request('search') }}"
                            placeholder="Nama petugas...">
                 </div>
-                <div class="fg-f">
-                    <label>Wilayah</label>
-                    <select name="wilayah">
-                        <option value="">Semua Wilayah</option>
-                        @foreach($wilayahList as $w)
-                        <option value="{{ $w->wilayah }}"
-                            {{ request('wilayah') == $w->wilayah ? 'selected' : '' }}>
-                            {{ $w->wilayah }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
+                @if($wilayahList->count() > 1)
+
+<div class="fg-f">
+    <label>Wilayah</label>
+    <select name="wilayah">
+        <option value="">Semua Wilayah</option>
+
+        @foreach($wilayahList as $w)
+        <option value="{{ $w->wilayah }}"
+            {{ request('wilayah') == $w->wilayah ? 'selected' : '' }}>
+            {{ $w->wilayah }}
+        </option>
+        @endforeach
+
+    </select>
+</div>
+
+@else
+
+<div class="fg-f">
+    <label>Wilayah Kerja</label>
+    <input type="text"
+           value="{{ $wilayahList->first()->wilayah ?? 'PLN ULP Rivai' }}"
+           readonly>
+</div>
+
+@endif
                 <div class="fg-f">
                     <label>Status</label>
                     <select name="status">
@@ -210,8 +227,9 @@
             <colgroup>
                 <col style="width:110px">
                 <col style="width:220px">
-                <col>
-                <col style="width:110px">
+                <col style="width:200px">
+                <col style="width:150px">
+                <col style="width:120px">
                 <col style="width:100px">
             </colgroup>
             <thead>
@@ -230,13 +248,7 @@
                         <span class="kode-chip">{{ $p->kode_petugas }}</span>
                     </td>
                     <td>
-                        <div class="user-cell">
-                            <div class="ava">{{ strtoupper(substr($p->nama,0,1)) }}</div>
-                            <div>
-                                <div class="u-name">{{ $p->nama }}</div>
-                                <div class="u-email">{{ $p->email }}</div>
-                            </div>
-                        </div>
+                        <div class="u-name">{{ $p->nama }}</div>
                     </td>
                     <td>
                         <span class="wilayah-tag">
@@ -253,6 +265,7 @@
 <td class="pe-4">
     <div class="action-group">
 
+        @permission('petugas:edit')
         <a href="/datapetugas/edit/{{ $p->id }}" class="act-btn" title="Edit">
             <svg fill="none" viewBox="0 0 24 24">
                 <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"
@@ -262,7 +275,9 @@
                       stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </a>
+        @endpermission
 
+        @permission('petugas:delete')
         <form action="/datapetugas/delete/{{ $p->id }}" method="POST">
             @csrf
             <button type="submit" class="act-btn del" title="Hapus"
@@ -279,13 +294,14 @@
                 </svg>
             </button>
         </form>
+        @endpermission
 
     </div>
 </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="text-center py-5" style="color:var(--c-muted);font-size:.875rem">
+                    <td colspan="6" class="text-center py-5" style="color:var(--c-muted);font-size:.875rem">
                         Data petugas tidak ditemukan.
                     </td>
                 </tr>

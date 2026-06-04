@@ -218,11 +218,63 @@
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     @media (max-width: 768px) {
+        .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+        .page-header h1 { font-size: 1.25rem; }
         .filter-bar { flex-direction: column; }
+        .filter-group { width: 100%; min-width: auto; }
+        .filter-group input, .filter-group select { height: 40px; min-height: 40px; }
+        .summary-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+        .summary-card { padding: 14px 16px; }
+        .summary-card-value { font-size: 1.25rem; }
+        .tab-bar { padding: 0; margin-bottom: 16px; border-radius: var(--radius-sm); }
+        .tab-btn { padding: 10px 12px; font-size: 0.8125rem; }
+        .table-wrap { margin-bottom: 16px; border-radius: var(--radius-sm); }
+        .table { font-size: 0.8125rem; }
+        .table thead th { padding: 10px 12px; }
+        .table td { padding: 10px 12px; }
+        .action-cell { gap: 4px; }
+        .action-btn { width: 28px; height: 28px; font-size: 0.75rem; }
+        .btn { padding: 8px 14px; font-size: 0.8125rem; min-height: 40px; }
+        .btn-sm { padding: 5px 10px; height: auto; min-height: auto; }
+    }
+
+    @media (max-width: 576px) {
+        .page-wrap { padding: 16px 14px 32px; }
+        .page-header { margin-bottom: 20px; }
+        .page-header h1 { font-size: 1.125rem; }
+        .pln-alert { font-size: 0.8125rem; padding: 12px 14px; }
+        .summary-grid { grid-template-columns: 1fr; gap: 10px; }
+        .summary-card { padding: 12px 14px; }
+        .summary-card-label { font-size: 0.75rem; }
+        .summary-card-value { font-size: 1.125rem; }
+        .filter-bar { padding: 14px 16px; gap: 10px; }
         .filter-group { width: 100%; }
-        .summary-grid { grid-template-columns: repeat(2, 1fr); }
-        .table { font-size: .8125rem; }
-        .table td, .table th { padding: 10px 12px; }
+        .filter-group input, .filter-group select { height: 40px; font-size: 0.8125rem; }
+        .btn { padding: 7px 12px; font-size: 0.75rem; min-height: 40px; }
+        .btn-sm { padding: 5px 10px; font-size: 0.7rem; }
+        .tab-bar { padding: 0; margin-bottom: 14px; }
+        .tab-btn { padding: 9px 10px; font-size: 0.75rem; }
+        .tab-badge { font-size: 0.7rem; }
+        .table-wrap { border-radius: var(--radius-sm); }
+        .table { font-size: 0.75rem; }
+        .table thead th { padding: 8px 10px; }
+        .table td { padding: 8px 10px; }
+        .action-btn { width: 26px; height: 26px; font-size: 0.7rem; }
+        .pagination { gap: 4px; }
+        .page-link { width: 32px; height: 32px; font-size: 0.75rem; }
+    }
+
+    @media (max-width: 400px) {
+        .page-wrap { padding: 12px 10px 24px; }
+        .page-header h1 { font-size: 1rem; }
+        .summary-grid { grid-template-columns: 1fr; }
+        .summary-card { padding: 10px 12px; }
+        .summary-card-value { font-size: 1rem; }
+        .table { font-size: 0.7rem; }
+        .table thead th { padding: 6px 8px; font-size: 0.7rem; }
+        .table td { padding: 6px 8px; }
+        .btn { padding: 6px 10px; font-size: 0.7rem; }
+        .action-btn { width: 24px; height: 24px; font-size: 0.6rem; }
     }
 </style>
 
@@ -236,9 +288,11 @@
         </div>
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             @if ($activeTab === 'data')
+                @permission('pelanggan:export')
                 <a href="{{ route('pelanggan.export') }}" class="btn btn-outline btn-sm">
                     <i class="bi bi-download"></i> Export CSV
                 </a>
+                @endpermission
             @endif
         </div>
     </div>
@@ -275,9 +329,11 @@
             <i class="bi bi-table"></i> Data Pelanggan
             <span class="tab-badge">{{ $totalPelanggan }}</span>
         </button>
+        @permission('pelanggan:create')
         <button class="tab-btn {{ $activeTab === 'import' ? 'active' : '' }}" data-tab="import">
             <i class="bi bi-upload"></i> Import CSV
         </button>
+        @endpermission
         <button class="tab-btn {{ $activeTab === 'errors' ? 'active' : '' }}" data-tab="errors">
             <i class="bi bi-exclamation-circle"></i> Error Logs
         </button>
@@ -302,16 +358,18 @@
                 <div class="summary-card-value">Rp {{ number_format($totalRptag, 0) }}</div>
             </div>
             <div class="summary-card red">
-                <div class="summary-card-label">Terakhir Import</div>
-                <div class="summary-card-value" style="font-size: 1rem;">
-                    @if ($importLogs->isNotEmpty())
-                        {{ $importLogs->first()->import_date?->diffForHumans() ?? '-' }}
-                    @else
-                        -
-                    @endif
-                </div>
-            </div>
-        </div>
+    <div class="summary-card-label">Terakhir Import</div>
+
+    <div class="summary-card-value" style="font-size: 1rem;">
+        @if (!empty($importLogs) && count($importLogs) > 0)
+            {{ $importLogs->first()->import_date?->diffForHumans() ?? '-' }}
+        @else
+            -
+        @endif
+    </div>
+</div>
+
+</div>
 
         {{-- FILTER & SEARCH BAR --}}
         <form method="GET" action="{{ route('pelanggan.index', ['tab' => 'data']) }}" class="filter-bar" id="filter-form">
@@ -356,6 +414,16 @@
             </div>
 
             <div class="filter-group">
+                <label>Petugas</label>
+                <select name="petugas_id">
+                    <option value="">Semua</option>
+                    @foreach ($petugasList as $pt)
+                        <option value="{{ $pt->id }}" {{ $petugasId == $pt->id ? 'selected' : '' }}>{{ $pt->kode_petugas }} - {{ $pt->nama }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="filter-group">
                 <label>Lembar</label>
                 <select name="lembar">
                     <option value="">Semua</option>
@@ -377,7 +445,7 @@
         </form>
 
         {{-- DATA TABLE --}}
-        @if ($pelanggan->isEmpty())
+        @if (collect($pelanggan)->isEmpty())
             <div class="empty-state">
                 <div class="empty-icon"><i class="bi bi-inbox"></i></div>
                 <h3 class="empty-title">Tidak ada data</h3>
@@ -392,6 +460,9 @@
                                 <th style="width: 50px;">#</th>
                                 <th style="width: 110px;">IDPEL</th>
                                 <th>Nama</th>
+                                <th style="width: 120px;">UNITAP</th>
+                                <th style="width: 100px;">Kode Petugas</th>
+                                <th style="width: 150px;">Nama Petugas</th>
                                 <th style="width: 90px;">Daya</th>
                                 <th style="width: 80px;">Lembar</th>
                                 <th style="width: 110px;">RPTAG</th>
@@ -407,6 +478,15 @@
                                     <td class="text-muted">{{ $no++ }}</td>
                                     <td><strong>{{ $p->idpel }}</strong></td>
                                     <td>{{ $p->nama }}</td>
+                                    <td><span class="badge badge-success">{{ $p->unitap ?: '-' }}</span></td>
+                                    <td>{{ $p->petugas ? $p->petugas->kode_petugas : '-' }}</td>
+                                    <td>
+                                        @if($p->petugas)
+                                            <strong style="font-size:.8125rem;">{{ $p->petugas->nama }}</strong>
+                                        @else
+                                            <span class="text-muted">Tidak ditemukan</span>
+                                        @endif
+                                    </td>
                                     <td>{{ number_format($p->daya) }} kW</td>
                                     <td>{{ $p->lembar }}</td>
                                     <td>Rp {{ number_format($p->rptag, 0) }}</td>
@@ -414,15 +494,21 @@
                                     <td class="text-muted">{{ $p->created_at?->format('d M Y H:i') }}</td>
                                     <td>
                                         <div class="action-cell">
+                                            @permission('pelanggan:view')
                                             <button class="action-btn view" title="Lihat" onclick="viewPelanggan({{ $p->id }})">
                                                 <i class="bi bi-eye"></i>
                                             </button>
+                                            @endpermission
+                                            @permission('pelanggan:edit')
                                             <button class="action-btn edit" title="Edit" onclick="editPelanggan({{ $p->id }})">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
+                                            @endpermission
+                                            @permission('pelanggan:delete')
                                             <button class="action-btn delete" title="Hapus" onclick="deletePelanggan({{ $p->id }}, '{{ addslashes($p->nama) }}')">
                                                 <i class="bi bi-trash"></i>
                                             </button>
+                                            @endpermission
                                         </div>
                                     </td>
                                 </tr>
@@ -444,6 +530,7 @@
     </div>
 
     {{-- TAB: IMPORT CSV --}}
+    @permission('pelanggan:create')
     <div class="tab-pane {{ $activeTab === 'import' ? 'active' : '' }}" id="pane-import">
 
         <div style="padding-bottom: 24px;">
@@ -472,9 +559,9 @@
             </div>
 
             @error('csv_file')
-                <div class="pln-alert pln-alert-danger" style="margin-top: 12px;">
-                    <i class="bi bi-exclamation-triangle-fill"></i>
-                    {{ $message }}
+               <pre>
+{{ print_r($errorList,true) }}
+</pre>
                 </div>
             @enderror
         </form>
@@ -567,6 +654,7 @@
         @endif
 
     </div>
+    @endpermission
 
     {{-- TAB: ERROR LOGS --}}
     <div class="tab-pane {{ $activeTab === 'errors' ? 'active' : '' }}" id="pane-errors">

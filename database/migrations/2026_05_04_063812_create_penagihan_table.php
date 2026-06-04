@@ -1,9 +1,14 @@
 <?php
 
 // ================================================================
-// FILE: database/migrations/xxxx_xx_xx_create_penagihan_table.php
-// Jalankan: php artisan migrate
-// Atau buat tabel manual dengan SQL di bawah
+// FILE: database/migrations/xxxx_create_penagihan_table.php
+//
+// PERUBAHAN dari versi lama:
+// - Kolom bulan nullable (karena CSV hanya punya TglBuku, bukan bulan format YYYY-MM)
+// - Kolom kode_petugas ditambah (diambil otomatis dari pelanggan)
+// - Kolom tgl_tagih (dari TglBuku di CSV)
+// - Unique key: idpel + bulan (petugas_id dihapus dari unique agar lebih fleksibel)
+// - Kolom jumlah_tagih dan keterangan tetap ada untuk keperluan monitoring
 // ================================================================
 
 use Illuminate\Database\Migrations\Migration;
@@ -16,23 +21,46 @@ return new class extends Migration
     {
         Schema::create('penagihan', function (Blueprint $table) {
             $table->id();
-            $table->string('idpel', 50);            // FK ke pelanggan.idpel
-            $table->unsignedBigInteger('petugas_id'); // FK ke petugas.id
-            $table->string('bulan', 7);              // format: YYYY-MM  contoh: 2025-01
-            $table->enum('status', ['sudah', 'belum'])->default('belum');
-            $table->date('tgl_tagih')->nullable();   // tanggal penagihan dilakukan
-            $table->decimal('jumlah_tagih', 15, 2)->default(0); // nominal yang berhasil ditagih
+
+            // Relasi ke pelanggan
+            $table->string('idpel', 255);
+
+            // Diambil otomatis dari pelanggan saat import — tidak dari CSV
+            $table->string('kode_petugas', 50)->nullable();
+            $table->unsignedBigInteger('petugas_id')->nullable();
+
+            // Bulan penagihan (format: YYYY-MM), diambil dari TglBuku di CSV
+            $table->string('bulan', 7)->nullable();
+
+            // Status: belum / lunas
+            $table->enum('status', ['belum', 'lunas'])->default('belum');
+
+            // Tanggal penagihan dari kolom TglBuku di CSV
+            $table->date('tgl_tagih')->nullable();
+
+            // Nominal tagihan (opsional, untuk monitoring)
+            $table->bigInteger('jumlah_tagih')->default(0);
+
             $table->text('keterangan')->nullable();
             $table->timestamps();
 
-            // Satu record per pelanggan per petugas per bulan
-            $table->unique(['idpel', 'petugas_id', 'bulan'], 'unique_tagih');
+            // Satu IDPEL hanya boleh tercatat satu kali per bulan
+            $table->unique(['idpel', 'bulan'], 'unique_penagihan_idpel_bulan');
 
-            $table->foreign('idpel')->references('idpel')->on('pelanggan')->onDelete('cascade');
-            $table->foreign('petugas_id')->references('id')->on('petugas')->onDelete('cascade');
+            // Foreign keys
+            $table->foreign('idpel')
+                  ->references('idpel')
+                  ->on('pelanggan')
+                  ->onDelete('cascade');
+
+            $table->foreign('petugas_id')
+                  ->references('id')
+                  ->on('petugas')
+                  ->onDelete('set null');
 
             $table->index(['petugas_id', 'bulan']);
             $table->index('bulan');
+            $table->index('status');
         });
     }
 

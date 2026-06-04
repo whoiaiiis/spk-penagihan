@@ -27,76 +27,90 @@ class StaffDashboardController extends Controller
         $totalTagihan = DB::table('pelanggan')->sum('rptag') ?? 0;
 
         // ================================================================
-        // 3. TOTAL BERHASIL DITAGIH (SUM jumlah_bayar status = sudah bulan ini)
+        // 3. TOTAL BERHASIL DITAGIH
+        //    ✅ Diperbaiki: status 'sudah' → 'lunas'
+        //    ✅ Diperbaiki: sum(jumlah_bayar) → join pelanggan + sum(rptag)
         // ================================================================
         $totalTertagih = DB::table('penagihan')
-            ->where('bulan', $bulan)
-            ->where('status', 'sudah')
-            ->sum('jumlah_bayar') ?? 0;
+            ->join('pelanggan', 'pelanggan.idpel', '=', 'penagihan.idpel')
+            ->where('penagihan.bulan', $bulan)
+            ->where('penagihan.status', 'lunas')
+            ->sum('pelanggan.rptag') ?? 0;
 
         // ================================================================
-        // 4. TOTAL BELUM DITAGIH (COUNT status = 'belum' bulan ini)
+        // 4. TOTAL BELUM DITAGIH
+        //    ✅ Diperbaiki: status 'sudah' → 'lunas'
         // ================================================================
-        $totalBelumTagih = DB::table('penagihan')
+        $sudahTagihCount = DB::table('penagihan')
             ->where('bulan', $bulan)
-            ->where('status', 'belum')
+            ->where('status', 'lunas')
             ->count();
 
-        // ================================================================
-        // 5. PERSENTASE KEBERHASILAN (sudah / total tagihan bulan ini) * 100
-        // ================================================================
-        $totalPenagihanBulan = DB::table('penagihan')
-            ->where('bulan', $bulan)
-            ->count();
+        $totalBelumTagih = $totalPelanggan - $sudahTagihCount;
 
+        // ================================================================
+        // 5. PERSENTASE KEBERHASILAN
+        //    ✅ Diperbaiki: status 'sudah' → 'lunas'
+        // ================================================================
         $persentaseKeberhasilan = 0;
-        if ($totalPenagihanBulan > 0) {
-            $sudahTagih = DB::table('penagihan')
-                ->where('bulan', $bulan)
-                ->where('status', 'sudah')
-                ->count();
-            $persentaseKeberhasilan = round(($sudahTagih / $totalPenagihanBulan) * 100, 1);
+        if ($totalPelanggan > 0) {
+            $persentaseKeberhasilan = round(($sudahTagihCount / $totalPelanggan) * 100, 1);
         }
 
         // ================================================================
         // 6. TREN 6 BULAN TERAKHIR
+        //    ✅ Diperbaiki: status 'sudah' → 'lunas'
+        //    ✅ Diperbaiki: sum(jumlah_bayar) → join pelanggan + sum(rptag)
+        //    ✅ Diperbaiki: ambil bulan yang benar-benar ada di tabel penagihan
+        //       (mengikuti pola AdminController agar data sinkron)
         // ================================================================
+        $bulanAda = DB::table('penagihan')
+            ->select('bulan')
+            ->distinct()
+            ->orderBy('bulan', 'asc')
+            ->pluck('bulan')
+            ->toArray();
+
+        // Ambil 6 bulan terakhir dari yang benar-benar ada
+        $bulanAda = array_slice($bulanAda, -6);
+
         $trendBulan = [];
-        for ($i = 5; $i >= 0; $i--) {
-            $dataBulan = Carbon::now()->subMonths($i)->format('Y-m');
-            
+        foreach ($bulanAda as $dataBulan) {
             $targetBulan = DB::table('pelanggan')->sum('rptag') ?? 0;
-            
+
+            // ✅ join pelanggan + sum(rptag) + status lunas
             $terbayarBulan = DB::table('penagihan')
-                ->where('bulan', $dataBulan)
-                ->where('status', 'sudah')
-                ->sum('jumlah_bayar') ?? 0;
-            
+                ->join('pelanggan', 'pelanggan.idpel', '=', 'penagihan.idpel')
+                ->where('penagihan.bulan', $dataBulan)
+                ->where('penagihan.status', 'lunas')
+                ->sum('pelanggan.rptag') ?? 0;
+
             $trendBulan[] = [
-                'bulan' => $dataBulan,
-                'bulan_label' => Carbon::createFromFormat('Y-m', $dataBulan)->translatedFormat('M Y'),
-                'target' => $targetBulan,
-                'terbayar' => $terbayarBulan,
+                'bulan'        => $dataBulan,
+                'bulan_label'  => Carbon::createFromFormat('Y-m', $dataBulan)->translatedFormat('M Y'),
+                'target'       => (int)$targetBulan,
+                'terbayar'     => (int)$terbayarBulan,
             ];
         }
 
         // ================================================================
         // 7. TOP 5 PELANGGAN TAGIHAN TERBESAR
+        //    ✅ Diperbaiki: cek status penagihan pakai 'lunas' bukan 'sudah'
         // ================================================================
         $topPelanggan = DB::table('pelanggan')
             ->orderByDesc('rptag')
             ->limit(5)
             ->get()
             ->map(function($p) use ($bulan) {
-                // Cari status penagihan untuk bulan ini
                 $penagihan = DB::table('penagihan')
                     ->where('idpel', $p->idpel)
                     ->where('bulan', $bulan)
                     ->first();
-                
-                $p->status_tagih = $penagihan->status ?? 'belum';
-                $p->jumlah_bayar = $penagihan->jumlah_bayar ?? 0;
-                
+
+                // ✅ status 'lunas' bukan 'sudah', tampilkan rptag sebagai jumlah_bayar
+                $p->status_tagih = ($penagihan && $penagihan->status === 'lunas') ? 'sudah' : 'belum';
+                $p->jumlah_bayar = ($penagihan && $penagihan->status === 'lunas') ? $p->rptag : 0;
+
                 return $p;
             });
 
@@ -122,12 +136,15 @@ class StaffDashboardController extends Controller
 
         // ================================================================
         // 9. REKAP STATUS TAGIHAN (Pie chart data)
+        //    ✅ Diperbaiki: status 'sudah' → 'lunas'
         // ================================================================
+        $lunasCount = DB::table('penagihan')
+            ->where('bulan', $bulan)
+            ->where('status', 'lunas')
+            ->count();
+
         $statusChart = [
-            'sudah' => DB::table('penagihan')
-                ->where('bulan', $bulan)
-                ->where('status', 'sudah')
-                ->count(),
+            'sudah' => $lunasCount,
             'belum' => DB::table('penagihan')
                 ->where('bulan', $bulan)
                 ->where('status', 'belum')
@@ -137,12 +154,12 @@ class StaffDashboardController extends Controller
         // ================================================================
         // CHART DATA FOR CHART.JS
         // ================================================================
-        
+
         // Trend chart data
         $trendChartData = array_map(function($t) {
             return [
-                'bulan' => substr($t['bulan_label'], 0, 3),
-                'target' => (int)$t['target'],
+                'bulan'    => substr($t['bulan_label'], 0, 3),
+                'target'   => (int)$t['target'],
                 'terbayar' => (int)$t['terbayar'],
             ];
         }, $trendBulan);
@@ -150,7 +167,7 @@ class StaffDashboardController extends Controller
         // Top pelanggan chart data
         $topPelangganChartData = $topPelanggan->map(function($p) {
             return [
-                'nama' => substr($p->nama, 0, 12),
+                'nama'  => substr($p->nama, 0, 12),
                 'rptag' => (int)$p->rptag,
             ];
         })->values();

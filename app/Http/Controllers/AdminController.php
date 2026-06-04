@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class AdminController extends Controller
 {
     /**
-     * Dashboard Admin - Monitoring Penagihan
+     * Dashboard Admin — Monitoring Penagihan
      */
     public function dashboard(Request $request)
     {
@@ -26,25 +27,26 @@ class AdminController extends Controller
         // ================================================================
         // 2. TOTAL PELANGGAN
         // ================================================================
-        $totalPelanggan = DB::table('pelanggan')
-            ->count();
+        $totalPelanggan = DB::table('pelanggan')->count();
 
         // ================================================================
-        // 3. TOTAL TAGIHAN (SUM rptag dari pelanggan)
+        // 3. TOTAL TAGIHAN — SUM rptag seluruh pelanggan
         // ================================================================
-        $totalTagihan = DB::table('pelanggan')
-            ->sum('rptag') ?? 0;
+        $totalTagihan = DB::table('pelanggan')->sum('rptag') ?? 0;
 
         // ================================================================
-        // 4. TOTAL BERHASIL DITAGIH (SUM jumlah_bayar dari penagihan bulan ini)
+        // 4. TOTAL BERHASIL DITAGIH
+        //    → SUM rptag pelanggan yang statusnya 'lunas' bulan ini
+        //    ✅ Tidak pakai jumlah_bayar (NULL), pakai pelanggan.rptag
         // ================================================================
         $totalTertagih = DB::table('penagihan')
-            ->where('bulan', $bulan)
-            ->where('status', 'sudah')
-            ->sum('jumlah_bayar') ?? 0;
+            ->join('pelanggan', 'pelanggan.idpel', '=', 'penagihan.idpel')
+            ->where('penagihan.bulan', $bulan)
+            ->where('penagihan.status', 'lunas')
+            ->sum('pelanggan.rptag') ?? 0;
 
         // ================================================================
-        // 5. TOTAL BELUM DITAGIH (COUNT status = 'belum' bulan ini)
+        // 5. TOTAL BELUM DITAGIH — COUNT status = 'belum' bulan ini
         // ================================================================
         $totalBelumTagih = DB::table('penagihan')
             ->where('bulan', $bulan)
@@ -53,46 +55,64 @@ class AdminController extends Controller
 
         // ================================================================
         // 6. PERSENTASE KEBERHASILAN PENAGIHAN
+        //    → lunas bulan ini / total pelanggan keseluruhan
+        //    ✅ Bukan dibagi total penagihan saja (yang bisa 3 data)
         // ================================================================
-        $totalPenagihanBulan = DB::table('penagihan')
+        $sudahTagihBulan = DB::table('penagihan')
             ->where('bulan', $bulan)
+            ->where('status', 'lunas')
             ->count();
 
         $persentaseTertagih = 0;
-        if ($totalPenagihanBulan > 0) {
-            $sudahTagih = DB::table('penagihan')
-                ->where('bulan', $bulan)
-                ->where('status', 'sudah')
-                ->count();
-            $persentaseTertagih = round(($sudahTagih / $totalPenagihanBulan) * 100, 1);
+        if ($totalPelanggan > 0) {
+            $persentaseTertagih = round(($sudahTagihBulan / $totalPelanggan) * 100, 2);
         }
 
         // ================================================================
-        // 7. TOP 5 PETUGAS BERDASARKAN JUMLAH PELANGGAN BERHASIL DITAGIH
+        // 7. TOP 5 PETUGAS
+        //    → berdasarkan jumlah pelanggan lunas & total rptag lunas
+        //    ✅ Join petugas lewat kode_petugas (bukan petugas_id)
         // ================================================================
         $petugasTeratas = DB::table('petugas')
-            ->leftJoin('penagihan', function($join) use ($bulan) {
-                $join->on('penagihan.petugas_id', '=', 'petugas.id')
+            ->leftJoin('pelanggan', 'pelanggan.kode_petugas', '=', 'petugas.kode_petugas') // ✅
+            ->leftJoin('penagihan', function ($join) use ($bulan) {
+                $join->on('penagihan.idpel', '=', 'pelanggan.idpel')
                      ->where('penagihan.bulan', $bulan)
-                     ->where('penagihan.status', 'sudah');
+                     ->where('penagihan.status', 'lunas');
             })
-            ->leftJoin('pelanggan', 'pelanggan.idpel', '=', 'penagihan.idpel')
             ->where('petugas.status', 'aktif')
             ->select(
                 'petugas.id',
+                'petugas.kode_petugas',
                 'petugas.nama',
                 'petugas.wilayah',
+
+                // Jumlah pelanggan yang berhasil lunas bulan ini
                 DB::raw('COUNT(DISTINCT penagihan.idpel) as jumlah_tagihan'),
-                DB::raw('COALESCE(SUM(penagihan.jumlah_bayar), 0) as total_tertagih'),
+
+                // Total rptag pelanggan yang lunas
+                DB::raw("
+                    COALESCE(
+                        SUM(
+                            CASE
+                                WHEN penagihan.status = 'lunas'
+                                THEN pelanggan.rptag
+                                ELSE 0
+                            END
+                        ), 0
+                    ) as total_tertagih
+                "),
+
+                // Total rptag semua pelanggan petugas ini (pembagi persentase)
                 DB::raw('COALESCE(SUM(pelanggan.rptag), 0) as total_rptag')
             )
-            ->groupBy('petugas.id', 'petugas.nama', 'petugas.wilayah')
+            ->groupBy('petugas.id', 'petugas.kode_petugas', 'petugas.nama', 'petugas.wilayah')
             ->orderByDesc('jumlah_tagihan')
             ->limit(5)
             ->get();
 
-        // Hitung persentase untuk TOP petugas
-        $petugasTeratas = $petugasTeratas->map(function($p) {
+        // Hitung persentase per petugas
+        $petugasTeratas = $petugasTeratas->map(function ($p) {
             $p->persentase = 0;
             if ($p->total_rptag > 0) {
                 $p->persentase = round(($p->total_tertagih / $p->total_rptag) * 100, 1);
@@ -101,7 +121,7 @@ class AdminController extends Controller
         });
 
         // ================================================================
-        // 8. DAFTAR WILAYAH
+        // 8. DAFTAR WILAYAH AKTIF
         // ================================================================
         $wilayahList = DB::table('petugas')
             ->where('status', 'aktif')
@@ -112,43 +132,69 @@ class AdminController extends Controller
 
         // ================================================================
         // 9. REKAP 6 BULAN TERAKHIR
+        //    ✅ Ambil bulan yang BENAR-BENAR ada di tabel penagihan
+        //       bukan loop statis 6 bulan terakhir dari Carbon::now()
         // ================================================================
+        $bulanAda = DB::table('penagihan')
+            ->select('bulan')
+            ->distinct()
+            ->orderBy('bulan', 'asc')
+            ->pluck('bulan')
+            ->toArray();
+
+        // Ambil 6 bulan terakhir dari yang benar-benar ada
+        $bulanAda = array_slice($bulanAda, -6);
+
         $rekapBulan = [];
-        
-        // Generate 6 bulan terakhir
-        for ($i = 5; $i >= 0; $i--) {
-            $dataBulan = Carbon::now()->subMonths($i)->format('Y-m');
-            
+
+        foreach ($bulanAda as $bln) {
+            // Total rptag semua pelanggan (tetap, tidak berubah per bulan)
             $totalRptag = DB::table('pelanggan')->sum('rptag') ?? 0;
-            
+
+            // Total rptag pelanggan yang lunas bulan ini
+            // ✅ Tidak pakai jumlah_bayar (NULL), pakai pelanggan.rptag
             $totalTagihBulan = DB::table('penagihan')
-                ->where('bulan', $dataBulan)
-                ->where('status', 'sudah')
-                ->sum('jumlah_bayar') ?? 0;
-            
+                ->join('pelanggan', 'pelanggan.idpel', '=', 'penagihan.idpel')
+                ->where('penagihan.bulan', $bln)
+                ->where('penagihan.status', 'lunas')
+                ->sum('pelanggan.rptag') ?? 0;
+
             $rekapBulan[] = [
-                'bulan' => $dataBulan,
-                'bulan_label' => Carbon::createFromFormat('Y-m', $dataBulan)->translatedFormat('M Y'),
-                'total_rptag' => $totalRptag,
-                'total_tagih' => $totalTagihBulan,
+                'bulan'       => $bln,
+                'bulan_label' => Carbon::createFromFormat('Y-m', $bln)->translatedFormat('M Y'),
+                'total_rptag' => (int) $totalRptag,
+                'total_tagih' => (int) $totalTagihBulan,
             ];
         }
 
         // ================================================================
         // 10. REKAP PER WILAYAH
+        //     ✅ Join petugas lewat kode_petugas (bukan petugas_id)
         // ================================================================
         $rekapWilayah = DB::table('petugas')
-            ->leftJoin('penagihan', function($join) use ($bulan) {
-                $join->on('penagihan.petugas_id', '=', 'petugas.id')
+            ->leftJoin('pelanggan', 'pelanggan.kode_petugas', '=', 'petugas.kode_petugas') // ✅
+            ->leftJoin('penagihan', function ($join) use ($bulan) {
+                $join->on('penagihan.idpel', '=', 'pelanggan.idpel')
                      ->where('penagihan.bulan', $bulan);
             })
-            ->leftJoin('pelanggan', 'pelanggan.idpel', '=', 'penagihan.idpel')
             ->where('petugas.status', 'aktif')
             ->select(
                 'petugas.wilayah',
                 DB::raw('COUNT(DISTINCT petugas.id) as total_petugas'),
                 DB::raw('COUNT(DISTINCT pelanggan.idpel) as total_pelanggan'),
-                DB::raw('COALESCE(SUM(penagihan.jumlah_bayar), 0) as total_tertagih')
+
+                // ✅ Pakai pelanggan.rptag, bukan jumlah_bayar
+                DB::raw("
+                    COALESCE(
+                        SUM(
+                            CASE
+                                WHEN penagihan.status = 'lunas'
+                                THEN pelanggan.rptag
+                                ELSE 0
+                            END
+                        ), 0
+                    ) as total_tertagih
+                ")
             )
             ->groupBy('petugas.wilayah')
             ->orderBy('petugas.wilayah')
@@ -157,12 +203,12 @@ class AdminController extends Controller
         // ================================================================
         // DATA UNTUK CHART
         // ================================================================
-        
-        // Chart: Status Penagihan (Pie Chart)
+
+        // Pie Chart: Status Penagihan bulan ini
         $statusChart = [
             'sudah' => DB::table('penagihan')
                 ->where('bulan', $bulan)
-                ->where('status', 'sudah')
+                ->where('status', 'lunas')
                 ->count(),
             'belum' => DB::table('penagihan')
                 ->where('bulan', $bulan)
@@ -170,21 +216,21 @@ class AdminController extends Controller
                 ->count(),
         ];
 
-        // Chart: Top Petugas untuk Bar Chart
-        $topPetugasChart = $petugasTeratas->map(function($p) {
+        // Bar Chart: Top 5 Petugas
+        $topPetugasChart = $petugasTeratas->map(function ($p) {
             return [
-                'nama' => substr($p->nama, 0, 10), // short name
-                'jumlah' => (int)$p->jumlah_tagihan,
-                'tertagih' => (int)$p->total_tertagih,
+                'nama'     => Str::limit($p->nama, 12, ''),
+                'jumlah'   => (int) $p->jumlah_tagihan,
+                'tertagih' => (int) $p->total_tertagih,
             ];
         })->values();
 
-        // Chart: Trend 6 bulan
-        $trendChart = array_map(function($r) {
+        // Line Chart: Trend 6 bulan (dari $rekapBulan yang sudah benar)
+        $trendChart = array_map(function ($r) {
             return [
-                'bulan' => substr($r['bulan_label'], 0, 3),
-                'total_rptag' => (int)$r['total_rptag'],
-                'total_tagih' => (int)$r['total_tagih'],
+                'bulan'       => substr($r['bulan_label'], 0, 3),
+                'total_rptag' => (int) $r['total_rptag'],
+                'total_tagih' => (int) $r['total_tagih'],
             ];
         }, $rekapBulan);
 

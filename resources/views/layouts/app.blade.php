@@ -14,6 +14,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+
+    <!-- Responsive CSS -->
+    <link rel="stylesheet" href="{{ asset('css/responsive.css') }}">
+
     <style>
     /* ================================================================
        CSS VARIABLES — PLN Brand System
@@ -74,6 +80,23 @@
     }
 
     /* ================================================================
+       SIDEBAR OVERLAY (Mobile)
+    ================================================================ */
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 20, 50, 0.5);
+        z-index: 99;
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+        transition: opacity var(--transition);
+    }
+    .sidebar-overlay.show {
+        display: block;
+    }
+
+    /* ================================================================
        SIDEBAR
     ================================================================ */
     .sidebar {
@@ -106,14 +129,14 @@
         border-bottom: 1px solid rgba(255,255,255,.08);
         flex-shrink: 0;
     }
-   .sidebar-brand-logo-img{
-    width: 30px;
-    height: 30px;
-    object-fit: contain;
-    border-radius: 6px;
-    background: white;
-    padding: 2px;
-}
+    .sidebar-brand-logo-img {
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
+        border-radius: 6px;
+        background: white;
+        padding: 2px;
+    }
     .sidebar-brand-text {
         line-height: 1.25;
     }
@@ -129,6 +152,28 @@
         font-weight: 500;
         text-transform: uppercase;
         letter-spacing: .6px;
+    }
+
+    /* Close button — mobile only */
+    .sidebar-close-btn {
+        display: none;
+        margin-left: auto;
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        background: rgba(255,255,255,.1);
+        border: none;
+        color: rgba(255,255,255,.7);
+        font-size: 16px;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: background var(--transition);
+    }
+    .sidebar-close-btn:hover {
+        background: rgba(255,255,255,.2);
+        color: #fff;
     }
 
     /* Nav section label */
@@ -263,6 +308,7 @@
         display: flex;
         flex-direction: column;
         min-height: 100vh;
+        min-width: 0; /* prevent overflow */
     }
 
     /* ================================================================
@@ -286,11 +332,15 @@
         display: flex;
         align-items: center;
         gap: 12px;
+        min-width: 0;
     }
     .topbar-page-title {
         font-size: 15px;
         font-weight: 600;
         color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .topbar-breadcrumb {
         display: flex;
@@ -305,6 +355,7 @@
         display: flex;
         align-items: center;
         gap: 10px;
+        flex-shrink: 0;
     }
     .topbar-badge {
         display: inline-flex;
@@ -316,26 +367,7 @@
         color: var(--pln-blue);
         font-size: 11px;
         font-weight: 600;
-    }
-    .topbar-notif {
-        width: 34px;
-        height: 34px;
-        border-radius: var(--radius-md);
-        border: 1px solid var(--border);
-        background: var(--bg-card);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-secondary);
-        font-size: 15px;
-        cursor: pointer;
-        transition: background var(--transition), border-color var(--transition);
-        position: relative;
-    }
-    .topbar-notif:hover {
-        background: var(--pln-blue-light);
-        border-color: var(--pln-blue);
-        color: var(--pln-blue);
+        white-space: nowrap;
     }
     .topbar-divider {
         width: 1px;
@@ -365,11 +397,38 @@
         font-size: 11px;
         font-weight: 700;
         color: #fff;
+        flex-shrink: 0;
     }
     .topbar-username {
         font-size: 12px;
         font-weight: 600;
         color: var(--text-primary);
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Hamburger button */
+    .sidebar-toggle-btn {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+        background: var(--bg-card);
+        color: var(--text-secondary);
+        font-size: 18px;
+        cursor: pointer;
+        transition: background var(--transition), color var(--transition);
+        flex-shrink: 0;
+    }
+    .sidebar-toggle-btn:hover {
+        background: var(--pln-blue-light);
+        color: var(--pln-blue);
+        border-color: var(--pln-blue);
     }
 
     /* ================================================================
@@ -386,7 +445,7 @@
     }
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(-8px); }
-        to { opacity: 1; transform: translateY(0); }
+        to   { opacity: 1; transform: translateY(0); }
     }
     .topbar-dropdown .dropdown-item {
         padding: 8px 20px;
@@ -407,15 +466,9 @@
         background: var(--pln-blue-light);
         color: var(--pln-blue);
     }
-    .topbar-dropdown .dropdown-item:hover i {
-        color: var(--pln-blue);
-    }
-    .topbar-dropdown .dropdown-item-danger {
-        color: #DC2626 !important;
-    }
-    .topbar-dropdown .dropdown-item-danger i {
-        color: #DC2626 !important;
-    }
+    .topbar-dropdown .dropdown-item:hover i { color: var(--pln-blue); }
+    .topbar-dropdown .dropdown-item-danger { color: #DC2626 !important; }
+    .topbar-dropdown .dropdown-item-danger i { color: #DC2626 !important; }
     .topbar-dropdown .dropdown-item-danger:hover {
         background: #FEF2F2 !important;
         color: #B91C1C !important;
@@ -424,9 +477,7 @@
         border-color: var(--border);
         margin: 6px 0;
     }
-    .topbar-dropdown .dropdown-user-info {
-        padding: 8px 20px 8px;
-    }
+    .topbar-dropdown .dropdown-user-info { padding: 8px 20px 8px; }
     .topbar-dropdown .dropdown-user-name {
         font-size: 14px;
         font-weight: 700;
@@ -447,10 +498,11 @@
         flex: 1;
         padding: 28px;
         background: var(--bg-body);
+        min-width: 0;
     }
 
     /* ================================================================
-       REUSABLE COMPONENTS (available to all child views)
+       REUSABLE COMPONENTS
     ================================================================ */
 
     /* Cards */
@@ -459,12 +511,9 @@
         border: 1px solid var(--border) !important;
         border-radius: var(--radius-lg) !important;
         box-shadow: var(--shadow-sm);
-        transition: box-shadow var(--transition), transform var(--transition);
+        transition: box-shadow var(--transition);
     }
-    .card:hover {
-        box-shadow: var(--shadow-md);
-        transform: none; /* override Bootstrap hover scale */
-    }
+    .card:hover { box-shadow: var(--shadow-md); }
     .card-header {
         background: transparent !important;
         border-bottom: 1px solid var(--border) !important;
@@ -485,6 +534,7 @@
         position: relative;
         overflow: hidden;
         transition: box-shadow var(--transition);
+        height: 100%;
     }
     .stat-card:hover { box-shadow: var(--shadow-md); }
     .stat-card-icon {
@@ -528,6 +578,7 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
+        white-space: nowrap;
     }
     .btn-pln:hover { background: var(--pln-blue-dark); color: #fff; box-shadow: 0 4px 12px rgba(0,85,165,.3); }
     .btn-pln:disabled { opacity: .5; cursor: not-allowed; }
@@ -545,6 +596,7 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
+        white-space: nowrap;
     }
     .btn-pln-outline:hover { background: var(--pln-blue-light); }
     .btn-pln-ghost {
@@ -565,11 +617,11 @@
     .btn-pln-ghost:hover { background: var(--bg-body); border-color: #C5D2E0; color: var(--text-primary); }
 
     /* Badges */
-    .badge-pln       { background: var(--pln-blue-light);  color: var(--pln-blue);    border-radius: 99px; padding: 3px 9px; font-size: 11px; font-weight: 600; }
-    .badge-success   { background: #E8F8F0; color: #1A7A4A; border-radius: 99px; padding: 3px 9px; font-size: 11px; font-weight: 600; }
-    .badge-warning   { background: #FEF3DC; color: #B7600A; border-radius: 99px; padding: 3px 9px; font-size: 11px; font-weight: 600; }
-    .badge-danger    { background: #FEE8E8; color: #C0392B; border-radius: 99px; padding: 3px 9px; font-size: 11px; font-weight: 600; }
-    .badge-neutral   { background: #EEF1F5; color: #5A6A7E; border-radius: 99px; padding: 3px 9px; font-size: 11px; font-weight: 600; }
+    .badge-pln     { background: var(--pln-blue-light); color: var(--pln-blue);  border-radius: 99px; padding: 3px 9px; font-size: 11px; font-weight: 600; }
+    .badge-success { background: #E8F8F0; color: #1A7A4A; border-radius: 99px; padding: 3px 9px; font-size: 11px; font-weight: 600; }
+    .badge-warning { background: #FEF3DC; color: #B7600A; border-radius: 99px; padding: 3px 9px; font-size: 11px; font-weight: 600; }
+    .badge-danger  { background: #FEE8E8; color: #C0392B; border-radius: 99px; padding: 3px 9px; font-size: 11px; font-weight: 600; }
+    .badge-neutral { background: #EEF1F5; color: #5A6A7E;  border-radius: 99px; padding: 3px 9px; font-size: 11px; font-weight: 600; }
 
     /* Tables */
     .pln-table {
@@ -601,6 +653,12 @@
         border: 1px solid var(--border);
         border-radius: var(--radius-lg);
         overflow: hidden;
+    }
+    @media (max-width: 768px) {
+        .pln-table-wrap {
+            overflow-x: auto; /* horizontal scroll on small screens */
+            -webkit-overflow-scrolling: touch;
+        }
     }
 
     /* Alerts */
@@ -695,7 +753,7 @@
     @keyframes pln-spin { to { transform: rotate(360deg); } }
 
     /* Pagination override */
-    .pagination { gap: 4px; }
+    .pagination { gap: 4px; flex-wrap: wrap; }
     .page-link {
         border-radius: var(--radius-sm) !important;
         border-color: var(--border) !important;
@@ -721,23 +779,248 @@
         box-shadow: 0 0 0 3px rgba(0,85,165,.1) !important;
     }
 
-    /* Active nav detection */
-    .nav-item[href="{{ request()->url() }}"],
-    .nav-item.active { /* set via JS */ }
-
     /* Scrollbar */
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #C5D2E0; border-radius: 99px; }
     ::-webkit-scrollbar-thumb:hover { background: #9AAABB; }
 
-    /* Mobile */
-    @media (max-width: 768px) {
-        .sidebar { transform: translateX(-100%); }
-        .sidebar.open { transform: translateX(0); }
-        .main-wrap { margin-left: 0; }
-        .page-content { padding: 16px; }
+    /* ================================================================
+       RESPONSIVE — Laptop/Desktop (1201px – 1399px)
+    ================================================================ */
+    @media (max-width: 1399px) and (min-width: 1200px) {
+        .page-content { padding: 24px; }
+    }
+
+    /* ================================================================
+       RESPONSIVE — Tablet Landscape (1025px – 1199px)
+    ================================================================ */
+    @media (min-width: 1025px) and (max-width: 1199px) {
+        :root {
+            --sidebar-w: 220px;
+            --topbar-h: 56px;
+        }
+        .page-content { padding: 20px; }
+        .stat-card-value { font-size: 20px; }
+        .topbar { padding: 0 20px; }
+        .topbar-badge { display: inline-flex !important; }
+        h1 { font-size: 20px !important; }
+    }
+
+    /* ================================================================
+       RESPONSIVE — Tablet (769px – 1024px)
+    ================================================================ */
+    @media (min-width: 769px) and (max-width: 1024px) {
+        :root {
+            --sidebar-w: 210px;
+            --topbar-h: 56px;
+        }
+        .page-content { padding: 18px; }
+        .stat-card-value { font-size: 18px; }
         .topbar { padding: 0 16px; }
+        .topbar-badge { display: none; } /* hide on tablet to save space */
+        .topbar-username { max-width: 80px; }
+        h1 { font-size: 18px !important; }
+        h2 { font-size: 16px !important; }
+        h3 { font-size: 15px !important; }
+    }
+
+    /* ================================================================
+       RESPONSIVE — Mobile (≤ 768px)
+    ================================================================ */
+    @media (max-width: 768px) {
+        /* Sidebar hidden off-screen */
+        .sidebar {
+            transform: translateX(-100%);
+            width: 260px; /* slightly wider on mobile for touch */
+        }
+        .sidebar.open {
+            transform: translateX(0);
+            box-shadow: 4px 0 24px rgba(0,20,60,.25);
+        }
+
+        /* Show close button inside sidebar on mobile */
+        .sidebar-close-btn {
+            display: inline-flex;
+        }
+
+        /* Main fills full width */
+        .main-wrap { margin-left: 0; }
+
+        /* Topbar adjustments */
+        .topbar { padding: 0 14px; gap: 8px; }
+        .topbar-badge { display: none; }
+        .topbar-breadcrumb { display: none; }
+        .topbar-page-title { font-size: 14px; }
+
+        /* Show hamburger */
+        .sidebar-toggle-btn { display: inline-flex; }
+
+        /* Page content */
+        .page-content { padding: 14px; }
+
+        /* Page header */
+        .page-header { margin-bottom: 16px; }
+        .page-header h1 { font-size: 17px; }
+
+        /* Stat cards stack nicely — use col-6 in child views */
+        .stat-card-value { font-size: 20px; }
+        .stat-card { padding: 16px; }
+
+        /* Tables scroll horizontally */
+        .pln-table-wrap { border-radius: var(--radius-md); }
+
+        /* Buttons */
+        .btn-pln, .btn-pln-outline, .btn-pln-ghost {
+            padding: 7px 13px;
+            font-size: 12px;
+        }
+
+        /* Username hidden on very small screens */
+        .topbar-username { display: none; }
+        .topbar-user { padding: 4px 6px; gap: 0; }
+    }
+
+    /* ================================================================
+       RESPONSIVE — Very small (≤ 400px)
+    ================================================================ */
+    @media (max-width: 400px) {
+        .page-content { padding: 10px; }
+        .stat-card-value { font-size: 16px; }
+        .page-header h1 { font-size: 15px; }
+        .stat-card { padding: 12px; }
+        h1 { font-size: 16px !important; }
+        h2 { font-size: 14px !important; }
+    }
+
+    /* ================================================================
+       RESPONSIVE UTILITIES — Typography
+    ================================================================ */
+    @media (max-width: 768px) {
+        h1 { font-size: 18px !important; }
+        h2 { font-size: 16px !important; }
+        h3 { font-size: 14px !important; }
+        p { font-size: 13px !important; }
+    }
+
+    /* ================================================================
+       RESPONSIVE UTILITIES — Spacing Adjustments
+    ================================================================ */
+    @media (max-width: 768px) {
+        .row { --bs-gutter-x: 0.75rem; }
+        .container-fluid { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+    }
+
+    /* ================================================================
+       RESPONSIVE UTILITIES — Tables
+    ================================================================ */
+    .table-responsive-wrapper {
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        margin-bottom: 1rem;
+    }
+    .table-responsive-wrapper table {
+        margin-bottom: 0;
+    }
+    @media (max-width: 768px) {
+        .table-responsive-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .table-responsive-wrapper table {
+            min-width: 100%;
+            font-size: 12px;
+        }
+        .table-responsive-wrapper thead { display: table-header-group; }
+        .table-responsive-wrapper th,
+        .table-responsive-wrapper td {
+            padding: 8px 10px;
+            white-space: nowrap;
+        }
+    }
+
+    /* ================================================================
+       RESPONSIVE UTILITIES — Cards
+    ================================================================ */
+    @media (max-width: 992px) {
+        .kpi-card { padding: 16px; }
+    }
+    @media (max-width: 576px) {
+        .stat-card,
+        .kpi-card,
+        .card {
+            padding: 12px;
+        }
+    }
+
+    /* ================================================================
+       RESPONSIVE UTILITIES — Charts
+    ================================================================ */
+    .chart-container {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+    @media (max-width: 768px) {
+        .chart-container { min-height: 250px; }
+        .chart-card { padding: 16px; }
+    }
+    @media (max-width: 576px) {
+        .chart-container { min-height: 220px; }
+        .chart-card { padding: 12px; }
+    }
+
+    /* ================================================================
+       RESPONSIVE UTILITIES — Buttons & Actions
+    ================================================================ */
+    @media (max-width: 768px) {
+        .dashboard-header-actions,
+        .btn-group-actions {
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .dashboard-header-actions .btn-action,
+        .btn-group-actions .btn-pln {
+            flex: 1 1 48%;
+            min-width: 100px;
+        }
+    }
+    @media (max-width: 576px) {
+        .dashboard-header-actions .btn-action,
+        .btn-group-actions .btn-pln {
+            flex: 1 1 100%;
+        }
+    }
+
+    /* ================================================================
+       RESPONSIVE UTILITIES — Forms & Filters
+    ================================================================ */
+    .form-group-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    @media (max-width: 1024px) {
+        .form-group-row {
+            gap: 10px;
+        }
+    }
+    @media (max-width: 768px) {
+        .form-group-row {
+            flex-direction: column;
+            gap: 8px;
+        }
+        .form-group-row > * {
+            flex: 1 1 100%;
+        }
+    }
+
+    /* ================================================================
+       RESPONSIVE UTILITIES — Modal Adjustments
+    ================================================================ */
+    @media (max-width: 576px) {
+        .modal-dialog { margin: 8px; }
+        .modal-content { border-radius: var(--radius-md); }
     }
     </style>
 
@@ -755,6 +1038,9 @@
     $currentUrl  = request()->url();
 @endphp
 
+<!-- Overlay (mobile sidebar backdrop) -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
 <div class="app-shell">
 
     <!-- ============================================================
@@ -769,12 +1055,16 @@
                 <div class="sidebar-brand-name">PLN</div>
                 <div class="sidebar-brand-sub">Smart Collection</div>
             </div>
+            <!-- Close button shown on mobile -->
+            <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Tutup menu">
+                <i class="bi bi-x-lg"></i>
+            </button>
         </div>
 
         <!-- Navigation -->
         <div class="sidebar-nav">
 
-            @if(in_array('dashboard', $permissions))
+            @if(has_permission('dashboard:view'))
             <div class="sidebar-label">Utama</div>
             <a href="/dashboard"
                class="nav-item {{ request()->is('dashboard') ? 'active' : '' }}">
@@ -783,11 +1073,11 @@
             </a>
             @endif
 
-            @if(in_array('roles', $permissions) || in_array('data_pengguna', $permissions) || in_array('data_petugas', $permissions) || in_array('data_kriteria', $permissions))
+            @if(has_permission('roles:view') || has_permission('users:view') || has_permission('petugas:view') || has_permission('kriteria:view') || has_permission('pelanggan:view'))
             <div class="sidebar-label">Master Data</div>
             @endif
 
-            @if(in_array('roles', $permissions))
+            @if(has_permission('roles:view'))
             <a href="/roles"
                class="nav-item {{ request()->is('roles*') ? 'active' : '' }}">
                 <i class="bi bi-shield-lock nav-icon"></i>
@@ -795,7 +1085,7 @@
             </a>
             @endif
 
-            @if(in_array('data_pengguna', $permissions))
+            @if(has_permission('users:view'))
             <a href="/datapengguna"
                class="nav-item {{ request()->is('datapengguna*') ? 'active' : '' }}">
                 <i class="bi bi-people nav-icon"></i>
@@ -803,7 +1093,7 @@
             </a>
             @endif
 
-            @if(in_array('data_petugas', $permissions))
+            @if(has_permission('petugas:view'))
             <a href="/datapetugas"
                class="nav-item {{ request()->is('datapetugas*') ? 'active' : '' }}">
                 <i class="bi bi-person-badge nav-icon"></i>
@@ -811,7 +1101,7 @@
             </a>
             @endif
 
-            @if(in_array('data_kriteria', $permissions))
+            @if(has_permission('kriteria:view'))
             <a href="/datakriteria"
                class="nav-item {{ request()->is('datakriteria*') ? 'active' : '' }}">
                 <i class="bi bi-sliders nav-icon"></i>
@@ -819,7 +1109,7 @@
             </a>
             @endif
 
-            @if(in_array('data_pelanggan', $permissions))
+            @if(has_permission('pelanggan:view'))
             <a href="/pelanggan"
                class="nav-item {{ request()->is('pelanggan*') ? 'active' : '' }}">
                 <i class="bi bi-person-lines-fill nav-icon"></i>
@@ -827,11 +1117,11 @@
             </a>
             @endif
 
-            @if(in_array('data_penilaian', $permissions) || in_array('input_penagihan', $permissions) || in_array('cetak_invoice', $permissions) || in_array('hasil_ranking', $permissions))
+            @if(has_permission('penilaian:view') || has_permission('penagihan:view') || has_permission('invoice:view') || has_permission('ranking:view'))
             <div class="sidebar-label">Operasional</div>
             @endif
 
-            @if(in_array('input_penagihan', $permissions))
+            @if(has_permission('penagihan:view'))
             <a href="/penagihan"
                class="nav-item {{ request()->is('penagihan*') ? 'active' : '' }}">
                 <i class="bi bi-pencil-square nav-icon"></i>
@@ -839,19 +1129,19 @@
             </a>
             @endif
 
-            @if(in_array('cetak_invoice', $permissions))
-<a href="{{ route('invoice.index') }}"
-   class="nav-item {{ request()->is('invoices*') ? 'active' : '' }}">
-    <i class="bi bi-receipt nav-icon"></i>
-    Cetak Invoice
-</a>
-@endif
+            @if(has_permission('invoice:view'))
+            <a href="{{ route('invoice.index') }}"
+               class="nav-item {{ request()->is('invoices*') ? 'active' : '' }}">
+                <i class="bi bi-receipt nav-icon"></i>
+                Cetak Invoice
+            </a>
+            @endif
 
-            @if(in_array('data_penilaian', $permissions) || in_array('hasil_ranking', $permissions))
+            @if(has_permission('penilaian:view') || has_permission('ranking:view'))
             <div class="sidebar-label">SPK &amp; Analitik</div>
             @endif
 
-            @if(in_array('data_penilaian', $permissions))
+            @if(has_permission('penilaian:view'))
             <a href="/penilaian"
                class="nav-item {{ request()->is('penilaian*') ? 'active' : '' }}">
                 <i class="bi bi-clipboard-data nav-icon"></i>
@@ -859,7 +1149,7 @@
             </a>
             @endif
 
-            @if(in_array('hasil_ranking', $permissions))
+            @if(has_permission('ranking:view'))
             <a href="/ranking"
                class="nav-item {{ request()->is('ranking*') ? 'active' : '' }}">
                 <i class="bi bi-bar-chart-steps nav-icon"></i>
@@ -867,17 +1157,15 @@
             </a>
             @endif
 
-            @if(in_array('monitoring', $permissions))
+            @if(has_permission('monitoring:view'))
             <a href="{{ route('monitoring.index') }}"
-   class="nav-item {{ request()->is('monitoringkinerja*') ? 'active' : '' }}">
-    <i class="bi bi-graph-up-arrow nav-icon"></i>
-    Monitoring Kinerja
-</a>
+               class="nav-item {{ request()->is('monitoringkinerja*') ? 'active' : '' }}">
+                <i class="bi bi-graph-up-arrow nav-icon"></i>
+                Monitoring Kinerja
+            </a>
             @endif
 
         </div>
-
-
     </aside>
 
     <!-- ============================================================
@@ -888,10 +1176,12 @@
         <!-- TOP BAR -->
         <header class="topbar">
             <div class="topbar-left">
-                <button class="btn-pln-ghost d-md-none" style="padding:6px 10px"
-                        onclick="document.getElementById('sidebar').classList.toggle('open')">
-                    <i class="bi bi-list" style="font-size:18px"></i>
+
+                <!-- Hamburger — visible on mobile & tablet -->
+                <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Buka menu">
+                    <i class="bi bi-list"></i>
                 </button>
+
                 <div>
                     <div class="topbar-page-title">@yield('page_title', 'Dashboard')</div>
                     <div class="topbar-breadcrumb">
@@ -901,6 +1191,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="topbar-right">
                 <span class="topbar-badge">
                     <i class="bi bi-building" style="font-size:11px"></i>
@@ -911,7 +1202,7 @@
                     <div class="topbar-user" data-bs-toggle="dropdown" aria-expanded="false" role="button">
                         <div class="topbar-avatar">{{ $userInitial }}</div>
                         <span class="topbar-username">{{ $userName }}</span>
-                        <i class="bi bi-chevron-down" style="font-size:10px;color:var(--text-muted)"></i>
+                        <i class="bi bi-chevron-down" style="font-size:10px;color:var(--text-muted);margin-left:4px"></i>
                     </div>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li class="dropdown-user-info">
@@ -942,15 +1233,56 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-// Close sidebar on outside click (mobile)
-document.addEventListener('click', function(e) {
-    const sidebar = document.getElementById('sidebar');
-    if (window.innerWidth <= 768 &&
-        sidebar.classList.contains('open') &&
-        !sidebar.contains(e.target)) {
-        sidebar.classList.remove('open');
+(function () {
+    const sidebar  = document.getElementById('sidebar');
+    const overlay  = document.getElementById('sidebarOverlay');
+    const toggleBtn = document.getElementById('sidebarToggleBtn');
+    const closeBtn  = document.getElementById('sidebarCloseBtn');
+
+    function openSidebar() {
+        sidebar.classList.add('open');
+        overlay.classList.add('show');
+        document.body.style.overflow = 'hidden'; // prevent scroll behind overlay
     }
-});
+
+    function closeSidebar() {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    // Hamburger button
+    toggleBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (sidebar.classList.contains('open')) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
+    });
+
+    // Close button inside sidebar
+    closeBtn.addEventListener('click', closeSidebar);
+
+    // Clicking overlay closes sidebar
+    overlay.addEventListener('click', closeSidebar);
+
+    // Close sidebar when a nav link is clicked (mobile navigation)
+    document.querySelectorAll('.nav-item').forEach(function (item) {
+        item.addEventListener('click', function () {
+            if (window.innerWidth <= 768) {
+                closeSidebar();
+            }
+        });
+    });
+
+    // On resize to desktop, reset mobile state
+    window.addEventListener('resize', function () {
+        if (window.innerWidth > 768) {
+            closeSidebar();
+        }
+    });
+})();
 </script>
 
 @stack('scripts')

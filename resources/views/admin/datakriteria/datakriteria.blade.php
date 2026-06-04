@@ -23,6 +23,84 @@
 .total-bobot-fill.ok   { background: linear-gradient(90deg,#1A7A4A,#2ECC71); }
 .total-bobot-fill.warn { background: linear-gradient(90deg,#D4891A,#F5A623); }
 .total-bobot-fill.over { background: linear-gradient(90deg,#C0392B,#E74C3C); }
+
+/* ================================================================
+   RESPONSIVE — Tablet (768px – 1024px)
+================================================================ */
+@media (max-width: 1024px) {
+    .stat-card-value { font-size: 20px; }
+    .pln-table { font-size: 12px; }
+    .pln-table th,
+    .pln-table td { padding: 10px 12px; }
+}
+
+/* ================================================================
+   RESPONSIVE — Mobile (<= 768px)
+================================================================ */
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .page-header h1 { font-size: 18px; }
+    
+    .row { --bs-gutter-x: 0.75rem; }
+    
+    .stat-card { padding: 14px; }
+    .stat-card-value { font-size: 18px; }
+    .stat-card-label { font-size: 10px; }
+    
+    .pln-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .pln-table { font-size: 11px; }
+    .pln-table th,
+    .pln-table td {
+        padding: 8px 10px;
+        white-space: nowrap;
+    }
+    
+    .bobot-bar-wrap { gap: 6px; }
+    .bobot-val { font-size: 11px; }
+}
+
+/* ================================================================
+   RESPONSIVE — Small Mobile (<= 576px)
+================================================================ */
+@media (max-width: 576px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .page-header h1 { font-size: 16px; }
+    .page-header a { width: 100%; }
+    
+    .stat-card { padding: 12px; }
+    .stat-card-value { font-size: 16px; }
+    
+    .pln-table { font-size: 10px; }
+    .pln-table th,
+    .pln-table td { padding: 6px 8px; }
+    
+    .badge-neutral { font-size: 10px; }
+}
+
+/* ================================================================
+   RESPONSIVE — Very Small (<= 400px)
+================================================================ */
+@media (max-width: 400px) {
+    .page-header h1 { font-size: 14px; }
+    .stat-card { padding: 10px; }
+    .stat-card-value { font-size: 14px; }
+    .pln-table { font-size: 9px; }
+    .pln-table th,
+    .pln-table td { padding: 5px 6px; }
+}
 </style>
 
 {{-- LOADING --}}
@@ -39,10 +117,12 @@
         <h1>Data Kriteria</h1>
         <p>Kelola kriteria dan bobot untuk perhitungan SAW</p>
     </div>
+    @permission('kriteria:create')
     <a href="/datakriteria/create" class="btn-pln">
         <i class="bi bi-plus-lg"></i>
         Tambah Kriteria
     </a>
+    @endpermission
 </div>
 
 {{-- ALERT --}}
@@ -176,11 +256,14 @@
                     </td>
                     <td style="text-align:right">
                         <div style="display:flex;gap:6px;justify-content:flex-end">
+                            @permission('kriteria:edit')
                             <a href="/datakriteria/edit/{{ $k->id }}"
                                class="btn-pln-ghost" style="padding:5px 10px;font-size:12px"
                                title="Edit">
                                 <i class="bi bi-pencil"></i>
                             </a>
+                            @endpermission
+                            @permission('kriteria:delete')
                             <form action="/datakriteria/delete/{{ $k->id }}"
                                   method="POST" style="display:inline"
                                   onsubmit="return confirm('Yakin hapus kriteria \'{{ $k->nama }}\'?')">
@@ -191,6 +274,7 @@
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </form>
+                            @endpermission
                         </div>
                     </td>
                 </tr>

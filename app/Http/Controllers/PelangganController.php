@@ -68,12 +68,13 @@ class PelangganController extends Controller
         $rptagMin = $request->query('rptag_min', '');
         $rptagMax = $request->query('rptag_max', '');
         $lembar = $request->query('lembar', '');
+        $petugasId = $request->query('petugas_id', '');
         $perPage = $request->query('per_page', 25);
 
         // ────────────────────────────────────────────────────────────────
         // Build query
         // ────────────────────────────────────────────────────────────────
-        $query = Pelanggan::query();
+        $query = Pelanggan::with('petugas');
 
         // Search
         if (!empty($search)) {
@@ -95,6 +96,11 @@ class PelangganController extends Controller
             $query->byLembar($lembar);
         }
 
+        // Filter Petugas
+        if (!empty($petugasId)) {
+            $query->where('petugas_id', $petugasId);
+        }
+
         // Sort
         $query->orderByDynamic($sortBy);
 
@@ -114,6 +120,8 @@ class PelangganController extends Controller
         // ────────────────────────────────────────────────────────────────
        $importLogs = collect();
 
+       $petugasList = \App\Models\Petugas::all();
+
         return view('staff.datapelanggan.datapelanggan', [
             'activeTab' => 'data',
             'pelanggan' => $pelanggan,
@@ -129,6 +137,8 @@ class PelangganController extends Controller
             'totalDaya' => $totalDaya,
             'totalRptag' => $totalRptag,
             'lembars' => $lembars,
+            'petugasList' => $petugasList,
+            'petugasId' => $petugasId,
             'importLogs' => $importLogs,
             'preview' => [],
             'errorList' => [],
@@ -139,81 +149,98 @@ class PelangganController extends Controller
     /**
      * Tampilkan tab import (upload & preview)
      */
-    private function showImportTab()
-    {
-        return view('staff.datapelanggan.datapelanggan', [
-            'activeTab' => 'import',
-            'preview' => Session::get('import_preview', []),
-            'errorList' => Session::get('import_errors', []),
-            'stats' => Session::get('import_stats', [
-                'total' => 0,
-                'valid' => 0,
-                'error' => 0,
-                'error_rows' => 0,
-            ]),
-            'fatal' => Session::get('import_fatal', null),
-            'pelanggan' => [],
-            'search' => '',
-            'sortBy' => 'newest',
-            'dayaMin' => '',
-            'dayaMax' => '',
-            'rptagMin' => '',
-            'rptagMax' => '',
-            'lembar' => '',
-            'perPage' => 25,
-            'totalPelanggan' => 0,
-            'totalDaya' => 0,
-            'totalRptag' => 0,
-            'lembars' => [],
-            'importLogs' => [],
-        ]);
-    }
+   private function showImportTab()
+{
+    $petugasList = \App\Models\Petugas::all();
+
+    return view('staff.datapelanggan.datapelanggan', [
+        'activeTab' => 'import',
+
+        'preview' => Session::get('import_preview', []),
+        'errorList' => Session::get('import_errors', []),
+
+        'stats' => Session::get('import_stats', [
+            'total' => 0,
+            'valid' => 0,
+            'error' => 0,
+            'error_rows' => 0,
+        ]),
+
+        'fatal' => Session::get('import_fatal', null),
+
+        'pelanggan' => [],
+        'search' => '',
+        'sortBy' => 'newest',
+        'dayaMin' => '',
+        'dayaMax' => '',
+        'rptagMin' => '',
+        'rptagMax' => '',
+        'lembar' => '',
+        'perPage' => 25,
+
+        'totalPelanggan' => 0,
+        'totalDaya' => 0,
+        'totalRptag' => 0,
+
+        'lembars' => [],
+        'importLogs' => [],
+
+        'petugasList' => $petugasList,
+        'petugasId' => '',
+    ]);
+}
 
     /**
      * Tampilkan tab error import
      */
     private function showErrorTab(Request $request)
-    {
-        $page = $request->query('page', 1);
-        $perPage = 20;
+{
+    $page = $request->query('page', 1);
+    $perPage = 20;
 
-        $errorLogs = DB::table('import_errors')
-            ->join('import_logs', 'import_errors.import_log_id', '=', 'import_logs.id')
-            ->select(
-                'import_errors.id',
-                'import_errors.row_number',
-                'import_errors.row_data',
-                'import_errors.error_message',
-                'import_errors.error_type',
-                'import_logs.filename',
-                'import_logs.import_date',
-                'import_errors.created_at'
-            )
-            ->orderBy('import_errors.created_at', 'desc')
-            ->paginate($perPage, ['*'], 'error_page', $page);
+    $errorLogs = DB::table('import_errors')
+        ->join('import_logs', 'import_errors.import_log_id', '=', 'import_logs.id')
+        ->select(
+            'import_errors.id',
+            'import_errors.row_number',
+            'import_errors.row_data',
+            'import_errors.error_message',
+            'import_errors.error_type',
+            'import_logs.filename',
+            'import_logs.import_date',
+            'import_errors.created_at'
+        )
+        ->orderBy('import_errors.created_at', 'desc')
+        ->paginate($perPage, ['*'], 'error_page', $page);
 
-        return view('staff.datapelanggan.datapelanggan', [
-            'activeTab' => 'errors',
-            'errorLogs' => $errorLogs,
-            'preview' => [],
-            'errorList' => [],
-            'stats' => [],
-            'pelanggan' => [],
-            'search' => '',
-            'sortBy' => 'newest',
-            'dayaMin' => '',
-            'dayaMax' => '',
-            'rptagMin' => '',
-            'rptagMax' => '',
-            'lembar' => '',
-            'perPage' => 25,
-            'totalPelanggan' => 0,
-            'totalDaya' => 0,
-            'totalRptag' => 0,
-            'lembars' => [],
-            'importLogs' => [],
-        ]);
-    }
+    $petugasList = \App\Models\Petugas::all();
+
+    return view('staff.datapelanggan.datapelanggan', [
+        'activeTab' => 'errors',
+        'errorLogs' => $errorLogs,
+        'preview' => [],
+        'errorList' => [],
+        'stats' => [],
+        'pelanggan' => [],
+        'search' => '',
+        'sortBy' => 'newest',
+        'dayaMin' => '',
+        'dayaMax' => '',
+        'rptagMin' => '',
+        'rptagMax' => '',
+        'lembar' => '',
+        'perPage' => 25,
+        'totalPelanggan' => 0,
+        'totalDaya' => 0,
+        'totalRptag' => 0,
+        'lembars' => [],
+        'importLogs' => [],
+
+        // Tambahkan ini
+        'petugasList' => $petugasList,
+        'petugasId' => '',
+    ]);
+}
 
     /**
      * Proses upload CSV

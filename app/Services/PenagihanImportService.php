@@ -8,82 +8,64 @@ use Illuminate\Support\Facades\Log;
 /**
  * PenagihanImportService
  *
- * Handles CSV parsing, row-level validation, and batch database insert
- * for penagihan data based on PLN format.
+ * Membaca file CSV hasil pembayaran PLN.
+ * Hanya membaca 2 kolom:
+ *   - Kolom B (index 1) = TglBuku  → format YYYYMMDD, contoh: 20260302
+ *   - Kolom D (index 3) = Idpel    → contoh: 141000020529
+ *
+ * Yang terjadi saat import:
+ *   1. Cari pelanggan berdasarkan Idpel
+ *   2. Update pelanggan.status_penagihan = 'lunas'
+ *   3. Insert/update tabel penagihan (updateOrInsert)
  */
 class PenagihanImportService
 {
-    /**
-     * CSV Column mapping based on user format:
-     * A = UNIT
-     * B = IDPEL
-     * C = NAMA
-     * D = TARIF
-     * E = DAYA
-     * F = LEMBAR
-     * G = GARDU
-     * H = ALAMAT
-     * I = NO SURAT
-     * J = RP TAG
-     * K = TEXT RP TAG
-     * L = TERBILANG
-     * M = BULAN
-     * N = RBM
-     * O = LNS
-     */
-    private const COLUMNS = [
-        'unit'         => 0,  // A
-        'idpel'        => 1,  // B
-        'nama'         => 2,  // C
-        'tarif'        => 3,  // D
-        'daya'         => 4,  // E
-        'lembar'       => 5,  // F
-        'gardu'        => 6,  // G
-        'alamat'       => 7,  // H
-        'nomor_surat'  => 8,  // I
-        'rptag'        => 9,  // J
-        'text_rptag'   => 10, // K
-        'terbilang'    => 11, // L
-        'bulan'        => 12, // M
-        'rbm'          => 13, // N
-        'lns'          => 14, // O
-    ];
+    // Mapping kolom CSV (index berbasis 0)
+    private const COL_TGLBUKU = 1; // Kolom B
+    private const COL_IDPEL   = 3; // Kolom D
 
     /**
-     * Parse a CSV file and return structured result.
+     * Parse CSV dan kembalikan hasil terstruktur untuk preview.
+     *
+     * @param  string $filePath  Path absolut ke file CSV
+     * @return array{preview: array, valid: array, errors: array, stats: array, fatal: string|null}
      */
     public function processFile(string $filePath): array
     {
-        $preview = [];
-        $valid   = [];
-        $errors  = [];
-
         $handle = fopen($filePath, 'r');
         if (! $handle) {
             return $this->emptyResult('File tidak bisa dibuka.');
         }
 
-        $delimiter = ';';
+        // Deteksi delimiter otomatis (titik koma atau koma)
+        $firstLine = fgets($handle);
+        rewind($handle);
+        $delimiter = substr_count($firstLine, ';') >= substr_count($firstLine, ',') ? ';' : ',';
 
-        // Skip header
-        $rawHeader = fgetcsv($handle, 0, $delimiter);
-        if (! $rawHeader) {
+        // Skip baris header
+        $header = fgetcsv($handle, 0, $delimiter);
+        if (! $header) {
             fclose($handle);
-            return $this->emptyResult('File CSV kosong.');
+            return $this->emptyResult('File CSV kosong atau tidak valid.');
         }
 
-        // Fetch lookup data
-        $existingPelanggan = DB::table('pelanggan')->pluck('idpel')->flip()->all();
-        $petugasList = DB::table('petugas')->select('id', 'kode_petugas')->get()->keyBy('kode_petugas')->toArray();
-        $rankingList = DB::table('ranking')->select('idpel', 'ranking', 'nilai_akhir')->get()->keyBy('idpel')->toArray();
+        // Ambil semua idpel yang ada di tabel pelanggan sekali saja
+        // format: [ '141000020529' => true, ... ]
+        $pelangganAda = DB::table('pelanggan')
+            ->pluck('idpel')
+            ->flip()
+            ->all();
 
-        $seenInBatch = [];
-        $rowNumber = 1;
+        $preview    = [];
+        $valid      = [];
+        $errors     = [];
+        $seenInFile = []; // cegah duplikat dalam satu file
+        $rowNumber  = 1;  // header sudah dilewati
 
         while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
             $rowNumber++;
 
-            // Skip completely blank rows
+            // Lewati baris yang sepenuhnya kosong
             if (count(array_filter($row, fn($v) => trim($v) !== '')) === 0) {
                 continue;
             }
@@ -91,42 +73,26 @@ class PenagihanImportService
             $data      = $this->extractRow($row);
             $rowErrors = [];
 
-            // 1. Validation: IDPEL
+            // ── Validasi TglBuku ─────────────────────────────────────────────
+            if ($data['tgl_buku'] === '') {
+    $rowErrors[] = 'TglBuku kosong';
+} elseif (! $this->parseTglBuku($data['tgl_buku'])) {
+    $rowErrors[] = "TglBuku '{$data['tgl_buku']}' tidak valid";
+}
+
+            // ── Validasi Idpel ───────────────────────────────────────────────
             if ($data['idpel'] === '') {
-                $rowErrors[] = 'IDPEL kosong';
-            } elseif (!isset($existingPelanggan[$data['idpel']])) {
-                $rowErrors[] = "IDPEL '{$data['idpel']}' tidak ditemukan di tabel pelanggan";
+                $rowErrors[] = 'Idpel kosong';
+            } elseif (! isset($pelangganAda[$data['idpel']])) {
+                $rowErrors[] = "Idpel '{$data['idpel']}' tidak ditemukan di tabel pelanggan";
             }
 
-            // 2. Validation: Petugas (UNIT)
-            $petugasId = null;
-            if ($data['unit'] === '') {
-                $rowErrors[] = 'UNIT kosong';
-            } elseif (!isset($petugasList[$data['unit']])) {
-                $rowErrors[] = "Kode Petugas '{$data['unit']}' tidak ditemukan";
-            } else {
-                $petugasId = $petugasList[$data['unit']]->id;
-            }
-            $data['petugas_id'] = $petugasId;
-
-            // 3. Validation: Ranking
-            if ($data['idpel'] !== '') {
-                if (!isset($rankingList[$data['idpel']])) {
-                    $rowErrors[] = "Data ranking untuk IDPEL '{$data['idpel']}' tidak ditemukan";
-                    $data['ranking_awal'] = null;
-                    $data['nilai_spk'] = null;
-                } else {
-                    $data['ranking_awal'] = $rankingList[$data['idpel']]->ranking;
-                    $data['nilai_spk']    = $rankingList[$data['idpel']]->nilai_akhir;
-                }
+            // ── Cegah duplikat dalam file ────────────────────────────────────
+            if ($data['idpel'] !== '' && isset($seenInFile[$data['idpel']])) {
+                $rowErrors[] = "Idpel '{$data['idpel']}' duplikat dalam file ini";
             }
 
-            // 4. Duplicate validation in file
-            $uniqueKey = $data['idpel'] . '_' . $data['bulan'] . '_' . $data['nomor_surat'];
-            if (isset($seenInBatch[$uniqueKey])) {
-                $rowErrors[] = "Data duplikat dalam file (IDPEL + Bulan + No Surat)";
-            }
-
+            // ── Kumpulkan hasil ──────────────────────────────────────────────
             $preview[] = array_merge($data, [
                 '_row'    => $rowNumber,
                 '_status' => empty($rowErrors) ? 'valid' : 'error',
@@ -134,8 +100,8 @@ class PenagihanImportService
             ]);
 
             if (empty($rowErrors)) {
-                $valid[] = $data;
-                $seenInBatch[$uniqueKey] = true;
+                $valid[]                    = $data;
+                $seenInFile[$data['idpel']] = true;
             } else {
                 foreach ($rowErrors as $msg) {
                     $errors[] = "Baris {$rowNumber} – {$msg}";
@@ -155,11 +121,20 @@ class PenagihanImportService
                 'error'      => count($errors),
                 'error_rows' => count(array_filter($preview, fn($r) => $r['_status'] === 'error')),
             ],
+            'fatal'   => null,
         ];
     }
 
     /**
-     * Batch-insert valid rows into the database.
+     * Simpan baris valid ke database.
+     *
+     * Untuk setiap baris:
+     *   1. Ambil petugas_id dan kode_petugas dari tabel pelanggan
+     *   2. updateOrInsert ke tabel penagihan (idempoten — aman dijalankan ulang)
+     *   3. Update pelanggan.status_penagihan = 'lunas'
+     *
+     * @param  array $validRows  Hasil dari processFile()['valid']
+     * @return int   Jumlah baris yang berhasil diproses
      */
     public function saveToDatabase(array $validRows): int
     {
@@ -167,51 +142,70 @@ class PenagihanImportService
             return 0;
         }
 
-        $now    = now();
-        $insert = [];
         $count = 0;
+        $now   = now();
 
         DB::beginTransaction();
+
         try {
             foreach ($validRows as $r) {
-                // Check for existing DB duplicate
-                $exists = DB::table('penagihan')
+
+                // Ambil data petugas dari pelanggan
+                $pelanggan = DB::table('pelanggan')
                     ->where('idpel', $r['idpel'])
-                    ->where('bulan', $r['bulan'])
-                    ->where('nomor_surat', $r['nomor_surat'])
-                    ->exists();
+                    ->select('idpel', 'petugas_id', 'kode_petugas')
+                    ->first();
 
-                if (!$exists) {
-                    $insert[] = [
-                        'idpel'         => $r['idpel'],
-                        'petugas_id'    => $r['petugas_id'],
-                        'bulan'         => $r['bulan'],
-                        'status'        => $r['status'],
-                        'jumlah_tagih'  => $r['jumlah_bayar'],
-                        'keterangan'    => '',
-                        'tgl_tagih'     => $r['tanggal_tagih'],
-                        'created_at'    => $now,
-                        'updated_at'    => $now,
-                    ];
-
-                    // Update pelanggan status
-                    DB::table('pelanggan')
-                        ->where('idpel', $r['idpel'])
-                        ->update(['status_penagihan' => $r['status']]);
-
-                    $count++;
+                if (! $pelanggan) {
+                    // Seharusnya tidak terjadi karena sudah divalidasi,
+                    // tapi tetap kita skip dengan aman
+                    Log::warning("[PENAGIHAN] Idpel {$r['idpel']} tidak ditemukan saat save, dilewati.");
+                    continue;
                 }
-            }
 
-            foreach (array_chunk($insert, 500) as $chunk) {
-                DB::table('penagihan')->insert($chunk);
+                // Bulan diambil dari TglBuku YYYYMMDD → format 'YYYY-MM'
+                // Contoh: '20260302' → '2026-03'
+                $bulan = substr($r['tgl_buku'], 0, 4) . '-' . substr($r['tgl_buku'], 4, 2);
+
+                // Insert atau update baris penagihan
+                // Unique key: idpel + bulan (satu pelanggan satu kali per bulan)
+              DB::table('penagihan')->updateOrInsert(
+[
+    'idpel' => $r['idpel'],
+    'bulan' => $bulan,
+],
+[
+    'kode_petugas' => $pelanggan->kode_petugas,
+    'petugas_id'   => $pelanggan->petugas_id,
+    'status'       => 'lunas',
+    'updated_at'   => $now,
+    'created_at'   => $now,
+]
+);
+
+                // Tandai pelanggan sebagai lunas
+                DB::table('pelanggan')
+                    ->where('idpel', $r['idpel'])
+                    ->update([
+                        'status_penagihan' => 'berhasil',
+                        'updated_at'       => $now,
+                    ]);
+
+                $count++;
             }
 
             DB::commit();
+
+            Log::info('[PENAGIHAN] Import selesai.', ['total' => $count]);
+
             return $count;
-        } catch (\Exception $e) {
+
+        } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Gagal save import penagihan: ' . $e->getMessage());
+            Log::error('[PENAGIHAN] Import GAGAL: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
             throw $e;
         }
     }
@@ -220,54 +214,77 @@ class PenagihanImportService
     // Private helpers
     // ────────────────────────────────────────────────────────────────────────
 
+    /**
+     * Ekstrak kolom B (TglBuku) dan D (Idpel) dari satu baris CSV.
+     *
+     * Kembalikan:
+     *   tgl_buku  — nilai mentah dari kolom B (untuk pesan error & ambil bulan)
+     *   tgl_tagih — string 'Y-m-d' atau null jika format tidak valid
+     *   idpel     — string angka bersih
+     */
     private function extractRow(array $row): array
     {
-        $get = function(int $index) use ($row) {
-            return isset($row[$index]) ? trim($row[$index]) : '';
-        };
+        $get = fn(int $i) => isset($row[$i]) ? trim($row[$i]) : '';
 
-        // Normalisasi IDPEL: Hilangkan format scientific
-        $rawIdpel = $get(self::COLUMNS['idpel']);
-        $idpel = preg_replace('/[^0-9]/', '', $rawIdpel);
-        if (stripos($rawIdpel, 'E') !== false) {
-            $idpel = number_format((float)$rawIdpel, 0, '', '');
-        }
+        // ── Kolom B: TglBuku (YYYYMMDD) ─────────────────────────────────────
+        $tglBuku  = $get(self::COL_TGLBUKU);
+        $tglTagih = $this->parseTglBuku($tglBuku);
 
-        // Normalisasi nominal
-        $rawNominal = $get(self::COLUMNS['rptag']);
-        $jumlahBayar = (int) str_replace(['.', ','], '', $rawNominal);
+        // ── Kolom D: Idpel ───────────────────────────────────────────────────
+        $rawIdpel = $get(self::COL_IDPEL);
+        $idpel    = $this->normalizeIdpel($rawIdpel);
 
-        // Status dan tanggal tagih
-        // Jika LNS tgl ada isi -> jumlah bayar diisi, status = sudah
-        // Sesuai prompt user: jumlah_bayar > 0 -> status = sudah, jumlah_bayar <= 0 -> status = belum
-        $lns = $get(self::COLUMNS['lns']);
-        $status = 'belum';
-        $tanggalTagih = null;
-
-        if ($jumlahBayar > 0 && !empty($lns)) {
-            $status = 'sudah';
-            $tanggalTagih = now()->format('Y-m-d');
-        } elseif ($jumlahBayar <= 0) {
-            $status = 'belum';
-            $jumlahBayar = 0;
-            $tanggalTagih = null;
-        }
-
-        return [
-            'unit'          => $get(self::COLUMNS['unit']),
-            'idpel'         => $idpel,
-            'nama'          => $get(self::COLUMNS['nama']),
-            'daya'          => $get(self::COLUMNS['daya']),
-            'lembar'        => $get(self::COLUMNS['lembar']),
-            'nomor_surat'   => $get(self::COLUMNS['nomor_surat']),
-            'jumlah_bayar'  => $jumlahBayar,
-            'bulan'         => $get(self::COLUMNS['bulan']),
-            'lns'           => $lns,
-            'status'        => $status,
-            'tanggal_tagih' => $tanggalTagih,
-        ];
+   return [
+    'tgl_buku' => $tglBuku,
+    'idpel'    => $idpel,
+];
     }
 
+    /**
+     * Parse TglBuku format YYYYMMDD → string 'Y-m-d'.
+     * Contoh: '20260302' → '2026-03-02'
+     * Kembalikan null jika format tidak valid.
+     */
+    private function parseTglBuku(string $raw): ?string
+    {
+        // Harus tepat 8 digit angka
+        if (! preg_match('/^\d{8}$/', $raw)) {
+            return null;
+        }
+
+        $year  = substr($raw, 0, 4);
+        $month = substr($raw, 4, 2);
+        $day   = substr($raw, 6, 2);
+
+        // Validasi kalender (cegah tanggal seperti 20261332)
+        if (! checkdate((int) $month, (int) $day, (int) $year)) {
+            return null;
+        }
+
+        return "{$year}-{$month}-{$day}";
+    }
+
+    /**
+     * Bersihkan Idpel: hapus non-digit, tangani scientific notation Excel.
+     * Contoh: '1.41E+11' → '141000000000'
+     */
+    private function normalizeIdpel(string $raw): string
+    {
+        if ($raw === '') {
+            return '';
+        }
+
+        // Excel kadang mengekspor angka panjang sebagai scientific notation
+        if (stripos($raw, 'E') !== false) {
+            return number_format((float) $raw, 0, '', '');
+        }
+
+        return preg_replace('/[^0-9]/', '', $raw);
+    }
+
+    /**
+     * Kembalikan struktur kosong dengan pesan error fatal.
+     */
     private function emptyResult(string $fatalError = ''): array
     {
         return [
@@ -278,7 +295,4 @@ class PenagihanImportService
             'fatal'   => $fatalError,
         ];
     }
-    
 }
-
-  

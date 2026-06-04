@@ -24,26 +24,32 @@ class SupervisorDashboardController extends Controller
             ->count();
 
         // ================================================================
-        // 2. TOTAL PELANGGAN TERTAGIH (COUNT status = 'sudah' bulan ini)
+        // 2. TOTAL PELANGGAN TERTAGIH (COUNT status = 'lunas' bulan ini)
+        //    ✅ Diperbaiki: 'sudah' → 'lunas'
         // ================================================================
         $totalPelangganTertagih = DB::table('penagihan')
             ->where('bulan', $bulan)
-            ->where('status', 'sudah')
+            ->where('status', 'lunas')
             ->count();
 
         // ================================================================
-        // 3. TOTAL NOMINAL TERTAGIH (SUM jumlah_bayar status = 'sudah')
+        // 3. TOTAL NOMINAL TERTAGIH
+        //    ✅ Diperbaiki: tidak lagi sum(jumlah_bayar) yang banyak NULL
+        //       Sekarang sum(pelanggan.rptag) untuk baris yang status='lunas'
         // ================================================================
         $totalNominalTertagih = DB::table('penagihan')
-            ->where('bulan', $bulan)
-            ->where('status', 'sudah')
-            ->sum('jumlah_bayar') ?? 0;
+            ->join('pelanggan', 'pelanggan.idpel', '=', 'penagihan.idpel')
+            ->where('penagihan.bulan', $bulan)
+            ->where('penagihan.status', 'lunas')
+            ->sum('pelanggan.rptag') ?? 0;
 
         // ================================================================
         // 4. PERSENTASE KINERJA PENAGIHAN
+        //    ✅ Pembilang sudah benar karena $totalPelangganTertagih pakai 'lunas'
         // ================================================================
-        $totalPenagihan = DB::table('penagihan')
-            ->where('bulan', $bulan)
+        $totalPenagihan = DB::table('pelanggan')
+            ->join('petugas', 'petugas.kode_petugas', '=', 'pelanggan.kode_petugas')
+            ->where('petugas.status', 'aktif')
             ->count();
 
         $persentaseKinerja = 0;
@@ -53,22 +59,25 @@ class SupervisorDashboardController extends Controller
 
         // ================================================================
         // 5. TOP 10 PETUGAS TERBAIK (berdasarkan jumlah pelanggan tertagih)
+        //    ✅ Diperbaiki: status "sudah" → "lunas", jumlah_bayar → pelanggan.rptag
         // ================================================================
         $topPetugas = DB::table('petugas')
+            ->leftJoin('pelanggan', 'pelanggan.kode_petugas', '=', 'petugas.kode_petugas')
             ->leftJoin('penagihan', function($join) use ($bulan) {
-                $join->on('penagihan.petugas_id', '=', 'petugas.id')
+                $join->on('penagihan.idpel', '=', 'pelanggan.idpel')
                      ->where('penagihan.bulan', $bulan);
             })
-            ->leftJoin('pelanggan', 'pelanggan.idpel', '=', 'penagihan.idpel')
             ->where('petugas.status', 'aktif')
             ->select(
                 'petugas.id',
                 'petugas.nama',
                 'petugas.wilayah',
                 'petugas.kode_petugas',
-                DB::raw('COUNT(DISTINCT CASE WHEN penagihan.status = "sudah" THEN penagihan.idpel END) as jumlah_tagihan'),
-                DB::raw('COALESCE(SUM(CASE WHEN penagihan.status = "sudah" THEN penagihan.jumlah_bayar ELSE 0 END), 0) as total_tertagih'),
-                DB::raw('COUNT(DISTINCT CASE WHEN penagihan.status = "belum" THEN penagihan.idpel END) as jumlah_belum'),
+                // ✅ status "lunas" bukan "sudah"
+                DB::raw('COUNT(DISTINCT CASE WHEN penagihan.status = "lunas" THEN pelanggan.idpel END) as jumlah_tagihan'),
+                // ✅ sum pelanggan.rptag bukan penagihan.jumlah_bayar
+                DB::raw('COALESCE(SUM(CASE WHEN penagihan.status = "lunas" THEN pelanggan.rptag ELSE 0 END), 0) as total_tertagih'),
+                DB::raw('COUNT(DISTINCT pelanggan.idpel) - COUNT(DISTINCT CASE WHEN penagihan.status = "lunas" THEN pelanggan.idpel END) as jumlah_belum'),
                 DB::raw('COALESCE(SUM(pelanggan.rptag), 0) as total_target')
             )
             ->groupBy('petugas.id', 'petugas.nama', 'petugas.wilayah', 'petugas.kode_petugas')
@@ -85,10 +94,12 @@ class SupervisorDashboardController extends Controller
 
         // ================================================================
         // 6. RANKING KEBERHASILAN PENAGIHAN (ALL PETUGAS)
+        //    ✅ Diperbaiki: status "sudah" → "lunas"
         // ================================================================
         $rankingPetugas = DB::table('petugas')
+            ->leftJoin('pelanggan', 'pelanggan.kode_petugas', '=', 'petugas.kode_petugas')
             ->leftJoin('penagihan', function($join) use ($bulan) {
-                $join->on('penagihan.petugas_id', '=', 'petugas.id')
+                $join->on('penagihan.idpel', '=', 'pelanggan.idpel')
                      ->where('penagihan.bulan', $bulan);
             })
             ->where('petugas.status', 'aktif')
@@ -97,9 +108,10 @@ class SupervisorDashboardController extends Controller
                 'petugas.nama',
                 'petugas.wilayah',
                 'petugas.kode_petugas',
-                DB::raw('COUNT(DISTINCT CASE WHEN penagihan.status = "sudah" THEN penagihan.idpel END) as sudah_tagih'),
-                DB::raw('COUNT(DISTINCT CASE WHEN penagihan.status = "belum" THEN penagihan.idpel END) as belum_tagih'),
-                DB::raw('COUNT(DISTINCT penagihan.idpel) as total_ditagih')
+                // ✅ status "lunas" bukan "sudah"
+                DB::raw('COUNT(DISTINCT CASE WHEN penagihan.status = "lunas" THEN pelanggan.idpel END) as sudah_tagih'),
+                DB::raw('COUNT(DISTINCT pelanggan.idpel) - COUNT(DISTINCT CASE WHEN penagihan.status = "lunas" THEN pelanggan.idpel END) as belum_tagih'),
+                DB::raw('COUNT(DISTINCT pelanggan.idpel) as total_ditagih')
             )
             ->groupBy('petugas.id', 'petugas.nama', 'petugas.wilayah', 'petugas.kode_petugas')
             ->orderByDesc('sudah_tagih')
@@ -113,19 +125,22 @@ class SupervisorDashboardController extends Controller
 
         // ================================================================
         // 7. REKAP WILAYAH TERBAIK
+        //    ✅ Diperbaiki: status "sudah" → "lunas"
         // ================================================================
         $rekapWilayah = DB::table('petugas')
+            ->leftJoin('pelanggan', 'pelanggan.kode_petugas', '=', 'petugas.kode_petugas')
             ->leftJoin('penagihan', function($join) use ($bulan) {
-                $join->on('penagihan.petugas_id', '=', 'petugas.id')
+                $join->on('penagihan.idpel', '=', 'pelanggan.idpel')
                      ->where('penagihan.bulan', $bulan);
             })
             ->where('petugas.status', 'aktif')
             ->select(
                 'petugas.wilayah',
                 DB::raw('COUNT(DISTINCT petugas.id) as total_petugas'),
-                DB::raw('COUNT(DISTINCT CASE WHEN penagihan.status = "sudah" THEN penagihan.idpel END) as total_tagih'),
-                DB::raw('COUNT(DISTINCT CASE WHEN penagihan.status = "belum" THEN penagihan.idpel END) as total_belum'),
-                DB::raw('COUNT(DISTINCT penagihan.idpel) as total_ditagih')
+                // ✅ status "lunas" bukan "sudah"
+                DB::raw('COUNT(DISTINCT CASE WHEN penagihan.status = "lunas" THEN pelanggan.idpel END) as total_tagih'),
+                DB::raw('COUNT(DISTINCT pelanggan.idpel) - COUNT(DISTINCT CASE WHEN penagihan.status = "lunas" THEN pelanggan.idpel END) as total_belum'),
+                DB::raw('COUNT(DISTINCT pelanggan.idpel) as total_ditagih')
             )
             ->groupBy('petugas.wilayah')
             ->orderByDesc('total_tagih')
@@ -139,11 +154,12 @@ class SupervisorDashboardController extends Controller
 
         // ================================================================
         // 8. CHART DATA - Status Penagihan
+        //    ✅ Diperbaiki: 'sudah' → 'lunas'
         // ================================================================
         $statusChart = [
             'sudah' => DB::table('penagihan')
                 ->where('bulan', $bulan)
-                ->where('status', 'sudah')
+                ->where('status', 'lunas')
                 ->count(),
             'belum' => DB::table('penagihan')
                 ->where('bulan', $bulan)

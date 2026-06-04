@@ -12,22 +12,23 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 32px;
+        margin-bottom: 12px; /* dikurangi dari 32px */
         flex-wrap: wrap;
-        gap: 16px;
+        gap: 12px;
     }
 
     .dashboard-header h1 {
-        font-size: 28px;
+        font-size: 22px;
         font-weight: 700;
         color: var(--text-primary);
         margin: 0;
+        line-height: 1.3;
     }
 
     .dashboard-subtitle {
         font-size: 13px;
         color: var(--text-muted);
-        margin-top: 4px;
+        margin-top: 2px; /* dikurangi dari 4px */
     }
 
     .dashboard-header-actions {
@@ -65,17 +66,54 @@
         background: var(--pln-blue-light);
     }
 
+    /* ================================================================
+       FILTER + REFRESH SEJAJAR
+    ================================================================ */
+    .filter-refresh-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--bg-body);
+        padding: 10px 16px;
+        border-radius: var(--radius-lg);
+        margin-bottom: 16px; /* dikurangi dari 24px */
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .filter-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+    }
+
+    .filter-input {
+        padding: 6px 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        background: white;
+        font-family: var(--font-sans);
+    }
+
     /* KPI CARDS */
     .kpi-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 16px;
-        margin-bottom: 32px;
+        gap: 14px;
+        margin-bottom: 20px; /* dikurangi dari 32px */
     }
 
     .kpi-card {
         background: white;
-        padding: 20px;
+        padding: 18px 20px; /* dikurangi dari 20px */
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-sm);
         transition: all var(--transition);
@@ -93,14 +131,15 @@
         color: var(--text-muted);
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        margin-bottom: 8px;
+        margin-bottom: 6px; /* dikurangi dari 8px */
     }
 
     .kpi-value {
         font-size: 28px;
         font-weight: 700;
         color: var(--text-primary);
-        margin-bottom: 4px;
+        margin-bottom: 2px; /* dikurangi dari 4px */
+        line-height: 1.2;
     }
 
     .kpi-detail {
@@ -111,24 +150,24 @@
     /* PROGRESS BAR */
     .progress-section {
         background: white;
-        padding: 24px;
+        padding: 20px 24px; /* dikurangi dari 24px */
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-sm);
-        margin-bottom: 32px;
+        margin-bottom: 20px; /* dikurangi dari 32px */
     }
 
     .progress-section-title {
         font-size: 14px;
         font-weight: 600;
         color: var(--text-primary);
-        margin-bottom: 16px;
+        margin-bottom: 14px; /* dikurangi dari 16px */
     }
 
     .progress-stats {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         gap: 12px;
-        margin-bottom: 16px;
+        margin-bottom: 14px; /* dikurangi dari 16px */
     }
 
     .progress-stat {
@@ -172,7 +211,7 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 16px;
-        margin-bottom: 32px;
+        margin-bottom: 20px; /* dikurangi dari 32px */
     }
 
     .chart-card {
@@ -192,17 +231,17 @@
     /* TABLE SECTIONS */
     .table-section {
         background: white;
-        padding: 24px;
+        padding: 20px 24px; /* dikurangi dari 24px */
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-sm);
-        margin-bottom: 32px;
+        margin-bottom: 20px; /* dikurangi dari 32px */
     }
 
     .table-title {
         font-size: 16px;
         font-weight: 600;
         color: var(--text-primary);
-        margin-bottom: 16px;
+        margin-bottom: 14px; /* dikurangi dari 16px */
     }
 
     .admin-table {
@@ -217,19 +256,25 @@
     }
 
     .admin-table th {
-        padding: 12px 16px;
+        padding: 10px 16px; /* dikurangi dari 12px */
         text-align: left;
-        font-weight: 600;
-        color: var(--text-secondary);
-        text-transform: uppercase;
-        font-size: 11px;
-        letter-spacing: 0.5px;
+        vertical-align: middle;
     }
 
     .admin-table td {
-        padding: 14px 16px;
+        padding: 12px 16px; /* dikurangi dari 14px */
+        vertical-align: middle;
         border-bottom: 1px solid var(--border);
-        color: var(--text-primary);
+    }
+
+    .admin-table th.text-center,
+    .admin-table td.text-center {
+        text-align: center !important;
+    }
+
+    .admin-table th.text-right,
+    .admin-table td.text-right {
+        text-align: right !important;
     }
 
     .admin-table tbody tr:hover {
@@ -273,17 +318,9 @@
         color: #C0392B;
     }
 
-    .text-right {
-        text-align: right;
-    }
-
-    .text-muted {
-        color: var(--text-muted);
-    }
-
-    .mono {
-        font-family: var(--font-mono);
-    }
+    .text-right { text-align: right; }
+    .text-muted { color: var(--text-muted); }
+    .mono { font-family: var(--font-mono); }
 
     /* EMPTY STATE */
     .empty-state {
@@ -302,82 +339,91 @@
         opacity: 0.5;
     }
 
-    .empty-state-text {
-        font-size: 14px;
-    }
+    .empty-state-text { font-size: 14px; }
 
-    /* FILTER SECTION */
-    .filter-section {
-        background: var(--bg-body);
-        padding: 16px 20px;
-        border-radius: var(--radius-lg);
-        margin-bottom: 24px;
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-
-    .filter-group {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    .filter-label {
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--text-secondary);
-        text-transform: uppercase;
-    }
-
-    .filter-input {
-        padding: 6px 12px;
-        border: 1px solid var(--border);
-        border-radius: var(--radius-md);
-        font-size: 13px;
-        background: white;
-        font-family: var(--font-sans);
+    /* ================================================================
+       RESPONSIVE
+    ================================================================ */
+    @media (max-width: 1024px) {
+        .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+        .dashboard-header h1 { font-size: 20px; }
     }
 
     @media (max-width: 768px) {
         .dashboard-header {
             flex-direction: column;
             align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .dashboard-header h1 { font-size: 18px; }
+
+        .filter-refresh-bar {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
         }
 
         .kpi-grid {
             grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
-        .charts-grid {
-            grid-template-columns: 1fr;
-        }
+        .kpi-card { padding: 14px 16px; }
+        .kpi-value { font-size: 22px; }
 
-        .admin-table {
-            font-size: 12px;
-        }
+        .charts-grid { grid-template-columns: 1fr; }
 
+        .admin-table { font-size: 12px; }
         .admin-table th,
-        .admin-table td {
-            padding: 10px 12px;
-        }
+        .admin-table td { padding: 8px 10px; }
 
-        .filter-section {
-            flex-direction: column;
-        }
+        .filter-group { width: 100%; }
+        .filter-input { width: 100%; }
 
-        .filter-group {
-            width: 100%;
+        .progress-stats {
+            grid-template-columns: 1fr;
+            gap: 8px;
         }
+    }
 
-        .filter-input {
-            width: 100%;
-        }
+    @media (max-width: 576px) {
+        .dashboard-header { margin-bottom: 10px; }
+        .dashboard-header h1 { font-size: 16px; }
+
+        .kpi-grid { gap: 10px; }
+        .kpi-card { padding: 12px; }
+        .kpi-value { font-size: 20px; }
+
+        .charts-grid { gap: 12px; }
+        .chart-card { padding: 12px; }
+        .table-section { padding: 14px 16px; }
+
+        .admin-table { font-size: 11px; }
+        .admin-table th,
+        .admin-table td { padding: 7px 8px; }
+
+        .filter-label { font-size: 11px; }
+        .filter-input { font-size: 12px; padding: 5px 10px; }
+    }
+
+    @media (max-width: 400px) {
+        .dashboard-header { margin-bottom: 8px; }
+        .dashboard-header h1 { font-size: 14px; }
+
+        .kpi-card { padding: 10px; }
+        .kpi-value { font-size: 18px; }
+
+        .admin-table { font-size: 10px; }
+        .admin-table th,
+        .admin-table td { padding: 6px 8px; }
+
+        .chart-card { padding: 10px; }
     }
 </style>
 
-<div class="container-fluid" style="padding: 24px 32px;">
+<div class="container-fluid" style="padding: 20px 32px;">
 
     <!-- ========== HEADER ========== -->
     <div class="dashboard-header">
@@ -387,27 +433,23 @@
                 Periode: <strong>{{ \Carbon\Carbon::createFromFormat('Y-m', $bulan)->translatedFormat('F Y') }}</strong>
             </p>
         </div>
+    </div>
+
+    <!-- ========== FILTER + REFRESH SEJAJAR ========== -->
+    <div class="filter-refresh-bar">
+        <div class="filter-group">
+            <span class="filter-label">Filter Bulan:</span>
+            <input type="month" class="filter-input" id="filterBulan" value="{{ $bulan }}" onchange="filterByBulan(this.value)">
+        </div>
         <div class="dashboard-header-actions">
             <button class="btn-action btn-secondary" onclick="location.reload()">
                 <i class="bi bi-arrow-clockwise"></i> Refresh
             </button>
-            <button class="btn-action" onclick="exportDashboard()">
-                <i class="bi bi-download"></i> Export
-            </button>
-        </div>
-    </div>
-
-    <!-- ========== FILTER ========== -->
-    <div class="filter-section">
-        <div class="filter-group">
-            <span class="filter-label">Filter Bulan:</span>
-            <input type="month" class="filter-input" id="filterBulan" value="{{ $bulan }}" onchange="filterByBulan(this.value)">
         </div>
     </div>
 
     <!-- ========== KPI CARDS ========== -->
     <div class="kpi-grid">
-        <!-- Total Petugas -->
         <div class="kpi-card">
             <div class="kpi-label">
                 <i class="bi bi-people" style="margin-right: 6px;"></i> Total Petugas
@@ -416,7 +458,6 @@
             <div class="kpi-detail">Petugas aktif</div>
         </div>
 
-        <!-- Total Pelanggan -->
         <div class="kpi-card">
             <div class="kpi-label">
                 <i class="bi bi-person-check" style="margin-right: 6px;"></i> Total Pelanggan
@@ -425,7 +466,6 @@
             <div class="kpi-detail">Pelanggan terdaftar</div>
         </div>
 
-        <!-- Total Tagihan -->
         <div class="kpi-card">
             <div class="kpi-label">
                 <i class="bi bi-cash-coin" style="margin-right: 6px;"></i> Target Tagihan
@@ -434,7 +474,6 @@
             <div class="kpi-detail">Total rptag</div>
         </div>
 
-        <!-- Persentase Keberhasilan -->
         <div class="kpi-card">
             <div class="kpi-label">
                 <i class="bi bi-percent" style="margin-right: 6px;"></i> Keberhasilan
@@ -472,7 +511,6 @@
 
     <!-- ========== CHARTS ========== -->
     <div class="charts-grid">
-        <!-- Pie Chart: Status Penagihan -->
         <div class="chart-card">
             <div class="chart-title">
                 <i class="bi bi-pie-chart"></i> Status Penagihan Bulan Ini
@@ -480,7 +518,6 @@
             <canvas id="statusChart" height="80"></canvas>
         </div>
 
-        <!-- Bar Chart: Top Petugas -->
         <div class="chart-card">
             <div class="chart-title">
                 <i class="bi bi-bar-chart"></i> Top 5 Petugas
@@ -488,7 +525,6 @@
             <canvas id="topPetugasChart" height="80"></canvas>
         </div>
 
-        <!-- Line Chart: Trend 6 Bulan -->
         <div class="chart-card">
             <div class="chart-title">
                 <i class="bi bi-graph-up-arrow"></i> Trend 6 Bulan Terakhir
@@ -512,7 +548,7 @@
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th style="width: 40px;">Rank</th>
+                            <th class="text-center" style="width: 40px;">Rank</th>
                             <th>Nama Petugas</th>
                             <th>Wilayah</th>
                             <th class="text-right">Jumlah Pelanggan Tertagih</th>
@@ -522,20 +558,20 @@
                     </thead>
                     <tbody>
                         @foreach($petugasTeratas as $idx => $petugas)
-                            <tr>
-                                <td>
-                                    <span class="rank-badge">{{ $idx + 1 }}</span>
-                                </td>
-                                <td>{{ $petugas->nama }}</td>
-                                <td>{{ $petugas->wilayah ?? '-' }}</td>
-                                <td class="text-right mono">{{ $petugas->jumlah_tagihan }}</td>
-                                <td class="text-right mono">Rp {{ number_format($petugas->total_tertagih, 0, ',', '.') }}</td>
-                                <td class="text-right">
-                                    <span class="badge-status {{ $petugas->persentase >= 80 ? 'badge-good' : ($petugas->persentase >= 60 ? 'badge-warning' : 'badge-danger') }}">
-                                        {{ $petugas->persentase }}%
-                                    </span>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td class="text-center">
+                                <span class="rank-badge">{{ $idx + 1 }}</span>
+                            </td>
+                            <td>{{ $petugas->nama }}</td>
+                            <td>{{ $petugas->wilayah ?? '-' }}</td>
+                            <td class="text-right mono">{{ $petugas->jumlah_tagihan }}</td>
+                            <td class="text-right mono">Rp {{ number_format($petugas->total_tertagih, 0, ',', '.') }}</td>
+                            <td class="text-right">
+                                <span class="badge-status {{ $petugas->persentase >= 80 ? 'badge-good' : ($petugas->persentase >= 60 ? 'badge-warning' : 'badge-danger') }}">
+                                    {{ $petugas->persentase }}%
+                                </span>
+                            </td>
+                        </tr>
                         @endforeach
                     </tbody>
                 </table>
@@ -615,6 +651,18 @@
 
 <script>
     // ================================================================
+    // RESPONSIVE CHART SETTINGS
+    // ================================================================
+    const isMobile = window.innerWidth <= 768;
+    const isSmallDevice = window.innerWidth <= 576;
+
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        devicePixelRatio: 2
+    };
+
+    // ================================================================
     // PIE CHART - Status Penagihan
     // ================================================================
     const statusCtx = document.getElementById('statusChart');
@@ -623,6 +671,9 @@
             sudah: {{ $statusChart['sudah'] ?? 0 }},
             belum: {{ $statusChart['belum'] ?? 0 }}
         };
+
+        statusCtx.parentElement.style.position = 'relative';
+        statusCtx.parentElement.style.height = isMobile ? '250px' : '300px';
 
         new Chart(statusCtx, {
             type: 'doughnut',
@@ -636,14 +687,13 @@
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: true,
+                ...chartOptions,
                 plugins: {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            padding: 16,
-                            font: { size: 12 },
+                            padding: isSmallDevice ? 8 : 16,
+                            font: { size: isSmallDevice ? 10 : 12 },
                             color: '#5A6A7E'
                         }
                     }
@@ -659,10 +709,13 @@
     if (topPetugasCtx) {
         const topPetugasData = @json($topPetugasChart);
 
+        topPetugasCtx.parentElement.style.position = 'relative';
+        topPetugasCtx.parentElement.style.height = isMobile ? '250px' : '300px';
+
         new Chart(topPetugasCtx, {
             type: 'bar',
             data: {
-                labels: topPetugasData.map(p => p.nama),
+                labels: topPetugasData.map(p => p.nama.length > 15 ? p.nama.substring(0, 15) + '...' : p.nama),
                 datasets: [{
                     label: 'Jumlah Pelanggan Tertagih',
                     data: topPetugasData.map(p => p.jumlah),
@@ -673,14 +726,13 @@
             },
             options: {
                 indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: true,
+                ...chartOptions,
                 plugins: {
                     legend: {
                         display: true,
                         labels: {
-                            padding: 16,
-                            font: { size: 12 },
+                            padding: isSmallDevice ? 8 : 16,
+                            font: { size: isSmallDevice ? 10 : 12 },
                             color: '#5A6A7E'
                         }
                     }
@@ -688,11 +740,11 @@
                 scales: {
                     x: {
                         beginAtZero: true,
-                        ticks: { color: '#5A6A7E' },
+                        ticks: { color: '#5A6A7E', font: { size: isSmallDevice ? 9 : 11 } },
                         grid: { color: '#E2E9F1' }
                     },
                     y: {
-                        ticks: { color: '#5A6A7E' },
+                        ticks: { color: '#5A6A7E', font: { size: isSmallDevice ? 9 : 11 } },
                         grid: { display: false }
                     }
                 }
@@ -707,6 +759,9 @@
     if (trendCtx) {
         const trendData = @json($trendChart);
 
+        trendCtx.parentElement.style.position = 'relative';
+        trendCtx.parentElement.style.height = isMobile ? '250px' : '300px';
+
         new Chart(trendCtx, {
             type: 'line',
             data: {
@@ -720,7 +775,7 @@
                         borderWidth: 2,
                         tension: 0.4,
                         fill: true,
-                        pointRadius: 4,
+                        pointRadius: isSmallDevice ? 3 : 4,
                         pointBackgroundColor: '#0055A5',
                         pointBorderColor: '#fff',
                         pointBorderWidth: 2,
@@ -733,7 +788,7 @@
                         borderWidth: 2,
                         tension: 0.4,
                         fill: true,
-                        pointRadius: 4,
+                        pointRadius: isSmallDevice ? 3 : 4,
                         pointBackgroundColor: '#1A7A4A',
                         pointBorderColor: '#fff',
                         pointBorderWidth: 2,
@@ -741,14 +796,13 @@
                 ]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: true,
+                ...chartOptions,
                 plugins: {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            padding: 16,
-                            font: { size: 12 },
+                            padding: isSmallDevice ? 8 : 16,
+                            font: { size: isSmallDevice ? 10 : 12 },
                             color: '#5A6A7E'
                         }
                     }
@@ -758,14 +812,17 @@
                         beginAtZero: true,
                         ticks: {
                             color: '#5A6A7E',
+                            font: { size: isSmallDevice ? 9 : 11 },
                             callback: function(value) {
+                                if (value >= 1000000000) return 'Rp' + (value/1000000000).toFixed(1) + 'M';
+                                if (value >= 1000000) return 'Rp' + (value/1000000).toFixed(1) + 'J';
                                 return 'Rp' + value.toLocaleString('id-ID');
                             }
                         },
                         grid: { color: '#E2E9F1' }
                     },
                     x: {
-                        ticks: { color: '#5A6A7E' },
+                        ticks: { color: '#5A6A7E', font: { size: isSmallDevice ? 9 : 11 } },
                         grid: { display: false }
                     }
                 }
@@ -787,6 +844,13 @@
     function exportDashboard() {
         alert('Fitur export sedang dalam pengembangan');
     }
+
+    // ================================================================
+    // RESPONSIVE RESIZE HANDLER
+    // ================================================================
+    window.addEventListener('resize', function() {
+        location.reload();
+    });
 </script>
 
 @endsection
