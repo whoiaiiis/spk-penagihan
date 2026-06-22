@@ -18,14 +18,14 @@
     }
 
     .supervisor-header h1 {
-        font-size: 28px;
+        font-size: 30px;
         font-weight: 700;
         color: var(--text-primary);
         margin: 0;
     }
 
     .dashboard-subtitle {
-        font-size: 13px;
+        font-size: 15px;
         color: var(--text-muted);
         margin-top: 2px; /* dikurangi dari 4px */
     }
@@ -44,7 +44,7 @@
         color: white;
         border: none;
         border-radius: var(--radius-md);
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 600;
         cursor: pointer;
         transition: background var(--transition);
@@ -87,7 +87,7 @@
     }
 
     .filter-label {
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 600;
         color: var(--text-secondary);
         text-transform: uppercase;
@@ -97,7 +97,7 @@
         padding: 6px 12px;
         border: 1px solid var(--border);
         border-radius: var(--radius-md);
-        font-size: 13px;
+        font-size: 15px;
         background: white;
         font-family: var(--font-sans);
     }
@@ -125,7 +125,7 @@
     }
 
     .kpi-label {
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 600;
         color: var(--text-muted);
         text-transform: uppercase;
@@ -134,7 +134,7 @@
     }
 
     .kpi-value {
-        font-size: 28px;
+        font-size: 30px;
         font-weight: 700;
         color: var(--text-primary);
         margin-bottom: 2px; /* dikurangi dari 4px */
@@ -142,7 +142,7 @@
     }
 
     .kpi-detail {
-        font-size: 12px;
+        font-size: 14px;
         color: var(--text-muted);
     }
 
@@ -162,7 +162,7 @@
     }
 
     .chart-title {
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 600;
         color: var(--text-primary);
         margin-bottom: 16px;
@@ -178,7 +178,7 @@
     }
 
     .table-title {
-        font-size: 16px;
+        font-size: 18px;
         font-weight: 600;
         color: var(--text-primary);
         margin-bottom: 14px; /* dikurangi dari 16px */
@@ -187,7 +187,7 @@
     .supervisor-table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 13px;
+        font-size: 15px;
     }
 
     .supervisor-table thead tr {
@@ -201,7 +201,7 @@
         font-weight: 600;
         color: var(--text-secondary);
         text-transform: uppercase;
-        font-size: 11px;
+        font-size: 13px;
         letter-spacing: 0.5px;
     }
 
@@ -225,14 +225,14 @@
         color: white;
         border-radius: 50%;
         font-weight: 700;
-        font-size: 12px;
+        font-size: 14px;
     }
 
     .badge-status {
         display: inline-block;
         padding: 4px 10px;
         border-radius: 12px;
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 600;
         text-transform: uppercase;
     }
@@ -276,13 +276,13 @@
     }
 
     .empty-state-icon {
-        font-size: 48px;
+        font-size: 50px;
         margin-bottom: 16px;
         opacity: 0.5;
     }
 
     .empty-state-text {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     /* ================================================================
@@ -290,8 +290,8 @@
     ================================================================ */
     @media (max-width: 1024px) {
         .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-        .supervisor-header h1 { font-size: 24px; }
-        .supervisor-table { font-size: 12px; }
+        .supervisor-header h1 { font-size: 26px; }
+        .supervisor-table { font-size: 14px; }
     }
 
     @media (max-width: 768px) {
@@ -301,7 +301,7 @@
             margin-bottom: 12px;
         }
 
-        .supervisor-header h1 { font-size: 20px; }
+        .supervisor-header h1 { font-size: 22px; }
 
         .filter-refresh-bar {
             flex-direction: column;
@@ -316,40 +316,40 @@
         }
 
         .kpi-card { padding: 14px 16px; }
-        .kpi-value { font-size: 24px; }
+        .kpi-value { font-size: 26px; }
 
-        .supervisor-table { font-size: 11px; }
+        .supervisor-table { font-size: 13px; }
         .supervisor-table th,
         .supervisor-table td { padding: 8px 10px; }
 
         .filter-group { width: 100%; }
-        .filter-input { width: 100%; height: 40px; font-size: 12px; }
+        .filter-input { width: 100%; height: 40px; font-size: 14px; }
 
         .dashboard-actions { flex-wrap: wrap; gap: 8px; }
-        .btn-action { padding: 7px 12px; font-size: 12px; }
+        .btn-action { padding: 7px 12px; font-size: 14px; }
 
-        h1 { font-size: 18px !important; }
+        h1 { font-size: 20px !important; }
     }
 
     @media (max-width: 576px) {
         .kpi-grid { gap: 10px; }
         .kpi-card { padding: 12px; }
-        .kpi-value { font-size: 20px; }
-        .supervisor-table { font-size: 10px; }
+        .kpi-value { font-size: 22px; }
+        .supervisor-table { font-size: 12px; }
         .supervisor-table th,
         .supervisor-table td { padding: 6px 8px; }
-        .btn-action { padding: 6px 10px; font-size: 11px; }
-        h1 { font-size: 16px !important; }
-        .filter-input { height: 36px; font-size: 11px; }
+        .btn-action { padding: 6px 10px; font-size: 13px; }
+        h1 { font-size: 18px !important; }
+        .filter-input { height: 36px; font-size: 13px; }
     }
 
     @media (max-width: 400px) {
         .kpi-card { padding: 10px; }
-        .kpi-value { font-size: 18px; }
-        .supervisor-table { font-size: 9px; }
+        .kpi-value { font-size: 20px; }
+        .supervisor-table { font-size: 11px; }
         .supervisor-table th,
         .supervisor-table td { padding: 5px 6px; }
-        h1 { font-size: 14px !important; }
+        h1 { font-size: 16px !important; }
     }
 </style>
 

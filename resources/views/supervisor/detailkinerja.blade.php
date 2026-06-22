@@ -1,7 +1,7 @@
 {{-- resources/views/supervisor/detail_kinerja.blade.php --}}
 @extends('layouts.app')
 
-@section('title', 'Detail Kinerja — {{ $petugas->nama }}')
+@section('title', 'Detail Kinerja — ' . $petugas->nama)
 
 @push('styles')
 <style>
@@ -34,7 +34,7 @@
     .page-wrap { max-width: 1100px; padding: 24px 20px 40px; }
 
     .breadcrumb-bar {
-        font-size: .8125rem; color: var(--c-muted);
+        font-size: 0.9375rem; color: var(--c-muted);
         margin-bottom: 14px; display: flex; align-items: center; gap: 6px;
     }
     .breadcrumb-bar a { color: var(--c-primary); text-decoration: none; }
@@ -51,16 +51,16 @@
         width: 56px; height: 56px; border-radius: 14px;
         background: var(--c-primary-lt); color: var(--c-primary);
         display: flex; align-items: center; justify-content: center;
-        font-size: 1.375rem; font-weight: 700; flex-shrink: 0;
+        font-size: 1.5rem; font-weight: 700; flex-shrink: 0;
         border: 1px solid #BFDBFE;
     }
     .profile-info { flex: 1; }
-    .profile-info h2 { font-size: 1.125rem; font-weight: 700; margin: 0 0 3px; }
-    .profile-info p  { font-size: .875rem; color: var(--c-muted); margin: 0; }
+    .profile-info h2 { font-size: 1.25rem; font-weight: 700; margin: 0 0 3px; }
+    .profile-info p  { font-size: 1rem; color: var(--c-muted); margin: 0; }
     .profile-meta { display: flex; gap: 20px; flex-wrap: wrap; }
     .profile-meta-item { text-align: right; }
-    .profile-meta-item .pm-label { font-size: .75rem; color: var(--c-muted); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
-    .profile-meta-item .pm-val   { font-size: 1rem; font-weight: 700; font-family: var(--mono); color: var(--c-text); }
+    .profile-meta-item .pm-label { font-size: 0.875rem; color: var(--c-muted); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
+    .profile-meta-item .pm-val   { font-size: 1.125rem; font-weight: 700; font-family: var(--mono); color: var(--c-text); }
 
     /* ── Kinerja meter ───────────────────────────────────────────────────── */
     .kinerja-meter {
@@ -72,11 +72,11 @@
     .meter-ring { flex-shrink: 0; }
     .meter-ring svg { display: block; }
     .meter-info { flex: 1; }
-    .meter-info h3 { font-size: 1.75rem; font-weight: 700; margin: 0 0 2px; font-family: var(--mono); }
-    .meter-info p  { font-size: .875rem; color: var(--c-muted); margin: 0; }
+    .meter-info h3 { font-size: 1.875rem; font-weight: 700; margin: 0 0 2px; font-family: var(--mono); }
+    .meter-info p  { font-size: 1rem; color: var(--c-muted); margin: 0; }
     .meter-stats { display: flex; gap: 24px; margin-top: 10px; flex-wrap: wrap; }
-    .ms-item .ms-label { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--c-muted); }
-    .ms-item .ms-val   { font-size: 1.125rem; font-weight: 700; font-family: var(--mono); }
+    .ms-item .ms-label { font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--c-muted); }
+    .ms-item .ms-val   { font-size: 1.25rem; font-weight: 700; font-family: var(--mono); }
     .ms-item.green .ms-val { color: var(--c-success); }
     .ms-item.red   .ms-val { color: var(--c-danger); }
     .ms-item.blue  .ms-val { color: var(--c-primary); }
@@ -87,8 +87,8 @@
         background: var(--c-surface); border: 1px solid var(--c-border);
         border-radius: var(--radius); padding: 16px 20px; box-shadow: var(--shadow);
     }
-    .sc .sc-label { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--c-muted); margin-bottom: 4px; }
-    .sc .sc-val   { font-size: 1.25rem; font-weight: 700; font-family: var(--mono); }
+    .sc .sc-label { font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--c-muted); margin-bottom: 4px; }
+    .sc .sc-val   { font-size: 1.375rem; font-weight: 700; font-family: var(--mono); }
     .sc.rpta  .sc-val { color: var(--c-text); }
     .sc.tagih .sc-val { color: var(--c-success); }
     .sc.sisa  .sc-val { color: var(--c-danger); }
@@ -102,12 +102,12 @@
         padding: 16px 20px; border-bottom: 1px solid var(--c-border);
         display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
     }
-    .table-card-header h3 { font-size: .9375rem; font-weight: 600; margin: 0; }
+    .table-card-header h3 { font-size: 1.0625rem; font-weight: 600; margin: 0; }
 
     /* Filter pill tabs */
     .pill-tabs { display: flex; gap: 6px; }
     .pill-tab {
-        padding: 5px 14px; border-radius: 99px; font-size: .8125rem; font-weight: 600;
+        padding: 5px 14px; border-radius: 99px; font-size: 0.9375rem; font-weight: 600;
         cursor: pointer; border: 1px solid var(--c-border); background: #F8FAFC; color: var(--c-muted);
         transition: all .15s;
     }
@@ -115,10 +115,10 @@
     .pill-tab:hover:not(.active) { background: #F1F5F9; }
 
     .tbl-wrap { overflow-x: auto; }
-    .detail-table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+    .detail-table { width: 100%; border-collapse: collapse; font-size: 1rem; }
     .detail-table thead th {
         background: #F8FAFC; padding: 10px 14px; text-align: left;
-        font-size: .75rem; font-weight: 600; text-transform: uppercase;
+        font-size: 0.875rem; font-weight: 600; text-transform: uppercase;
         letter-spacing: .05em; color: var(--c-muted);
         border-bottom: 1px solid var(--c-border); white-space: nowrap;
     }
@@ -130,11 +130,11 @@
     .detail-table tbody tr.row-belum:hover { background: #FEF9C3; }
     .detail-table td { padding: 11px 14px; vertical-align: middle; white-space: nowrap; }
     .detail-table td.right { text-align: right; }
-    .detail-table td.mono  { font-family: var(--mono); font-size: .82rem; }
+    .detail-table td.mono  { font-family: var(--mono); font-size: 0.945rem; }
 
     .pill {
         display: inline-flex; align-items: center; gap: 4px;
-        padding: 3px 10px; border-radius: 99px; font-size: .75rem; font-weight: 600;
+        padding: 3px 10px; border-radius: 99px; font-size: 0.875rem; font-weight: 600;
     }
     .pill.sudah { background: var(--c-success-lt); color: var(--c-success); border: 1px solid var(--c-success-bd); }
     .pill.belum { background: var(--c-warning-lt); color: var(--c-warning); border: 1px solid var(--c-warning-bd); }
@@ -142,7 +142,7 @@
     .btn {
         display: inline-flex; align-items: center; gap: 6px;
         padding: 7px 14px; border-radius: var(--radius-sm);
-        font-size: .8125rem; font-weight: 600; cursor: pointer;
+        font-size: 0.9375rem; font-weight: 600; cursor: pointer;
         border: 1px solid transparent; transition: all .15s;
         text-decoration: none; line-height: 1;
     }
@@ -259,7 +259,7 @@
             <h3>Detail Pelanggan</h3>
             <div class="pill-tabs">
                 <button class="pill-tab active" onclick="filterTable('semua', this)">Semua ({{ $stats['total'] ?? 0 }})</button>
-                <button class="pill-tab" onclick="filterTable('sudah', this)">Sudah ({{ $stats['sudah'] ?? 0 }})</button>
+                <button class="pill-tab" onclick="filterTable('lunas', this)">Sudah ({{ $stats['sudah'] ?? 0 }})</button>
                 <button class="pill-tab" onclick="filterTable('belum', this)">Belum ({{ $stats['belum'] ?? 0 }})</button>
             </div>
         </div>
@@ -269,7 +269,7 @@
                     <tr>
                         <th>ID Pelanggan</th>
                         <th>Nama</th>
-                        <th>RBM</th>
+                        <th>Unitap</th>
                         <th class="right">Daya</th>
                         <th class="right">Lembar</th>
                         <th class="right">RPTA</th>
@@ -285,12 +285,12 @@
                     <tr class="{{ $row->status === 'belum' ? 'row-belum' : '' }}" data-status="{{ $row->status }}">
                         <td class="mono">{{ $row->idpel }}</td>
                         <td style="font-weight:500">{{ $row->nama ?? '—' }}</td>
-                        <td class="mono" style="font-weight:600"><span class="badge badge-success">{{ $row->rbm ?: '-' }}</span></td>
+                        <td class="mono" style="font-weight:600"><span class="badge badge-success">{{ $row->unitap ?? '-' }}</span></td>
                         <td class="right mono">{{ number_format($row->daya ?? 0) }}</td>
                         <td class="right mono">{{ number_format($row->lembar ?? 0) }}</td>
                         <td class="right mono">{{ number_format($row->rptag ?? 0, 0, ',', '.') }}</td>
-                        <td class="right mono" style="color:{{ $row->status === 'sudah' ? 'var(--c-success)' : 'var(--c-light)' }};font-weight:{{ $row->status === 'sudah' ? '600' : '400' }}">
-                            {{ $row->status === 'sudah' ? number_format($row->jumlah_tagih ?? 0, 0, ',', '.') : '—' }}
+                        <td class="right mono" style="color:{{ $row->status === 'lunas' ? 'var(--c-success)' : 'var(--c-light)' }};font-weight:{{ $row->status === 'lunas' ? '600' : '400' }}">
+                            {{ $row->status === 'lunas' ? number_format($row->jumlah_tagih ?? 0, 0, ',', '.') : '—' }}
                         </td>
                         <td class="right mono" style="color:var(--c-danger)">
                             @php $sisa = ($row->rptag ?? 0) - ($row->jumlah_tagih ?? 0); @endphp
@@ -300,8 +300,8 @@
                             {{ !empty($row->tgl_tagih) ? \Carbon\Carbon::parse($row->tgl_tagih)->format('d/m/Y') : '—' }}
                         </td>
                         <td>
-                            <span class="pill {{ $row->status }}">
-                                @if($row->status === 'sudah')
+                            <span class="pill {{ $row->status === 'lunas' ? 'sudah' : 'belum' }}">
+                                @if($row->status === 'lunas')
                                     <svg width="11" height="11" fill="none" viewBox="0 0 24 24"><path d="M7 12l4 4 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
                                     Sudah
                                 @else
@@ -310,7 +310,7 @@
                                 @endif
                             </span>
                         </td>
-                        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;color:var(--c-muted);font-size:.82rem">
+                        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;color:var(--c-muted);font-size: 0.945rem">
                             {{ $row->keterangan ?: '—' }}
                         </td>
                     </tr>

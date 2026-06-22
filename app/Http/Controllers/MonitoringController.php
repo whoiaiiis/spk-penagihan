@@ -22,7 +22,10 @@ class MonitoringController extends Controller
 
         // Query utama monitoring
         $query = DB::table('petugas')
-            ->leftJoin('pelanggan', 'pelanggan.petugas_id', '=', 'petugas.id')
+            ->leftJoin('pelanggan', function ($join) use ($bulan) {
+                $join->on('pelanggan.petugas_id', '=', 'petugas.id')
+                     ->where('pelanggan.periode', '=', $bulan);
+            })
             ->leftJoin('penagihan', function ($join) use ($bulan) {
                 $join->on('penagihan.idpel', '=', 'pelanggan.idpel')
                      ->where('penagihan.bulan', $bulan);
@@ -188,6 +191,7 @@ class MonitoringController extends Controller
 
         // Detail pelanggan
         $detail = DB::table('pelanggan')
+            ->where('pelanggan.periode', $bulan)
             ->leftJoin('penagihan', function ($join) use ($bulan) {
                 $join->on('penagihan.idpel', '=', 'pelanggan.idpel')
                      ->where('penagihan.bulan', $bulan);

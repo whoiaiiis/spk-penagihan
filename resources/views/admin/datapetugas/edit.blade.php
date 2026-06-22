@@ -15,19 +15,19 @@
     .form-card-hdr { padding:16px 22px;border-bottom:1px solid var(--c-border);display:flex;align-items:center;gap:12px; }
     .form-icon { width:38px;height:38px;border-radius:var(--radius-sm);background:#EAF3DE;color:#0F6E56;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
     .form-icon svg { width:18px;height:18px; }
-    .form-card-hdr h2 { font-size:1rem;font-weight:700;margin:0 0 1px; }
-    .form-card-hdr p  { font-size:.8125rem;color:var(--c-muted);margin:0; }
+    .form-card-hdr h2 { font-size: 1.125rem;font-weight:700;margin:0 0 1px; }
+    .form-card-hdr p  { font-size: 0.9375rem;color:var(--c-muted);margin:0; }
     .form-body { padding:22px; }
     .fg { margin-bottom:14px; }
-    .fg label { display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--c-muted);margin-bottom:5px; }
-    .fg input,.fg select { width:100%;height:38px;padding:0 12px;border:1px solid var(--c-border);border-radius:var(--radius-sm);font-size:.875rem;background:#F8FAFC;color:#1E293B;outline:none;transition:border-color .15s; }
+    .fg label { display:block;font-size: 0.825rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--c-muted);margin-bottom:5px; }
+    .fg input,.fg select { width:100%;height:38px;padding:0 12px;border:1px solid var(--c-border);border-radius:var(--radius-sm);font-size: 1rem;background:#F8FAFC;color:#1E293B;outline:none;transition:border-color .15s; }
     .fg input:focus,.fg select:focus { border-color:var(--c-primary);background:#fff; }
     .fg-row { display:grid;grid-template-columns:1fr 1fr;gap:14px; }
     .form-footer { padding:14px 22px;border-top:1px solid var(--c-border);background:var(--c-surface);display:flex;align-items:center;justify-content:space-between; }
-    .btn-back { display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-sm);border:1px solid var(--c-border);background:#fff;font-size:.875rem;color:var(--c-muted);text-decoration:none;transition:background .15s; }
+    .btn-back { display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-sm);border:1px solid var(--c-border);background:#fff;font-size: 1rem;color:var(--c-muted);text-decoration:none;transition:background .15s; }
     .btn-back:hover { background:var(--c-surface);color:#1E293B; }
     .btn-back svg { width:14px;height:14px; }
-    .btn-update { display:inline-flex;align-items:center;gap:7px;padding:8px 22px;border-radius:var(--radius-sm);border:none;background:var(--c-success);color:#fff;font-size:.875rem;font-weight:600;cursor:pointer;transition:background .15s; }
+    .btn-update { display:inline-flex;align-items:center;gap:7px;padding:8px 22px;border-radius:var(--radius-sm);border:none;background:var(--c-success);color:#fff;font-size: 1rem;font-weight:600;cursor:pointer;transition:background .15s; }
     .btn-update:hover { background:var(--c-success-dk); }
     .btn-update svg { width:15px;height:15px; }
 </style>
@@ -53,9 +53,11 @@
             </div>
             @endif
 
+            {{-- Form untuk mengirim update data petugas ke server --}}
             <form method="POST" action="/datapetugas/update/{{ $petugas->id }}">
                 @csrf
 
+                {{-- Baris input Kode Petugas dan Status --}}
                 <div class="fg-row">
                     <div class="fg">
                         <label>Kode Petugas</label>
@@ -71,12 +73,14 @@
                     </div>
                 </div>
 
+                {{-- Input nama lengkap petugas --}}
                 <div class="fg">
                     <label>Nama Lengkap</label>
                     <input type="text" name="nama"
                            value="{{ old('nama', $petugas->nama) }}" required>
                 </div>
 
+                {{-- Input wilayah penugasan --}}
                 <div class="fg">
                     <label>Wilayah</label>
                     <input type="text" name="wilayah"
@@ -85,6 +89,7 @@
 
         </div>
 
+        {{-- Tombol aksi untuk update data atau kembali --}}
         <div class="form-footer">
             <a href="/datapetugas" class="btn-back">
                 <svg fill="none" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>

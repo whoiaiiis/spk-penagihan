@@ -20,15 +20,15 @@
     
     /* ── PAGE HEADER ── */
     .page-hdr { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; }
-    .page-hdr-left h1 { font-size: 1.5rem; font-weight: 700; margin: 0 0 4px; }
-    .page-hdr-left p { font-size: .875rem; color: var(--c-muted); margin: 0; }
+    .page-hdr-left h1 { font-size: 1.625rem; font-weight: 700; margin: 0 0 4px; }
+    .page-hdr-left p { font-size: 1rem; color: var(--c-muted); margin: 0; }
     .page-hdr-right { display: flex; gap: 10px; align-items: flex-start; }
 
     .btn-gen {
         display: inline-flex; align-items: center; gap: 6px;
         padding: 8px 16px; border-radius: var(--radius-sm);
         background: var(--c-primary); color: #fff;
-        border: none; font-size: .8rem; font-weight: 600;
+        border: none; font-size: 0.925rem; font-weight: 600;
         cursor: pointer; transition: all .15s;
         white-space: nowrap;
     }
@@ -42,9 +42,9 @@
         border-radius: var(--radius-sm); padding: 16px;
         box-shadow: var(--shadow);
     }
-    .stat-card-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--c-muted); margin-bottom: 8px; }
-    .stat-card-val { font-size: 1.75rem; font-weight: 700; color: var(--c-text); line-height: 1; margin-bottom: 6px; }
-    .stat-card-sub { font-size: .75rem; color: var(--c-muted); }
+    .stat-card-label { font-size: 0.825rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--c-muted); margin-bottom: 8px; }
+    .stat-card-val { font-size: 1.875rem; font-weight: 700; color: var(--c-text); line-height: 1; margin-bottom: 6px; }
+    .stat-card-sub { font-size: 0.875rem; color: var(--c-muted); }
     .stat-card-val.danger { color: #DC2626; }
     .stat-card-val.warning { color: #D97706; }
     .stat-card-val.success { color: #16A34A; }
@@ -57,11 +57,11 @@
         display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;
     }
     .fg { display: flex; flex-direction: column; gap: 4px; }
-    .fg label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--c-muted); }
+    .fg label { font-size: 0.825rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--c-muted); }
     .fg input, .fg select {
         height: 32px; padding: 0 10px;
         border: 1px solid var(--c-border); border-radius: var(--radius-sm);
-        font-size: .8rem; color: var(--c-text); background: #fff;
+        font-size: 0.925rem; color: var(--c-text); background: #fff;
         outline: none; transition: border-color .15s;
         min-width: 140px;
     }
@@ -69,7 +69,7 @@
     .btn-filter {
         height: 32px; padding: 0 16px; border-radius: var(--radius-sm);
         border: 1px solid var(--c-border); background: #fff;
-        font-size: .8rem; color: var(--c-muted); cursor: pointer;
+        font-size: 0.925rem; color: var(--c-muted); cursor: pointer;
         display: inline-flex; align-items: center; gap: 6px;
         transition: all .15s; white-space: nowrap;
     }
@@ -78,7 +78,7 @@
     .btn-reset {
         height: 32px; padding: 0 12px; border-radius: var(--radius-sm);
         border: 1px solid var(--c-border); background: #fff;
-        font-size: .8rem; color: var(--c-muted); cursor: pointer;
+        font-size: 0.925rem; color: var(--c-muted); cursor: pointer;
         text-decoration: none; display: inline-flex; align-items: center;
         transition: background .15s;
     }
@@ -89,24 +89,24 @@
 
     /* ── SECTION HEADER ── */
     .sec-hdr { padding: 16px; border-bottom: 1px solid var(--c-border); background: var(--c-surface); display: flex; justify-content: space-between; align-items: center; }
-    .sec-hdr h2 { font-size: .9rem; font-weight: 700; margin: 0; }
-    .sec-hdr button { background: none; border: none; cursor: pointer; color: var(--c-muted); font-size: .9rem; padding: 0; }
+    .sec-hdr h2 { font-size: 1.025rem; font-weight: 700; margin: 0; }
+    .sec-hdr button { background: none; border: none; cursor: pointer; color: var(--c-muted); font-size: 1.025rem; padding: 0; }
     .sec-hdr button:hover { color: var(--c-text); }
 
     /* ── TABLE ── */
     .tbl-wrap { overflow: auto; }
-    .result-tbl { width: 100%; border-collapse: collapse; font-size: .875rem; }
+    .result-tbl { width: 100%; border-collapse: collapse; font-size: 1rem; }
     .result-tbl thead { background: var(--c-surface); }
     .result-tbl th {
         padding: 11px 12px; text-align: left;
-        font-size: .7rem; font-weight: 700; text-transform: uppercase;
+        font-size: 0.825rem; font-weight: 700; text-transform: uppercase;
         letter-spacing: .05em; color: var(--c-muted); white-space: nowrap;
         border-bottom: 2px solid var(--c-border);
     }
     .result-tbl th.r { text-align: right; }
     .result-tbl td { padding: 10px 12px; border-bottom: 1px solid #F1F5F9; }
     .result-tbl td.r { text-align: right; }
-    .result-tbl td.mono { font-family: var(--mono); font-size: .8rem; }
+    .result-tbl td.mono { font-family: var(--mono); font-size: 0.925rem; }
     .result-tbl tr:hover td { background: #FAFAFA; }
     .result-tbl tr:last-child td { border-bottom: none; }
 
@@ -119,7 +119,7 @@
     .rank-badge {
         display: inline-flex; align-items: center; justify-content: center;
         width: 28px; height: 28px; border-radius: var(--radius-sm);
-        font-size: .75rem; font-weight: 700;
+        font-size: 0.875rem; font-weight: 700;
     }
     .rank-1 { background: #FEF9C3; color: #92400E; border: 1px solid #FCD34D; }
     .rank-2 { background: #F3F4F6; color: #374151; border: 1px solid #D1D5DB; }
@@ -129,7 +129,7 @@
     /* ── RISIKO PILL ── */
     .risiko-pill {
         display: inline-flex; align-items: center; gap: 4px;
-        padding: 2px 9px; border-radius: 99px; font-size: .75rem; font-weight: 600;
+        padding: 2px 9px; border-radius: 99px; font-size: 0.875rem; font-weight: 600;
     }
     .risiko-tinggi { background: #FEE2E2; color: #991B1B; }
     .risiko-sedang { background: #FEF9C3; color: #92400E; }
@@ -139,15 +139,15 @@
     .vi-bar-wrap { display: flex; align-items: center; gap: 8px; }
     .vi-bar-bg { width: 80px; height: 5px; border-radius: 99px; background: #E2E8F0; overflow: hidden; flex-shrink: 0; }
     .vi-bar-fill { height: 100%; border-radius: 99px; }
-    .vi-val { font-size: .75rem; font-weight: 700; font-family: var(--mono); min-width: 40px; }
+    .vi-val { font-size: 0.875rem; font-weight: 700; font-family: var(--mono); min-width: 40px; }
 
     /* ── EMPTY STATE ── */
     .empty-box {
         padding: 60px 40px; text-align: center; background: var(--c-surface);
     }
     .empty-box-icon { opacity: .3; display: block; margin: 0 auto 16px; width: 52px; height: 52px; }
-    .empty-box h3 { font-size: 1rem; font-weight: 600; margin: 0 0 8px; color: var(--c-text); }
-    .empty-box p { font-size: .875rem; color: var(--c-muted); margin: 0 0 20px; line-height: 1.6; }
+    .empty-box h3 { font-size: 1.125rem; font-weight: 600; margin: 0 0 8px; color: var(--c-text); }
+    .empty-box p { font-size: 1rem; color: var(--c-muted); margin: 0 0 20px; line-height: 1.6; }
     .empty-box .btn-gen { margin: 0 auto; }
 
     /* ── COLLAPSIBLE ── */
@@ -156,8 +156,8 @@
         display: flex; justify-content: space-between; align-items: center;
         cursor: pointer; user-select: none;
     }
-    .collapsible-hdr h3 { font-size: .9rem; font-weight: 700; margin: 0; }
-    .collapsible-toggle { font-size: 1.2rem; transition: transform .2s; }
+    .collapsible-hdr h3 { font-size: 1.025rem; font-weight: 700; margin: 0; }
+    .collapsible-toggle { font-size: 1.325rem; transition: transform .2s; }
     .collapsible-toggle.open { transform: rotate(180deg); }
     .collapsible-body { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
     .collapsible-body.open { max-height: 1000px; }
@@ -167,24 +167,24 @@
     .formula-strip {
         background: var(--c-surface); border: 1px solid var(--c-border);
         border-radius: var(--radius-sm); padding: 10px 14px;
-        font-size: .75rem; color: var(--c-muted);
+        font-size: 0.875rem; color: var(--c-muted);
         margin-bottom: 12px; line-height: 1.8; overflow-x: auto;
     }
     .formula-strip code {
         background: #E2E8F0; padding: 2px 6px; border-radius: 4px;
-        font-size: .7rem; color: var(--c-text); font-family: var(--mono);
+        font-size: 0.825rem; color: var(--c-text); font-family: var(--mono);
         white-space: nowrap;
     }
     .formula-strip strong { color: var(--c-text); }
 
     /* ── PAGINATION ── */
-    .pagination-wrap { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-top: 1px solid var(--c-border); background: var(--c-surface); font-size: .8rem; }
+    .pagination-wrap { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-top: 1px solid var(--c-border); background: var(--c-surface); font-size: 0.925rem; }
     .pagination-info { color: var(--c-muted); }
     .pagination-links { display: flex; gap: 4px; }
     .pagination-links a, .pagination-links span {
         display: inline-flex; align-items: center; justify-content: center;
         width: 30px; height: 30px; border: 1px solid var(--c-border);
-        border-radius: var(--radius-sm); font-size: .75rem; text-decoration: none;
+        border-radius: var(--radius-sm); font-size: 0.875rem; text-decoration: none;
         transition: all .15s;
     }
     .pagination-links a { color: var(--c-text); background: #fff; cursor: pointer; }
@@ -193,7 +193,7 @@
     .pagination-links .active span { background: var(--c-primary); color: #fff; border-color: var(--c-primary); }
 
     /* ── ALERTS ── */
-    .alert { padding: 10px 14px; border-radius: var(--radius-sm); font-size: .875rem; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+    .alert { padding: 10px 14px; border-radius: var(--radius-sm); font-size: 1rem; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
     .alert-success { background: #ECFDF5; border: 1px solid #A7F3D0; color: #065F46; }
     .alert-danger { background: #FEF2F2; border: 1px solid #FECACA; color: #991B1B; }
     .alert svg { width: 16px; height: 16px; flex-shrink: 0; }
@@ -202,7 +202,7 @@
     .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(249,250,251,.9); align-items: center; justify-content: center; z-index: 9999; }
     .loading-overlay.show { display: flex; }
     .loading-card { background: #fff; border: 1px solid var(--c-border); border-radius: var(--radius); padding: 28px 44px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,.1); }
-    .loading-card p { font-size: .875rem; color: var(--c-muted); margin: 12px 0 0; }
+    .loading-card p { font-size: 1rem; color: var(--c-muted); margin: 12px 0 0; }
     .spin { width: 32px; height: 32px; margin: 0 auto; border: 2.5px solid var(--c-border); border-top-color: var(--c-text); border-radius: 50%; animation: spin .75s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -227,7 +227,7 @@
 
 <div class="page-wrap">
 
-    {{-- ── PAGE HEADER ── --}}
+    {{-- Header halaman hasil ranking dan tombol generate --}}
     <div class="page-hdr">
         <div class="page-hdr-left">
             <h1>Dashboard Hasil Ranking SAW</h1>
@@ -246,7 +246,7 @@
         </div>
     </div>
 
-    {{-- ── ALERTS ── --}}
+    {{-- Notifikasi pesan sukses atau error --}}
     @if(session('success'))
     <div class="alert alert-success">
         <svg fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -260,7 +260,7 @@
     </div>
     @endif
 
-    {{-- ── EMPTY STATE ── --}}
+    {{-- Tampilan jika data ranking belum tersedia --}}
     @if(!$hasData)
     <div class="main-card">
         <div class="empty-box">
@@ -280,7 +280,7 @@
     </div>
     @else
 
-    {{-- ── STATISTICS ── --}}
+    {{-- Menampilkan ringkasan total pelanggan dan kategori prioritas --}}
     <div class="stat-grid">
         <div class="stat-card">
             <div class="stat-card-label">Total Pelanggan</div>
@@ -304,7 +304,7 @@
         </div>
         <div class="stat-card">
             <div class="stat-card-label">Terakhir Generate</div>
-            <div class="stat-card-val" style="font-size: 1rem;">
+            <div class="stat-card-val" style="font-size: 1.125rem;">
                 @if($stats['generated_at'])
                     {{ \Carbon\Carbon::parse($stats['generated_at'])->format('d M Y H:i') }}
                 @else
@@ -315,7 +315,7 @@
         </div>
     </div>
 
-    {{-- ── FILTER BAR ── --}}
+    {{-- Form untuk mencari dan memfilter hasil ranking --}}
     <div class="filter-bar">
         <form method="GET" action="{{ request()->url() }}" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;width:100%">
             <div class="fg">
@@ -349,13 +349,13 @@
         </form>
     </div>
 
-    {{-- ── RANKING TABLE ── --}}
+    {{-- Tabel utama untuk menampilkan daftar ranking pelanggan --}}
     <div class="main-card">
         <div class="sec-hdr">
             <h2>Peringkat Ranking (Vi = Σ wj × Rij)</h2>
         </div>
 
-        <div style="padding: 14px 16px; background: var(--c-surface); border-bottom: 1px solid var(--c-border); font-size: .75rem; color: var(--c-muted); overflow-x: auto;">
+        <div style="padding: 14px 16px; background: var(--c-surface); border-bottom: 1px solid var(--c-border); font-size: 0.875rem; color: var(--c-muted); overflow-x: auto;">
             @foreach($kriteria as $k)
                 <span style="display: inline-block; margin-right: 16px; white-space: nowrap;">
                     <strong>w{{ $loop->iteration }}</strong> = {{ $k->bobot }}% ({{ ucfirst($k->tipe) }})
@@ -384,6 +384,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                {{-- Looping data ranking pelanggan --}}
                 @foreach($ranking as $row)
                 @php
                     $n = $normalisasi[$row->idpel] ?? null;
@@ -405,9 +406,9 @@
                     <td style="padding: 0; width: 3px;"></td>
                     <td><span class="rank-badge {{ $rc }}">{{ $row->ranking }}</span></td>
                     <td>
-                        <div style="font-weight: 600; font-family: var(--mono); font-size: .8rem;">{{ $row->idpel }}</div>
+                        <div style="font-weight: 600; font-family: var(--mono); font-size: 0.925rem;">{{ $row->idpel }}</div>
                         @if($row->nama)
-                        <div style="font-size: .75rem; color: var(--c-muted);">{{ Str::limit($row->nama, 30) }}</div>
+                        <div style="font-size: 0.875rem; color: var(--c-muted);">{{ Str::limit($row->nama, 30) }}</div>
                         @endif
                     </td>
                     @if($n)
@@ -439,7 +440,7 @@
             @endif
         </div>
 
-        {{-- Pagination --}}
+        {{-- Link navigasi pagination --}}
         @if($ranking->hasPages())
         <div class="pagination-wrap">
             <div class="pagination-info">
@@ -470,7 +471,7 @@
         @endif
     </div>
 
-    {{-- ── NORMALISASI MATRIX (COLLAPSIBLE) ── --}}
+    {{-- Tabel matriks normalisasi yang bisa dilipat (collapsible) --}}
     @if(!$normalisasi->isEmpty())
     <div class="main-card">
         <div class="collapsible-hdr" onclick="toggleNormalisasi()">
@@ -497,6 +498,7 @@
                             </tr>
                         </thead>
                         <tbody>
+                        {{-- Looping baris data normalisasi --}}
                         @foreach($normalisasi as $n)
                             <tr>
                                 <td class="mono" style="color: var(--c-muted);">{{ $loop->iteration }}</td>
@@ -510,7 +512,7 @@
                         </tbody>
                     </table>
                 </div>
-                <p style="font-size: .75rem; color: var(--c-muted); margin: 12px 0 0;">
+                <p style="font-size: 0.875rem; color: var(--c-muted); margin: 12px 0 0;">
                     Nilai normalisasi hasil perhitungan menggunakan metode SAW dengan tipe kriteria benefit dan cost.
                 </p>
             </div>
@@ -526,6 +528,7 @@
 
 @push('scripts')
 <script>
+// Script untuk mengatur fungsi toggle buka/tutup matriks normalisasi
 function toggleNormalisasi() {
     const body = document.getElementById('norm-body');
     const toggle = document.getElementById('norm-toggle');
@@ -539,3 +542,4 @@ function toggleNormalisasi() {
 }
 </script>
 @endpush
+

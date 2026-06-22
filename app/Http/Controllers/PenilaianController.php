@@ -8,325 +8,222 @@ use Illuminate\Support\Facades\Log;
 
 class PenilaianController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | HALAMAN DATA PENILAIAN
-    |--------------------------------------------------------------------------
-    */
+    // halaman utama data penilaian — tampilkan hasil SAW yang sudah di-generate
     public function index(Request $request)
     {
-        // ambil data kriteria
+        // ambil semua kriteria untuk ditampilkan di tabel header
         $kriteria = DB::table('kriteria')
             ->orderBy('id')
             ->get();
 
-        // search & filter
         $search   = $request->get('search');
         $kategori = $request->get('kategori');
         $sort     = $request->get('sort');
+        $periode  = $request->get('periode');
 
-        // query penilaian
         $query = DB::table('penilaian');
 
+        if ($periode) {
+            $query->where('periode', $periode);
+        }
+
+        // filter pencarian berdasarkan idpel
         if ($search) {
             $query->where('idpel', 'like', '%' . $search . '%');
         }
 
+        // filter berdasarkan kategori prioritas
         if ($kategori) {
             $query->where('kategori', $kategori);
         }
 
-        // sorting
+        // sorting kolom — default urut idpel
         switch ($sort) {
-            case 'c1_desc':
-                $query->orderByDesc('c1');
-                break;
-            case 'c2_desc':
-                $query->orderByDesc('c2');
-                break;
-            case 'c3_desc':
-                $query->orderByDesc('c3');
-                break;
-            case 'c4_desc':
-                $query->orderByDesc('c4');
-                break;
-            case 'vi_desc':
-                $query->orderByDesc('total_nilai');
-                break;
-            default:
-                $query->orderBy('idpel');
-                break;
+            case 'c1_desc': $query->orderByDesc('c1');          break;
+            case 'c2_desc': $query->orderByDesc('c2');          break;
+            case 'c3_desc': $query->orderByDesc('c3');          break;
+            case 'c4_desc': $query->orderByDesc('c4');          break;
+            case 'vi_desc': $query->orderByDesc('total_nilai'); break;
+            default:        $query->orderBy('idpel');           break;
         }
 
-        // ambil data penilaian (paginated)
-        $penilaian = $query
-            ->paginate(50)
-            ->withQueryString();
+        $penilaian = $query->paginate(50)->withQueryString();
 
-        // statistik
+        $baseQuery = DB::table('penilaian');
+        if ($periode) {
+            $baseQuery->where('periode', $periode);
+        }
+
+        // info kapan terakhir di-generate
         $stats = [
-            'total_pelanggan' => DB::table('penilaian')->count(),
-            'generated_at'    => DB::table('penilaian')->max('updated_at'),
+            'total_pelanggan' => (clone $baseQuery)->count(),
+            'generated_at'    => (clone $baseQuery)->max('updated_at'),
         ];
 
-        // summary statistik
+        // ringkasan agregat untuk kartu statistik di atas tabel
         $summary = [
-            'total_pelanggan' => DB::table('penilaian')->count(),
-            'total_tunggakan' => DB::table('penilaian')->sum('c1'),
-            'avg_lembar'      => DB::table('penilaian')->avg('c2'),
-            'total_rpbk'      => DB::table('penilaian')->sum('c3'),
-            'max_daya'        => DB::table('penilaian')->max('c4'),
+            'total_pelanggan' => (clone $baseQuery)->count(),
+            'total_tunggakan' => (clone $baseQuery)->sum('c2'), // c2 = rptag
+            'avg_lembar'      => (clone $baseQuery)->avg('c3'), // c3 = lembar
+            'total_rpbk'      => (clone $baseQuery)->sum('c4'), // c4 = rpbk
+            'avg_historis'    => (clone $baseQuery)->avg('c1'), // c1 = historis_tunggakan
         ];
+
+        $periodeList = DB::table('penilaian')->select('periode')->distinct()->orderBy('periode', 'desc')->pluck('periode');
 
         return view(
             'staff.datapenilaian.datapenilaian',
-            compact(
-                'kriteria',
-                'penilaian',
-                'stats',
-                'summary'
-            )
+            compact('kriteria', 'penilaian', 'stats', 'summary', 'periode', 'periodeList')
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | GENERATE PENILAIAN SAW
-    |--------------------------------------------------------------------------
-    |
-    | 1. Hapus data lama (penilaian, normalisasi, ranking) — pakai TRUNCATE
-    | 2. Ambil data pelanggan (hanya kolom yang dibutuhkan)
-    | 3. Hitung C1–C4 dari pelanggan
-    | 4. Normalisasi SAW (BENEFIT: value / max)
-    | 5. Hitung total_nilai (Vi)
-    | 6. Tentukan kategori berdasarkan Vi
-    | 7. Simpan ke database dengan chunk 500
-    |
-    */
+    // proses generate SAW — hitung normalisasi & total nilai semua pelanggan
     public function generate(Request $request)
-{
-        // ----------------------------------------------------------------
-        // Tambah waktu eksekusi agar tidak timeout untuk data besar
-        // ----------------------------------------------------------------
+    {
+        $request->validate([
+            'periode' => 'required|date_format:Y-m',
+        ]);
+        $periode = $request->periode;
+
+        // naikkan time limit, kalau data 50rb+ bisa timeout kalau cuma 30 detik
         set_time_limit(300);
 
-        // ----------------------------------------------------------------
-        // LOG: generate dimulai
-        // ----------------------------------------------------------------
         Log::info('[SAW] GENERATE DIMULAI', [
             'user'       => auth()->id() ?? 'guest',
+            'periode'    => $periode,
             'started_at' => now()->toDateTimeString(),
         ]);
 
         try {
+            Log::info('SEBELUM DELETE RANKING PERIODE ' . $periode);
+            DB::table('ranking')->where('periode', $periode)->delete();
+
+            Log::info('SEBELUM DELETE NORMALISASI PERIODE ' . $periode);
+            DB::table('normalisasi')->where('periode', $periode)->delete();
+
+            Log::info('SEBELUM DELETE PENILAIAN PERIODE ' . $periode);
+            DB::table('penilaian')->where('periode', $periode)->delete();
 
             DB::beginTransaction();
 
-            // ------------------------------------------------------------
-            // DELETE (bukan TRUNCATE) — aman di dalam transaksi MySQL.
-            // TRUNCATE menyebabkan IMPLICIT COMMIT pada InnoDB sehingga
-            // rollBack() tidak berfungsi jika INSERT gagal setelahnya.
-            // Urutan: ranking → normalisasi → penilaian (child dulu).
-            // ------------------------------------------------------------
-            DB::table('ranking')->delete();
-            DB::table('normalisasi')->delete();
-            DB::table('penilaian')->delete();
+            // ambil nilai MAX langsung dari DB, bukan di PHP — lebih hemat RAM
+            // pakai fallback 1 supaya tidak ada pembagian dengan nol
+            $maxC1 = DB::table('pelanggan')->where('periode', $periode)->max('historis_tunggakan') ?: 1;
+            $maxC2 = DB::table('pelanggan')->where('periode', $periode)->max('rptag')              ?: 1;
+            $maxC3 = DB::table('pelanggan')->where('periode', $periode)->max('lembar')             ?: 1;
+            $maxC4 = DB::table('pelanggan')->where('periode', $periode)->max('rpbk')               ?: 1;
 
-            Log::info('[SAW] Tabel lama berhasil di-delete.', [
-                'penilaian_count'   => DB::table('penilaian')->count(),
-                'normalisasi_count' => DB::table('normalisasi')->count(),
-                'ranking_count'     => DB::table('ranking')->count(),
+            Log::info('[SAW] Nilai MAX kriteria.', [
+                'maxC1 (historis)' => $maxC1,
+                'maxC2 (rptag)'    => $maxC2,
+                'maxC3 (lembar)'   => $maxC3,
+                'maxC4 (rpbk)'     => $maxC4,
             ]);
 
-            // ------------------------------------------------------------
-            // [PERBAIKAN 4] Hanya ambil kolom yang dibutuhkan,
-            // bukan SELECT * agar lebih ringan di memori & jaringan DB
-            // ------------------------------------------------------------
-            $pelanggan = DB::table('pelanggan')
-                ->select('idpel', 'rptag', 'lembar', 'rpbk', 'daya')
-                ->get();
+            // bobot SAW per kriteria — total harus = 1.0
+            $w1 = 0.40; // historis tunggakan
+            $w2 = 0.35; // rptag (tagihan)
+            $w3 = 0.20; // lembar
+            $w4 = 0.05; // rpbk
 
-            // ------------------------------------------------------------
-            // LOG: jumlah pelanggan yang akan diproses
-            // ------------------------------------------------------------
-            Log::info('[SAW] Data pelanggan berhasil diambil.', [
-                'total' => $pelanggan->count(),
-            ]);
+            $totalProcessed = 0;
 
-            if ($pelanggan->isEmpty()) {
+            // chunk 500 baris sekaligus supaya PHP tidak OOM waktu proses data besar
+            DB::table('pelanggan')
+                ->where('periode', $periode)
+                ->select('idpel', 'rptag', 'lembar', 'rpbk', 'historis_tunggakan')
+                ->orderBy('idpel')
+                ->chunk(500, function ($pelangganChunk) use ($maxC1, $maxC2, $maxC3, $maxC4, $w1, $w2, $w3, $w4, &$totalProcessed, $periode) {
 
+                    $rows = [];
+
+                    foreach ($pelangganChunk as $p) {
+                        // ambil nilai mentah, default 0 kalau null
+                        $c1 = (int) ($p->historis_tunggakan ?? 0);
+                        $c2 = (int) ($p->rptag  ?? 0);
+                        $c3 = (int) ($p->lembar ?? 0);
+                        $c4 = (int) ($p->rpbk   ?? 0);
+
+                        // normalisasi benefit: nilai / max
+                        $norm_c1 = $maxC1 > 0 ? $c1 / $maxC1 : 0;
+                        $norm_c2 = $maxC2 > 0 ? $c2 / $maxC2 : 0;
+                        $norm_c3 = $maxC3 > 0 ? $c3 / $maxC3 : 0;
+                        $norm_c4 = $maxC4 > 0 ? $c4 / $maxC4 : 0;
+
+                        // hitung total nilai SAW (weighted sum)
+                        $total_nilai =
+                            ($norm_c1 * $w1) +
+                            ($norm_c2 * $w2) +
+                            ($norm_c3 * $w3) +
+                            ($norm_c4 * $w4);
+
+                        // tentukan kategori berdasarkan threshold total nilai
+                        if ($total_nilai >= 0.80) {
+                            $kategori = 'Sangat Prioritas';
+                        } elseif ($total_nilai >= 0.60) {
+                            $kategori = 'Prioritas';
+                        } elseif ($total_nilai >= 0.40) {
+                            $kategori = 'Sedang';
+                        } else {
+                            $kategori = 'Rendah';
+                        }
+
+                        $rows[] = [
+                            'idpel'       => $p->idpel,
+                            'periode'     => $periode,
+                            'c1'          => $c1,
+                            'c2'          => $c2,
+                            'c3'          => $c3,
+                            'c4'          => $c4,
+                            'norm_c1'     => round($norm_c1, 6),
+                            'norm_c2'     => round($norm_c2, 6),
+                            'norm_c3'     => round($norm_c3, 6),
+                            'norm_c4'     => round($norm_c4, 6),
+                            'total_nilai' => round($total_nilai, 6),
+                            'kategori'    => $kategori,
+                            'created_at'  => now(),
+                            'updated_at'  => now(),
+                        ];
+                    }
+
+                    // batch insert per chunk — jauh lebih cepat dari insert satu-satu
+                    DB::table('penilaian')->insert($rows);
+                    $totalProcessed += count($rows);
+
+                    Log::info('[SAW] Chunk berhasil diinsert.', [
+                        'jumlah_insert'   => count($rows),
+                        'total_sementara' => $totalProcessed,
+                    ]);
+                });
+
+            // kalau tidak ada baris yang diproses, kemungkinan tabel pelanggan kosong
+            if ($totalProcessed === 0) {
                 DB::rollBack();
-
                 Log::warning('[SAW] Data pelanggan kosong, generate dibatalkan.');
-
                 return redirect()
                     ->route('datapenilaian.index')
                     ->with('error', 'Data pelanggan kosong. Silakan import data terlebih dahulu.');
             }
 
-            /*
-            |--------------------------------------------------------------
-            | BOBOT SAW
-            |--------------------------------------------------------------
-            | C1 = Besar Tunggakan (rptag)  = 40%  BENEFIT
-            | C2 = Lama Tunggakan (lembar)  = 35%  BENEFIT
-            | C3 = Total Tagihan (rpbk)     = 20%  BENEFIT
-            | C4 = Daya Listrik (daya)      = 5%   BENEFIT
-            |--------------------------------------------------------------
-            */
-            $w1 = 0.40;
-            $w2 = 0.35;
-            $w3 = 0.20;
-            $w4 = 0.05;
-
-            /*
-            |--------------------------------------------------------------
-            | NILAI MAX UNTUK NORMALISASI (BENEFIT)
-            |--------------------------------------------------------------
-            | Semua kriteria BENEFIT → rumus: value / max(value)
-            | Fallback ke 1 agar tidak division by zero
-            |--------------------------------------------------------------
-            */
-            $maxC1 = $pelanggan->max('rptag')  ?: 1;
-            $maxC2 = $pelanggan->max('lembar') ?: 1;
-            $maxC3 = $pelanggan->max('rpbk')   ?: 1;
-            $maxC4 = $pelanggan->max('daya')   ?: 1;
-
-            Log::info('[SAW] Nilai MAX kriteria.', [
-                'maxC1 (rptag)'  => $maxC1,
-                'maxC2 (lembar)' => $maxC2,
-                'maxC3 (rpbk)'   => $maxC3,
-                'maxC4 (daya)'   => $maxC4,
-            ]);
-
-            $rows = [];
-
-            foreach ($pelanggan as $p) {
-
-                /*
-                |----------------------------------------------------------
-                | NILAI ASLI (dari pelanggan)
-                |----------------------------------------------------------
-                */
-                $c1 = (int) ($p->rptag  ?? 0);
-                $c2 = (int) ($p->lembar ?? 0);
-                $c3 = (int) ($p->rpbk   ?? 0);
-                $c4 = (int) ($p->daya   ?? 0);
-
-                /*
-                |----------------------------------------------------------
-                | NORMALISASI SAW — BENEFIT: value / max(value)
-                |----------------------------------------------------------
-                */
-                $norm_c1 = $maxC1 > 0 ? $c1 / $maxC1 : 0;
-                $norm_c2 = $maxC2 > 0 ? $c2 / $maxC2 : 0;
-                $norm_c3 = $maxC3 > 0 ? $c3 / $maxC3 : 0;
-                $norm_c4 = $maxC4 > 0 ? $c4 / $maxC4 : 0;
-
-                /*
-                |----------------------------------------------------------
-                | RUMUS SAW — Vi = Σ (wj × rij)
-                |----------------------------------------------------------
-                */
-                $total_nilai =
-                    ($norm_c1 * $w1) +
-                    ($norm_c2 * $w2) +
-                    ($norm_c3 * $w3) +
-                    ($norm_c4 * $w4);
-
-                /*
-                |----------------------------------------------------------
-                | KATEGORI PRIORITAS (berdasarkan Vi)
-                |----------------------------------------------------------
-                | >= 0.80 = Sangat Prioritas
-                | >= 0.60 = Prioritas
-                | >= 0.40 = Sedang
-                | <  0.40 = Rendah
-                |----------------------------------------------------------
-                */
-                if ($total_nilai >= 0.80) {
-                    $kategori = 'Sangat Prioritas';
-                } elseif ($total_nilai >= 0.60) {
-                    $kategori = 'Prioritas';
-                } elseif ($total_nilai >= 0.40) {
-                    $kategori = 'Sedang';
-                } else {
-                    $kategori = 'Rendah';
-                }
-
-                /*
-                |----------------------------------------------------------
-                | SIMPAN KE ARRAY
-                |----------------------------------------------------------
-                */
-                $rows[] = [
-                    'idpel'      => $p->idpel,
-                    'c1'         => $c1,
-                    'c2'         => $c2,
-                    'c3'         => $c3,
-                    'c4'         => $c4,
-                    'norm_c1'    => round($norm_c1, 6),
-                    'norm_c2'    => round($norm_c2, 6),
-                    'norm_c3'    => round($norm_c3, 6),
-                    'norm_c4'    => round($norm_c4, 6),
-                    'total_nilai' => round($total_nilai, 6),
-                    'kategori'   => $kategori,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-
-            // ------------------------------------------------------------
-            // LOG: sebelum insert
-            // ------------------------------------------------------------
-            Log::info('[SAW] Perhitungan SAW selesai, mulai insert ke database.', [
-                'jumlah_rows' => count($rows),
-            ]);
-
-            // ------------------------------------------------------------
-            // INSERT DATABASE — chunk 500 agar tidak melebihi
-            // batas parameter MySQL (max_allowed_packet)
-            // ------------------------------------------------------------
-            foreach (array_chunk($rows, 500) as $i => $chunk) {
-
-                DB::table('penilaian')->insert($chunk);
-
-                Log::info('[SAW] Chunk ke-' . ($i + 1) . ' berhasil diinsert.', [
-                    'jumlah' => count($chunk),
-                ]);
-            }
-
-            // ------------------------------------------------------------
-            // LOG: sebelum commit
-            // ------------------------------------------------------------
-            Log::info('[SAW] Semua chunk selesai, melakukan COMMIT.');
-
             DB::commit();
 
-            // ------------------------------------------------------------
-            // LOG: generate selesai + verifikasi jumlah tersimpan
-            // ------------------------------------------------------------
-            $finalCount = DB::table('penilaian')->count();
+            $finalCount = DB::table('penilaian')->where('periode', $periode)->count();
 
             Log::info('[SAW] GENERATE SELESAI.', [
-                'total_diproses'  => count($rows),
+                'total_diproses'  => $totalProcessed,
                 'total_tersimpan' => $finalCount,
-                'match'           => $finalCount === count($rows),
+                'match'           => $finalCount === $totalProcessed,
                 'finished_at'     => now()->toDateTimeString(),
             ]);
 
             return redirect()
                 ->route('datapenilaian.index')
-                ->with('success', 'Generate penilaian berhasil. ' . count($rows) . ' pelanggan diproses.')
+                ->with('success', 'Generate penilaian berhasil. ' . $totalProcessed . ' pelanggan diproses.')
                 ->with('active_tab', 'matriks');
 
         } catch (\Throwable $e) {
-
             DB::rollBack();
 
-            // ------------------------------------------------------------
-            // LOG: catat error secara lengkap agar mudah di-debug
-            // ------------------------------------------------------------
             Log::error('[SAW] GENERATE GAGAL.', [
                 'message' => $e->getMessage(),
                 'file'    => $e->getFile(),
@@ -340,27 +237,19 @@ class PenilaianController extends Controller
         }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | UPDATE KRITERIA
-    |--------------------------------------------------------------------------
-    */
+    // update bobot & tipe kriteria — validasi total harus pas 100% sebelum disimpan
     public function updateKriteria(Request $request)
     {
         $request->validate([
-            'kriteria'           => 'required|array',
-            'kriteria.*.id'      => 'required|exists:kriteria,id',
-            'kriteria.*.bobot'   => 'required|numeric|min:0|max:100',
-            'kriteria.*.tipe'    => 'required|in:benefit,cost',
+            'kriteria'         => 'required|array',
+            'kriteria.*.id'    => 'required|exists:kriteria,id',
+            'kriteria.*.bobot' => 'required|numeric|min:0|max:100',
+            'kriteria.*.tipe'  => 'required|in:benefit,cost',
         ]);
 
-        /*
-        |----------------------------------------------------------------------
-        | VALIDASI TOTAL BOBOT = 100%
-        |----------------------------------------------------------------------
-        */
         $totalBobot = collect($request->kriteria)->sum('bobot');
 
+        // tolak kalau bobotnya tidak genap 100
         if ($totalBobot != 100) {
             return back()->with('error', 'Total bobot harus 100%. Saat ini: ' . $totalBobot . '%');
         }
@@ -368,9 +257,7 @@ class PenilaianController extends Controller
         DB::beginTransaction();
 
         try {
-
             foreach ($request->kriteria as $k) {
-
                 DB::table('kriteria')
                     ->where('id', $k['id'])
                     ->update([
@@ -379,13 +266,9 @@ class PenilaianController extends Controller
                     ]);
             }
 
-            /*
-            |------------------------------------------------------------------
-            | RESET NORMALISASI & RANKING setelah bobot berubah
-            |------------------------------------------------------------------
-            */
-            DB::table('normalisasi')->truncate();
-            DB::table('ranking')->truncate();
+            // jangan kosongkan ranking/normalisasi karena ini akan merusak data history
+            // DB::table('normalisasi')->truncate();
+            // DB::table('ranking')->truncate();
 
             DB::commit();
 
@@ -399,7 +282,6 @@ class PenilaianController extends Controller
                 ->with('active_tab', 'kriteria');
 
         } catch (\Throwable $e) {
-
             DB::rollBack();
 
             Log::error('[SAW] Gagal update kriteria.', [

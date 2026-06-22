@@ -12,7 +12,7 @@
 
 <div class="px-4 py-4">
 
-    {{-- FORM --}}
+    {{-- Kartu form untuk mengedit kriteria --}}
     <div class="col-lg-7">
         <div class="card">
             <div class="card-header">
@@ -22,10 +22,11 @@
 
             <div class="card-body">
 
+                {{-- Form pengiriman update data kriteria ke server --}}
                 <form method="POST" action="/datakriteria/update/{{ $kriteria->id }}">
                     @csrf
 
-                    {{-- Nama --}}
+                    {{-- Input nama kriteria --}}
                     <div class="mb-4">
                         <label class="pln-label">Nama Kriteria</label>
                         <input type="text"
@@ -35,7 +36,7 @@
                                required>
                     </div>
 
-                    {{-- Tipe --}}
+                    {{-- Pilihan tipe kriteria (Benefit atau Cost) --}}
                     <div class="mb-4">
                         <label class="pln-label">Tipe Kriteria</label>
 
@@ -72,7 +73,7 @@
                         </div>
                     </div>
 
-                    {{-- BOBOT --}}
+                    {{-- Input bobot kriteria dalam persen --}}
                     <div class="mb-4">
                         <label class="pln-label">
                             Bobot (%)
@@ -96,7 +97,7 @@
                                required>
                     </div>
 
-                    {{-- KETERANGAN --}}
+                    {{-- Textarea keterangan kriteria --}}
                     <div class="mb-4">
                         <label class="pln-label">Keterangan</label>
                         <textarea name="keterangan"
@@ -104,7 +105,7 @@
                                   rows="3">{{ $kriteria->keterangan }}</textarea>
                     </div>
 
-                    {{-- BUTTON --}}
+                    {{-- Tombol aksi update atau kembali --}}
                     <div style="display:flex;justify-content:space-between">
 
                         <a href="/datakriteria" class="btn-pln-ghost">
@@ -143,7 +144,7 @@
 }
 </style>
 
-{{-- SCRIPT --}}
+{{-- Script untuk sinkronisasi nilai slider bobot dengan input number --}}
 <script>
 const range  = document.getElementById('bobot-range');
 const number = document.getElementById('bobot');

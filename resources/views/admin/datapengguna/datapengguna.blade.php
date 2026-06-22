@@ -17,14 +17,14 @@
 
     .page-wrap   { max-width: 860px; padding: 24px 20px 48px; }
     .page-hdr    { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
-    .page-hdr h1 { font-size: 1.25rem; font-weight: 700; margin: 0 0 2px; }
-    .page-hdr p  { font-size: .875rem; color: var(--c-muted); margin: 0; }
+    .page-hdr h1 { font-size: 1.375rem; font-weight: 700; margin: 0 0 2px; }
+    .page-hdr p  { font-size: 1rem; color: var(--c-muted); margin: 0; }
 
     .btn-add {
         display: inline-flex; align-items: center; gap: 7px;
         background: var(--c-primary); color: #fff;
         border: none; border-radius: var(--radius-sm);
-        padding: 8px 18px; font-size: .875rem; font-weight: 600;
+        padding: 8px 18px; font-size: 1rem; font-weight: 600;
         cursor: pointer; text-decoration: none; white-space: nowrap;
         transition: background .15s;
     }
@@ -43,7 +43,7 @@
     }
     .user-tbl thead th {
         padding: 10px 14px;
-        font-size: .7rem; font-weight: 700;
+        font-size: 0.825rem; font-weight: 700;
         text-transform: uppercase; letter-spacing: .06em; color: var(--c-muted);
     }
     .user-tbl thead th:last-child { text-align: right; }
@@ -51,27 +51,27 @@
     .user-tbl tbody tr { border-bottom: 1px solid #F1F5F9; transition: background .1s; }
     .user-tbl tbody tr:hover { background: var(--c-surface); }
     .user-tbl tbody tr:last-child { border-bottom: none; }
-    .user-tbl td { padding: 11px 14px; vertical-align: middle; font-size: .875rem; }
+    .user-tbl td { padding: 11px 14px; vertical-align: middle; font-size: 1rem; }
     .user-tbl td:last-child { text-align: right; }
 
     .user-cell { display: flex; align-items: center; gap: 11px; }
     .ava {
         width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
         display: flex; align-items: center; justify-content: center;
-        font-size: .8125rem; font-weight: 700;
+        font-size: 0.9375rem; font-weight: 700;
     }
     .ava-admin      { background: #E6F1FB; color: #0C447C; }
     .ava-staff      { background: #EAF3DE; color: #27500A; }
     .ava-supervisor { background: #FAEEDA; color: #633806; }
     .ava-default    { background: #F1EFE8; color: #444441; }
 
-    .u-name  { font-weight: 600; font-size: .875rem; color: var(--c-text); }
-    .u-email { font-size: .775rem; color: var(--c-muted); }
+    .u-name  { font-weight: 600; font-size: 1rem; color: var(--c-text); }
+    .u-username { font-size: 0.9rem; color: var(--c-muted); }
 
     .pill {
         display: inline-flex; align-items: center;
         padding: 3px 10px; border-radius: 99px;
-        font-size: .75rem; font-weight: 600;
+        font-size: 0.875rem; font-weight: 600;
     }
     .pill-admin      { background: #E6F1FB; color: #0C447C; }
     .pill-staff      { background: #EAF3DE; color: #27500A; }
@@ -89,12 +89,18 @@
     .act-btn:hover { background: var(--c-surface); }
     .act-btn svg   { width: 14px; height: 14px; }
     .act-btn.del   { color: #DC2626; }
+
+    @media (max-width: 576px) {
+        .page-hdr { flex-direction: column; gap: 12px; align-items: flex-start; }
+        .page-hdr h1 { font-size: 1.25rem; }
+    }
 </style>
 @endpush
 
 @section('content')
 <div class="px-4 py-4">
 
+    {{-- Header halaman dan tombol tambah pengguna --}}
     <div class="page-hdr">
         <div>
             <h1>Data Pengguna</h1>
@@ -115,6 +121,7 @@
     </div>
     @endif
 
+    {{-- Kartu tabel untuk menampilkan daftar pengguna --}}
     <div class="table-card">
         <div class="table-responsive">
         <table class="user-tbl">
@@ -133,6 +140,7 @@
                 </tr>
             </thead>
             <tbody>
+                {{-- Looping data pengguna dari database --}}
                 @forelse($users as $user)
                 <tr>
                     <td class="ps-4">
@@ -150,7 +158,7 @@
                             </div>
                             <div>
                                 <div class="u-name">{{ $user->name }}</div>
-                                <div class="u-email">{{ $user->email }}</div>
+                                <div class="u-username">{{ $user->username }}</div>
                             </div>
                         </div>
                     </td>
@@ -173,6 +181,7 @@
                             <svg fill="none" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         </a>
                         @endpermission
+                        {{-- Form untuk menghapus pengguna dengan alert konfirmasi --}}
                         @permission('users:delete')
                         <form action="/datapengguna/delete/{{ $user->id }}" method="POST" style="display:inline">
                             @csrf
@@ -186,7 +195,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" class="text-center py-5 text-muted" style="font-size:.875rem">
+                    <td colspan="4" class="text-center py-5 text-muted" style="font-size: 1rem">
                         Belum ada data pengguna.
                     </td>
                 </tr>

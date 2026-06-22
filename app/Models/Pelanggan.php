@@ -12,6 +12,7 @@ class Pelanggan extends Model
 
     protected $fillable = [
     'idpel',
+    'periode',
     'nama',
     'unitap',
     'kode_petugas',
@@ -21,6 +22,7 @@ class Pelanggan extends Model
     'rpbk',
     'petugas_id',
     'status_penagihan',
+    'historis_tunggakan',
 ];
 
     /**
@@ -36,9 +38,18 @@ class Pelanggan extends Model
         'lembar' => 'integer',
         'rptag' => 'float',
         'rpbk' => 'float',
+        'historis_tunggakan' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    /**
+     * Relasi ke Histori Tunggakan
+     */
+    public function historiTunggakan()
+    {
+        return $this->hasMany(\App\Models\HistoriTunggakan::class, 'idpel', 'idpel');
+    }
 
     /**
      * Scope: search by idpel or nama
@@ -51,6 +62,17 @@ class Pelanggan extends Model
 
         return $query->where('idpel', 'LIKE', "%{$search}%")
             ->orWhere('nama', 'LIKE', "%{$search}%");
+    }
+
+    /**
+     * Scope: filter by periode
+     */
+    public function scopeByPeriode($query, $periode)
+    {
+        if (empty($periode)) {
+            return $query;
+        }
+        return $query->where('periode', $periode);
     }
 
     /**
@@ -110,6 +132,8 @@ class Pelanggan extends Model
             'daya_low' => $query->orderBy('daya', 'asc'),
             'rptag_high' => $query->orderBy('rptag', 'desc'),
             'rptag_low' => $query->orderBy('rptag', 'asc'),
+            'historis_high' => $query->orderBy('historis_tunggakan', 'desc'),
+            'historis_low' => $query->orderBy('historis_tunggakan', 'asc'),
             default => $query->orderBy('created_at', 'desc'),
         };
     }

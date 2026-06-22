@@ -86,7 +86,7 @@
     }
 
     .form-card-hdr h2{
-        font-size:1.2rem;
+        font-size: 1.325rem;
         font-weight:700;
         margin:0 0 2px;
         color:var(--c-text);
@@ -95,7 +95,7 @@
     .form-card-hdr p{
         margin:0;
         color:var(--c-muted);
-        font-size:.875rem;
+        font-size: 1rem;
     }
 
     /* ── BODY ────────────────────────────────── */
@@ -113,7 +113,7 @@
 
         margin-bottom:7px;
 
-        font-size:.75rem;
+        font-size: 0.875rem;
         font-weight:700;
 
         text-transform:uppercase;
@@ -135,7 +135,7 @@
         background:#F8FAFC;
 
         color:var(--c-text);
-        font-size:.92rem;
+        font-size: 1.045rem;
 
         outline:none;
 
@@ -205,7 +205,7 @@
 
         margin-bottom:20px;
 
-        font-size:.875rem;
+        font-size: 1rem;
     }
 
     .alert-custom div+div{
@@ -242,7 +242,7 @@
 
         border-radius:var(--radius-sm);
 
-        font-size:.9rem;
+        font-size: 1.025rem;
         font-weight:600;
 
         text-decoration:none;
@@ -332,7 +332,7 @@
         }
 
         .form-card-hdr h2{
-            font-size:1.05rem;
+            font-size: 1.175rem;
         }
 
         .fg input,
@@ -379,6 +379,7 @@
 
             </div>
 
+            {{-- Form pengiriman data pengguna baru ke server --}}
             <form method="POST" action="/datapengguna/store">
                 @csrf
 
@@ -392,6 +393,7 @@
                     </div>
                     @endif
 
+                    {{-- Input nama lengkap pengguna --}}
                     <div class="fg">
                         <label>Nama Lengkap</label>
 
@@ -402,16 +404,7 @@
                                required>
                     </div>
 
-                    <div class="fg">
-                        <label>Email</label>
-
-                        <input type="email"
-                               name="email"
-                               value="{{ old('email') }}"
-                               placeholder="contoh@email.com"
-                               required>
-                    </div>
-
+                    {{-- Input password dengan fitur show/hide --}}
                     <div class="fg">
                         <label>Password</label>
 
@@ -444,6 +437,7 @@
                         </div>
                     </div>
 
+                    {{-- Baris form untuk pilihan Role dan Status pengguna --}}
                     <div class="fg-row">
 
                         <div class="fg">
@@ -491,6 +485,7 @@
 
                 </div>
 
+                {{-- Tombol aksi simpan atau kembali --}}
                 <div class="form-footer">
 
                     <a href="/datapengguna"
@@ -539,6 +534,7 @@
 
 @push('scripts')
 <script>
+    // Script untuk menampilkan atau menyembunyikan password
     function togglePwd(id)
     {
         const input = document.getElementById(id);

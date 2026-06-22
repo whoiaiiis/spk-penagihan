@@ -17,14 +17,14 @@
 
     .page-wrap   { max-width: 1000px; padding: 24px 20px 48px; }
     .page-hdr    { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:20px; }
-    .page-hdr h1 { font-size:1.25rem; font-weight:700; margin:0 0 2px; }
-    .page-hdr p  { font-size:.875rem; color:var(--c-muted); margin:0; }
+    .page-hdr h1 { font-size: 1.375rem; font-weight:700; margin:0 0 2px; }
+    .page-hdr p  { font-size: 1rem; color:var(--c-muted); margin:0; }
 
     .btn-add {
         display:inline-flex; align-items:center; gap:7px;
         background:var(--c-primary); color:#fff;
         border:none; border-radius:var(--radius-sm);
-        padding:8px 18px; font-size:.875rem; font-weight:600;
+        padding:8px 18px; font-size: 1rem; font-weight:600;
         cursor:pointer; text-decoration:none; white-space:nowrap;
         transition:background .15s;
     }
@@ -40,13 +40,13 @@
     .filter-row { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; }
     .fg-f { display:flex; flex-direction:column; gap:4px; flex:1; min-width:140px; }
     .fg-f label {
-        font-size:.7rem; font-weight:700; text-transform:uppercase;
+        font-size: 0.825rem; font-weight:700; text-transform:uppercase;
         letter-spacing:.06em; color:var(--c-muted);
     }
     .fg-f input, .fg-f select {
         height:36px; padding:0 10px;
         border:1px solid var(--c-border); border-radius:var(--radius-sm);
-        font-size:.875rem; color:var(--c-text); background:#F8FAFC;
+        font-size: 1rem; color:var(--c-text); background:#F8FAFC;
         outline:none; transition:border-color .15s;
     }
     .fg-f input:focus, .fg-f select:focus { border-color:var(--c-primary); background:#fff; }
@@ -55,7 +55,7 @@
         display:inline-flex; align-items:center; gap:6px;
         height:36px; padding:0 16px; border-radius:var(--radius-sm);
         border:1px solid var(--c-border); background:#fff;
-        font-size:.875rem; color:var(--c-muted); cursor:pointer;
+        font-size: 1rem; color:var(--c-muted); cursor:pointer;
         transition:all .15s; white-space:nowrap;
     }
     .btn-filter:hover { background:var(--c-surface); color:var(--c-text); }
@@ -64,7 +64,7 @@
         display:inline-flex; align-items:center;
         height:36px; padding:0 14px; border-radius:var(--radius-sm);
         border:1px solid var(--c-border); background:#fff;
-        font-size:.875rem; color:var(--c-muted); cursor:pointer;
+        font-size: 1rem; color:var(--c-muted); cursor:pointer;
         text-decoration:none; transition:background .15s;
     }
     .btn-reset:hover { background:var(--c-surface); }
@@ -77,18 +77,18 @@
     .pet-tbl { width:100%; border-collapse:collapse; table-layout:fixed; }
     .pet-tbl thead tr { background:var(--c-surface); border-bottom:2px solid var(--c-border); }
     .pet-tbl thead th {
-        padding:10px 14px; font-size:.7rem; font-weight:700;
+        padding:10px 14px; font-size: 0.825rem; font-weight:700;
         text-transform:uppercase; letter-spacing:.06em; color:var(--c-muted);
     }
     .pet-tbl thead th:last-child { text-align:right; }
     .pet-tbl tbody tr { border-bottom:1px solid #F1F5F9; transition:background .1s; }
     .pet-tbl tbody tr:hover { background:var(--c-surface); }
     .pet-tbl tbody tr:last-child { border-bottom:none; }
-    .pet-tbl td { padding:10px 14px; font-size:.875rem; vertical-align:middle; }
+    .pet-tbl td { padding:10px 14px; font-size: 1rem; vertical-align:middle; }
     .pet-tbl td:last-child { text-align:right; }
 
     .kode-chip {
-        font-family:monospace; font-size:.8rem;
+        font-family:monospace; font-size: 0.925rem;
         background:#F1F5F9; color:#475569;
         padding:3px 8px; border-radius:6px;
         border:1px solid var(--c-border);
@@ -97,18 +97,18 @@
         width:36px; height:36px; border-radius:50%; flex-shrink:0;
         background:#E6F1FB; color:#0C447C;
         display:flex; align-items:center; justify-content:center;
-        font-size:.8125rem; font-weight:700;
+        font-size: 0.9375rem; font-weight:700;
     }
     .user-cell { display:flex; align-items:center; gap:10px; }
-    .u-name  { font-weight:600; font-size:.875rem; }
-    .u-email { font-size:.775rem; color:var(--c-muted); }
+    .u-name  { font-weight:600; font-size: 1rem; }
+    .u-email { font-size: 0.9rem; color:var(--c-muted); }
 
-    .pill { display:inline-flex; align-items:center; padding:3px 10px; border-radius:99px; font-size:.75rem; font-weight:600; }
+    .pill { display:inline-flex; align-items:center; padding:3px 10px; border-radius:99px; font-size: 0.875rem; font-weight:600; }
     .pill-aktif    { background:#EAF3DE; color:#27500A; }
     .pill-nonaktif { background:#FCEBEB; color:#791F1F; }
 
     .wilayah-tag {
-        font-size:.8rem; color:#475569;
+        font-size: 0.925rem; color:#475569;
         display:inline-flex; align-items:center; gap:4px;
     }
     .wilayah-tag svg { width:13px; height:13px; opacity:.6; }
@@ -139,13 +139,23 @@
         padding:12px 18px; border-top:1px solid var(--c-border);
         display:flex; justify-content:center;
     }
+
+    @media (max-width: 768px) {
+        .filter-row { flex-direction: column; align-items: stretch; }
+        .fg-f { width: 100%; }
+        .btn-filter, .btn-reset { width: 100%; justify-content: center; }
+    }
+    @media (max-width: 576px) {
+        .page-hdr { flex-direction: column; gap: 12px; align-items: flex-start; }
+        .page-hdr h1 { font-size: 1.25rem; }
+    }
 </style>
 @endpush
 
 @section('content')
 <div class="px-4 py-4">
 
-    {{-- Header --}}
+    {{-- Header halaman dan tombol tambah petugas --}}
     <div class="page-hdr">
         <div>
             <h1>Data Petugas</h1>
@@ -166,7 +176,7 @@
     </div>
     @endif
 
-    {{-- Filter --}}
+    {{-- Form pencarian dan filter data petugas --}}
     <div class="filter-card">
         <form method="GET" action="/datapetugas">
             <div class="filter-row">
@@ -220,7 +230,7 @@
         </form>
     </div>
 
-    {{-- Table --}}
+    {{-- Kartu tabel yang menampilkan daftar petugas --}}
     <div class="table-card">
         <div class="table-responsive">
         <table class="pet-tbl">
@@ -242,6 +252,7 @@
                 </tr>
             </thead>
             <tbody>
+                {{-- Looping untuk menampilkan data petugas dari database --}}
                 @forelse($petugas as $p)
                 <tr>
                     <td class="ps-4">
@@ -277,6 +288,7 @@
         </a>
         @endpermission
 
+        {{-- Form untuk menghapus data petugas dengan alert konfirmasi --}}
         @permission('petugas:delete')
         <form action="/datapetugas/delete/{{ $p->id }}" method="POST">
             @csrf
@@ -301,7 +313,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="text-center py-5" style="color:var(--c-muted);font-size:.875rem">
+                    <td colspan="6" class="text-center py-5" style="color:var(--c-muted);font-size: 1rem">
                         Data petugas tidak ditemukan.
                     </td>
                 </tr>
@@ -310,6 +322,7 @@
         </table>
         </div>
 
+        {{-- Menampilkan link pagination jika data lebih dari satu halaman --}}
         <div class="tbl-footer">
             {{ $petugas->links() }}
         </div>

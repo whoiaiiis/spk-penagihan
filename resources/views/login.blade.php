@@ -87,15 +87,15 @@
         box-shadow: 0 6px 18px rgba(255,193,7,.35);
     }
     .left-logo-badge img { width: 34px; height: 34px; object-fit: contain; display: block; }
-    .left-logo-name { font-size: 17px; font-weight: 700; color: #fff; line-height: 1.1; margin-bottom: 2px; }
-    .left-logo-sub  { font-size: 11px; color: rgba(255,255,255,.55); font-weight: 500; text-transform: uppercase; letter-spacing: .8px; line-height: 1.3; }
+    .left-logo-name { font-size: 19px; font-weight: 700; color: #fff; line-height: 1.1; margin-bottom: 2px; }
+    .left-logo-sub  { font-size: 13px; color: rgba(255,255,255,.55); font-weight: 500; text-transform: uppercase; letter-spacing: .8px; line-height: 1.3; }
 
     .left-headline {
-        font-size: 32px; font-weight: 800; color: #fff;
+        font-size: 34px; font-weight: 800; color: #fff;
         line-height: 1.2; letter-spacing: -.5px; margin-bottom: 16px;
     }
     .left-headline span { color: var(--yellow); }
-    .left-desc { font-size: 14px; color: rgba(255,255,255,.5); line-height: 1.7; max-width: 320px; }
+    .left-desc { font-size: 16px; color: rgba(255,255,255,.5); line-height: 1.7; max-width: 320px; }
 
     .left-features { display: flex; flex-direction: column; gap: 10px; margin-top: 40px; position: relative; z-index: 2; }
     .feature-chip {
@@ -104,7 +104,7 @@
         background: rgba(255,255,255,.06);
         border: 1px solid rgba(255,255,255,.08);
         border-radius: 10px;
-        font-size: 13px; color: rgba(255,255,255,.75); font-weight: 500;
+        font-size: 15px; color: rgba(255,255,255,.75); font-weight: 500;
         transition: background .15s;
     }
     .feature-chip:hover { background: rgba(255,255,255,.1); }
@@ -113,10 +113,10 @@
         background: rgba(245,166,35,.15);
         border-radius: 7px;
         display: flex; align-items: center; justify-content: center;
-        color: var(--yellow); font-size: 13px; flex-shrink: 0;
+        color: var(--yellow); font-size: 15px; flex-shrink: 0;
     }
 
-    .left-bottom { position: relative; z-index: 2; font-size: 11px; color: rgba(255,255,255,.25); font-weight: 500; }
+    .left-bottom { position: relative; z-index: 2; font-size: 13px; color: rgba(255,255,255,.25); font-weight: 500; }
 
     /* ── RIGHT PANEL ── */
     .login-right {
@@ -142,22 +142,22 @@
         padding: 4px 10px;
         background: var(--blue-light); color: var(--blue);
         border-radius: 99px;
-        font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .6px;
+        font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .6px;
         margin-bottom: 14px;
     }
-    .form-header h2 { font-size: 26px; font-weight: 800; color: var(--text); letter-spacing: -.4px; margin-bottom: 6px; }
-    .form-header p  { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .form-header h2 { font-size: 28px; font-weight: 800; color: var(--text); letter-spacing: -.4px; margin-bottom: 6px; }
+    .form-header p  { font-size: 15px; color: var(--muted); line-height: 1.6; }
 
     /* Alert */
     .login-alert {
         display: flex; align-items: flex-start; gap: 10px;
         padding: 12px 14px;
         background: #FEE8E8; border: 1px solid #F5AAAA; border-radius: 10px;
-        font-size: 13px; color: #8B1A1A;
+        font-size: 15px; color: #8B1A1A;
         margin-bottom: 20px;
         animation: shake .35s ease;
     }
-    .login-alert i { margin-top: 1px; flex-shrink: 0; font-size: 15px; }
+    .login-alert i { margin-top: 1px; flex-shrink: 0; font-size: 17px; }
     @keyframes shake {
         0%,100% { transform: translateX(0); }
         20%      { transform: translateX(-5px); }
@@ -167,19 +167,19 @@
     /* Field group */
     .field-group { margin-bottom: 18px; }
     .field-label {
-        display: block; font-size: 12px; font-weight: 600; color: #4A5A6A;
+        display: block; font-size: 14px; font-weight: 600; color: #4A5A6A;
         margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px;
     }
     .field-wrap { position: relative; }
     .field-icon {
         position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-        color: var(--muted); font-size: 15px; pointer-events: none; transition: color .15s;
+        color: var(--muted); font-size: 17px; pointer-events: none; transition: color .15s;
     }
     .field-input {
         width: 100%;
         padding: 10px 12px 10px 38px;
         border: 1.5px solid var(--border); border-radius: 10px;
-        font-size: 13px; font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 15px; font-family: 'Plus Jakarta Sans', sans-serif;
         color: var(--text); background: #FAFBFD;
         transition: border-color .15s, box-shadow .15s, background .15s;
         outline: none;
@@ -192,20 +192,20 @@
     .field-input.has-toggle { padding-right: 44px; }
     .field-icon-right {
         position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-        color: var(--muted); font-size: 15px; cursor: pointer; transition: color .15s;
+        color: var(--muted); font-size: 17px; cursor: pointer; transition: color .15s;
         background: none; border: none; padding: 0; display: flex;
     }
     .field-icon-right:hover { color: var(--text); }
 
     /* Error hint */
-    .field-error { font-size: 12px; color: #C0392B; margin-top: 5px; display: block; }
+    .field-error { font-size: 14px; color: #C0392B; margin-top: 5px; display: block; }
 
     /* Submit */
     .btn-login {
         width: 100%; padding: 12px;
         background: var(--blue); color: #fff;
         border: none; border-radius: 10px;
-        font-size: 14px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 16px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif;
         cursor: pointer; transition: background .15s, box-shadow .15s, transform .1s;
         display: flex; align-items: center; justify-content: center; gap: 8px;
         margin-top: 8px; position: relative; overflow: hidden;
@@ -234,7 +234,7 @@
     .form-footer {
         margin-top: 32px; padding-top: 20px;
         border-top: 1px solid var(--border);
-        text-align: center; font-size: 11px; color: var(--muted);
+        text-align: center; font-size: 13px; color: var(--muted);
     }
 
     /* ── RESPONSIVE ── */
@@ -242,15 +242,15 @@
         .login-shell { grid-template-columns: 0.9fr 1.1fr; }
         .login-left  { padding: 40px; }
         .login-right { padding: 40px 36px; }
-        .left-headline { font-size: 28px; }
-        .form-header h2 { font-size: 24px; }
+        .left-headline { font-size: 30px; }
+        .form-header h2 { font-size: 26px; }
         .login-form-wrap { max-width: 350px; }
     }
     @media (min-width: 769px) and (max-width: 1024px) {
         .login-shell { grid-template-columns: 1fr; }
         .login-left  { display: none; }
         .login-right { padding: 36px 28px; min-height: 100vh; }
-        .form-header h2 { font-size: 22px; }
+        .form-header h2 { font-size: 24px; }
         .login-form-wrap { max-width: 340px; }
     }
     @media (max-width: 768px) {
@@ -259,12 +259,12 @@
         .login-right { padding: 28px 20px; min-height: 100vh; }
         .login-right::before { width: 100px; height: 100px; }
         .form-header { margin-bottom: 24px; }
-        .form-header h2 { font-size: 20px; }
+        .form-header h2 { font-size: 22px; }
         .field-group  { margin-bottom: 16px; }
-        .field-input  { padding: 9px 12px 9px 34px; font-size: 12px; border-radius: 8px; }
-        .field-icon   { left: 10px; font-size: 14px; }
+        .field-input  { padding: 9px 12px 9px 34px; font-size: 14px; border-radius: 8px; }
+        .field-icon   { left: 10px; font-size: 16px; }
         .field-icon-right { right: 10px; }
-        .btn-login    { padding: 10px; font-size: 13px; border-radius: 8px; min-height: 44px; }
+        .btn-login    { padding: 10px; font-size: 15px; border-radius: 8px; min-height: 44px; }
         .field-input  { min-height: 44px; }
         .login-form-wrap { max-width: 100%; }
     }
@@ -272,22 +272,22 @@
         .login-right  { padding: 20px 16px; }
         .form-header  { margin-bottom: 20px; text-align: center; }
         .form-header-eyebrow { display: flex; justify-content: center; }
-        .form-header h2 { font-size: 18px; margin-bottom: 4px; }
-        .form-header p  { font-size: 11px; }
-        .field-input  { font-size: 11px; padding: 8px 12px 8px 32px; }
-        .btn-login    { padding: 10px; font-size: 12px; margin-top: 4px; }
+        .form-header h2 { font-size: 20px; margin-bottom: 4px; }
+        .form-header p  { font-size: 13px; }
+        .field-input  { font-size: 13px; padding: 8px 12px 8px 32px; }
+        .btn-login    { padding: 10px; font-size: 14px; margin-top: 4px; }
         .field-group  { margin-bottom: 14px; }
-        .form-footer  { font-size: 9px; margin-top: 20px; }
+        .form-footer  { font-size: 11px; margin-top: 20px; }
     }
     @media (max-width: 400px) {
         .login-right  { padding: 16px 12px; }
         .form-header  { margin-bottom: 16px; }
-        .form-header h2 { font-size: 16px; }
+        .form-header h2 { font-size: 18px; }
         .field-group  { margin-bottom: 12px; }
-        .field-label  { font-size: 10px; }
-        .field-input  { font-size: 10px; padding: 7px 12px 7px 30px; }
-        .btn-login    { padding: 9px; font-size: 11px; }
-        .form-footer  { font-size: 8px; }
+        .field-label  { font-size: 12px; }
+        .field-input  { font-size: 12px; padding: 7px 12px 7px 30px; }
+        .btn-login    { padding: 9px; font-size: 13px; }
+        .form-footer  { font-size: 10px; }
     }
     </style>
 </head>
@@ -367,6 +367,7 @@
             </div>
             @endif
 
+            {{-- Form untuk proses login --}}
             <form method="POST" action="/login" id="login-form" autocomplete="off">
                 @csrf
 
@@ -436,7 +437,7 @@
 </div>
 
 <script>
-// Toggle password visibility
+// Fungsi untuk toggle visibilitas password
 document.getElementById('toggle-pw').addEventListener('click', function () {
     const input = document.getElementById('password');
     const icon  = document.getElementById('pw-icon');
@@ -449,7 +450,7 @@ document.getElementById('toggle-pw').addEventListener('click', function () {
     }
 });
 
-// Loading state on submit
+// Menampilkan animasi loading saat form disubmit
 document.getElementById('login-form').addEventListener('submit', function () {
     document.getElementById('btn-login').classList.add('loading');
 });

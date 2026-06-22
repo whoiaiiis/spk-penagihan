@@ -51,6 +51,7 @@
 </head>
 <body>
 
+    {{-- Bagian Header Laporan PDF --}}
     <div class="header">
         <table>
             <tr>
@@ -70,6 +71,7 @@
         </table>
     </div>
 
+    {{-- Informasi meta laporan seperti tanggal cetak dan filter aktif --}}
     <div class="meta-info">
         <table>
             <tr>
@@ -96,21 +98,26 @@
         </table>
     </div>
 
+    {{-- Tabel utama data ranking --}}
     <div class="table-wrap">
         <table class="data-table">
             <thead>
                 <tr>
                     <th class="center" style="width:40px;">Rank</th>
-                    <th style="width:100px;">IDPEL</th>
+                    <th style="width:90px;">IDPEL</th>
                     <th>Nama Pelanggan</th>
-                    {{-- ✅ Unitap menggantikan RBM --}}
-                    <th style="width:80px;">Unitap</th>
-                    <th class="right" style="width:80px;">Nilai Vi</th>
-                    <th class="center" style="width:90px;">Persentase</th>
-                    <th class="center" style="width:120px;">Kategori Prioritas</th>
+                    <th style="width:60px;">Unitap</th>
+                    <th class="right" title="Historis Tunggakan">C1(Hist)</th>
+                    <th class="right" title="Besar Tunggakan">C2(Rp)</th>
+                    <th class="right" title="Lama Tunggakan">C3(Bln)</th>
+                    <th class="right" title="Total Tagihan">C4(Rp)</th>
+                    <th class="right" style="width:70px;">Nilai Vi</th>
+                    <th class="center" style="width:80px;">%</th>
+                    <th class="center" style="width:100px;">Kategori</th>
                 </tr>
             </thead>
             <tbody>
+                {{-- Looping baris data ranking untuk ditampilkan di PDF --}}
                 @if(count($ranking) > 0)
                     @php
                         $max_nilai = $stats['max_nilai'] > 0 ? $stats['max_nilai'] : 1;
@@ -128,8 +135,11 @@
                             <td class="center">{{ $row->ranking }}</td>
                             <td>{{ $row->idpel }}</td>
                             <td>{{ $row->nama ?? '-' }}</td>
-                            {{-- ✅ unitap — ganti rbm --}}
                             <td>{{ $row->unitap ?? '-' }}</td>
+                            <td class="right">{{ number_format($row->c1 ?? 0, 0, ',', '.') }}</td>
+                            <td class="right">{{ number_format($row->c2 ?? 0, 0, ',', '.') }}</td>
+                            <td class="right">{{ number_format($row->c3 ?? 0, 0, ',', '.') }}</td>
+                            <td class="right">{{ number_format($row->c4 ?? 0, 0, ',', '.') }}</td>
                             <td class="right" style="font-family:monospace; font-size:10pt;">
                                 {{ number_format($row->nilai_akhir, 4, ',', '.') }}
                             </td>
@@ -141,7 +151,7 @@
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="7" class="center" style="padding:20px;">
+                        <td colspan="11" class="center" style="padding:20px;">
                             Tidak ada data yang sesuai dengan filter.
                         </td>
                     </tr>
@@ -150,6 +160,7 @@
         </table>
     </div>
 
+    {{-- Bagian footer halaman PDF (nomor halaman dan info cetak) --}}
     <div class="footer">
         <table>
             <tr>

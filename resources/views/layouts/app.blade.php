@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'SPK Penagihan') — PLN</title>
+    
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -65,7 +67,7 @@
     html, body {
         height: 100%;
         font-family: var(--font-sans);
-        font-size: 14px;
+        font-size: 16px;
         color: var(--text-primary);
         background: var(--bg-body);
         -webkit-font-smoothing: antialiased;
@@ -141,13 +143,13 @@
         line-height: 1.25;
     }
     .sidebar-brand-name {
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 700;
         color: #fff;
         letter-spacing: .2px;
     }
     .sidebar-brand-sub {
-        font-size: 10px;
+        font-size: 12px;
         color: rgba(255,255,255,.4);
         font-weight: 500;
         text-transform: uppercase;
@@ -164,7 +166,7 @@
         background: rgba(255,255,255,.1);
         border: none;
         color: rgba(255,255,255,.7);
-        font-size: 16px;
+        font-size: 18px;
         align-items: center;
         justify-content: center;
         cursor: pointer;
@@ -179,7 +181,7 @@
     /* Nav section label */
     .sidebar-label {
         padding: 18px 20px 6px;
-        font-size: 10px;
+        font-size: 12px;
         font-weight: 600;
         color: rgba(255,255,255,.3);
         text-transform: uppercase;
@@ -202,7 +204,7 @@
         padding: 8px 10px;
         border-radius: var(--radius-md);
         color: rgba(255,255,255,.65);
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 500;
         text-decoration: none;
         transition: background var(--transition), color var(--transition);
@@ -232,7 +234,7 @@
     .nav-item .nav-icon {
         width: 18px;
         text-align: center;
-        font-size: 15px;
+        font-size: 17px;
         flex-shrink: 0;
         opacity: .8;
     }
@@ -260,14 +262,14 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 700;
         color: var(--pln-blue-deeper);
         flex-shrink: 0;
     }
     .sidebar-user-info { flex: 1; min-width: 0; }
     .sidebar-user-name {
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 600;
         color: #fff;
         white-space: nowrap;
@@ -275,7 +277,7 @@
         text-overflow: ellipsis;
     }
     .sidebar-user-role {
-        font-size: 10px;
+        font-size: 12px;
         color: rgba(255,255,255,.4);
         text-transform: capitalize;
     }
@@ -288,7 +290,7 @@
         align-items: center;
         justify-content: center;
         color: rgba(255,255,255,.5);
-        font-size: 13px;
+        font-size: 15px;
         cursor: pointer;
         text-decoration: none;
         transition: background var(--transition), color var(--transition);
@@ -335,7 +337,7 @@
         min-width: 0;
     }
     .topbar-page-title {
-        font-size: 15px;
+        font-size: 17px;
         font-weight: 600;
         color: var(--text-primary);
         white-space: nowrap;
@@ -346,7 +348,7 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        font-size: 12px;
+        font-size: 14px;
         color: var(--text-muted);
     }
     .topbar-breadcrumb span { color: var(--text-secondary); }
@@ -365,7 +367,7 @@
         border-radius: 99px;
         background: var(--pln-blue-light);
         color: var(--pln-blue);
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 600;
         white-space: nowrap;
     }
@@ -394,13 +396,13 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 700;
         color: #fff;
         flex-shrink: 0;
     }
     .topbar-username {
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 600;
         color: var(--text-primary);
         max-width: 100px;
@@ -420,7 +422,7 @@
         border: 1px solid var(--border);
         background: var(--bg-card);
         color: var(--text-secondary);
-        font-size: 18px;
+        font-size: 20px;
         cursor: pointer;
         transition: background var(--transition), color var(--transition);
         flex-shrink: 0;
@@ -449,7 +451,7 @@
     }
     .topbar-dropdown .dropdown-item {
         padding: 8px 20px;
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 500;
         color: var(--text-primary);
         display: flex;
@@ -458,7 +460,7 @@
         transition: background var(--transition), color var(--transition);
     }
     .topbar-dropdown .dropdown-item i {
-        font-size: 16px;
+        font-size: 18px;
         color: var(--text-muted);
         transition: color var(--transition);
     }
@@ -479,13 +481,13 @@
     }
     .topbar-dropdown .dropdown-user-info { padding: 8px 20px 8px; }
     .topbar-dropdown .dropdown-user-name {
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 700;
         color: var(--text-primary);
         line-height: 1.2;
     }
     .topbar-dropdown .dropdown-user-role {
-        font-size: 12px;
+        font-size: 14px;
         color: var(--text-muted);
         text-transform: capitalize;
         margin-top: 4px;
@@ -520,7 +522,7 @@
         padding: 16px 20px !important;
         font-weight: 600;
         color: var(--text-primary);
-        font-size: 14px;
+        font-size: 16px;
     }
     .card-body { padding: 20px !important; }
 
@@ -544,16 +546,16 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
+        font-size: 20px;
         margin-bottom: 14px;
     }
     .stat-card-icon.blue   { background: var(--pln-blue-light); color: var(--pln-blue); }
     .stat-card-icon.yellow { background: #FEF3DC; color: var(--pln-yellow-dark); }
     .stat-card-icon.green  { background: #E8F8F0; color: #1A7A4A; }
     .stat-card-icon.red    { background: #FEE8E8; color: #C0392B; }
-    .stat-card-label  { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
-    .stat-card-value  { font-size: 24px; font-weight: 700; color: var(--text-primary); line-height: 1; margin-bottom: 6px; }
-    .stat-card-sub    { font-size: 12px; color: var(--text-secondary); }
+    .stat-card-label  { font-size: 13px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+    .stat-card-value  { font-size: 26px; font-weight: 700; color: var(--text-primary); line-height: 1; margin-bottom: 6px; }
+    .stat-card-sub    { font-size: 14px; color: var(--text-secondary); }
     .stat-card-accent {
         position: absolute;
         right: -10px; top: -10px;
@@ -570,7 +572,7 @@
         border: none;
         border-radius: var(--radius-md);
         padding: 8px 18px;
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 600;
         font-family: var(--font-sans);
         cursor: pointer;
@@ -588,7 +590,7 @@
         border: 1px solid var(--pln-blue);
         border-radius: var(--radius-md);
         padding: 7px 17px;
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 600;
         font-family: var(--font-sans);
         cursor: pointer;
@@ -605,7 +607,7 @@
         border: 1px solid var(--border);
         border-radius: var(--radius-md);
         padding: 7px 16px;
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 500;
         font-family: var(--font-sans);
         cursor: pointer;
@@ -617,23 +619,23 @@
     .btn-pln-ghost:hover { background: var(--bg-body); border-color: #C5D2E0; color: var(--text-primary); }
 
     /* Badges */
-    .badge-pln     { background: var(--pln-blue-light); color: var(--pln-blue);  border-radius: 99px; padding: 3px 9px; font-size: 11px; font-weight: 600; }
-    .badge-success { background: #E8F8F0; color: #1A7A4A; border-radius: 99px; padding: 3px 9px; font-size: 11px; font-weight: 600; }
-    .badge-warning { background: #FEF3DC; color: #B7600A; border-radius: 99px; padding: 3px 9px; font-size: 11px; font-weight: 600; }
-    .badge-danger  { background: #FEE8E8; color: #C0392B; border-radius: 99px; padding: 3px 9px; font-size: 11px; font-weight: 600; }
-    .badge-neutral { background: #EEF1F5; color: #5A6A7E;  border-radius: 99px; padding: 3px 9px; font-size: 11px; font-weight: 600; }
+    .badge-pln     { background: var(--pln-blue-light); color: var(--pln-blue);  border-radius: 99px; padding: 3px 9px; font-size: 13px; font-weight: 600; }
+    .badge-success { background: #E8F8F0; color: #1A7A4A; border-radius: 99px; padding: 3px 9px; font-size: 13px; font-weight: 600; }
+    .badge-warning { background: #FEF3DC; color: #B7600A; border-radius: 99px; padding: 3px 9px; font-size: 13px; font-weight: 600; }
+    .badge-danger  { background: #FEE8E8; color: #C0392B; border-radius: 99px; padding: 3px 9px; font-size: 13px; font-weight: 600; }
+    .badge-neutral { background: #EEF1F5; color: #5A6A7E;  border-radius: 99px; padding: 3px 9px; font-size: 13px; font-weight: 600; }
 
     /* Tables */
     .pln-table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 13px;
+        font-size: 15px;
     }
     .pln-table thead tr { background: #F5F8FC; }
     .pln-table th {
         padding: 10px 14px;
         text-align: left;
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 600;
         color: var(--text-muted);
         text-transform: uppercase;
@@ -665,7 +667,7 @@
     .pln-alert {
         padding: 12px 16px;
         border-radius: var(--radius-md);
-        font-size: 13px;
+        font-size: 15px;
         margin-bottom: 16px;
         display: flex;
         align-items: center;
@@ -683,7 +685,7 @@
         padding: 8px 12px;
         border: 1px solid var(--border);
         border-radius: var(--radius-md);
-        font-size: 13px;
+        font-size: 15px;
         font-family: var(--font-sans);
         color: var(--text-primary);
         background: var(--bg-card);
@@ -696,7 +698,7 @@
     }
     .pln-label {
         display: block;
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 600;
         color: var(--text-secondary);
         margin-bottom: 5px;
@@ -709,14 +711,14 @@
         margin-bottom: 24px;
     }
     .page-header h1 {
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 700;
         color: var(--text-primary);
         margin: 0 0 4px;
         letter-spacing: -.3px;
     }
     .page-header p {
-        font-size: 13px;
+        font-size: 15px;
         color: var(--text-muted);
         margin: 0;
     }
@@ -741,7 +743,7 @@
         text-align: center;
         box-shadow: var(--shadow-lg);
     }
-    .pln-loading-card p { font-size: 13px; color: var(--text-secondary); margin: 14px 0 0; font-weight: 500; }
+    .pln-loading-card p { font-size: 15px; color: var(--text-secondary); margin: 14px 0 0; font-weight: 500; }
     .pln-spinner {
         width: 36px; height: 36px;
         border: 3px solid var(--border);
@@ -758,7 +760,7 @@
         border-radius: var(--radius-sm) !important;
         border-color: var(--border) !important;
         color: var(--text-secondary) !important;
-        font-size: 12px !important;
+        font-size: 14px !important;
         padding: 5px 10px !important;
         font-family: var(--font-sans);
     }
@@ -771,7 +773,7 @@
         border-color: var(--border) !important;
         border-radius: var(--radius-md) !important;
         font-family: var(--font-sans) !important;
-        font-size: 13px !important;
+        font-size: 15px !important;
         color: var(--text-primary) !important;
     }
     .form-control:focus, .form-select:focus {
@@ -801,10 +803,10 @@
             --topbar-h: 56px;
         }
         .page-content { padding: 20px; }
-        .stat-card-value { font-size: 20px; }
+        .stat-card-value { font-size: 22px; }
         .topbar { padding: 0 20px; }
         .topbar-badge { display: inline-flex !important; }
-        h1 { font-size: 20px !important; }
+        h1 { font-size: 22px !important; }
     }
 
     /* ================================================================
@@ -816,13 +818,13 @@
             --topbar-h: 56px;
         }
         .page-content { padding: 18px; }
-        .stat-card-value { font-size: 18px; }
+        .stat-card-value { font-size: 20px; }
         .topbar { padding: 0 16px; }
         .topbar-badge { display: none; } /* hide on tablet to save space */
         .topbar-username { max-width: 80px; }
-        h1 { font-size: 18px !important; }
-        h2 { font-size: 16px !important; }
-        h3 { font-size: 15px !important; }
+        h1 { font-size: 20px !important; }
+        h2 { font-size: 18px !important; }
+        h3 { font-size: 17px !important; }
     }
 
     /* ================================================================
@@ -851,7 +853,7 @@
         .topbar { padding: 0 14px; gap: 8px; }
         .topbar-badge { display: none; }
         .topbar-breadcrumb { display: none; }
-        .topbar-page-title { font-size: 14px; }
+        .topbar-page-title { font-size: 16px; }
 
         /* Show hamburger */
         .sidebar-toggle-btn { display: inline-flex; }
@@ -861,10 +863,10 @@
 
         /* Page header */
         .page-header { margin-bottom: 16px; }
-        .page-header h1 { font-size: 17px; }
+        .page-header h1 { font-size: 19px; }
 
         /* Stat cards stack nicely — use col-6 in child views */
-        .stat-card-value { font-size: 20px; }
+        .stat-card-value { font-size: 22px; }
         .stat-card { padding: 16px; }
 
         /* Tables scroll horizontally */
@@ -873,7 +875,7 @@
         /* Buttons */
         .btn-pln, .btn-pln-outline, .btn-pln-ghost {
             padding: 7px 13px;
-            font-size: 12px;
+            font-size: 14px;
         }
 
         /* Username hidden on very small screens */
@@ -886,21 +888,21 @@
     ================================================================ */
     @media (max-width: 400px) {
         .page-content { padding: 10px; }
-        .stat-card-value { font-size: 16px; }
-        .page-header h1 { font-size: 15px; }
+        .stat-card-value { font-size: 18px; }
+        .page-header h1 { font-size: 17px; }
         .stat-card { padding: 12px; }
-        h1 { font-size: 16px !important; }
-        h2 { font-size: 14px !important; }
+        h1 { font-size: 18px !important; }
+        h2 { font-size: 16px !important; }
     }
 
     /* ================================================================
        RESPONSIVE UTILITIES — Typography
     ================================================================ */
     @media (max-width: 768px) {
-        h1 { font-size: 18px !important; }
-        h2 { font-size: 16px !important; }
-        h3 { font-size: 14px !important; }
-        p { font-size: 13px !important; }
+        h1 { font-size: 20px !important; }
+        h2 { font-size: 18px !important; }
+        h3 { font-size: 16px !important; }
+        p { font-size: 15px !important; }
     }
 
     /* ================================================================
@@ -929,7 +931,7 @@
         }
         .table-responsive-wrapper table {
             min-width: 100%;
-            font-size: 12px;
+            font-size: 14px;
         }
         .table-responsive-wrapper thead { display: table-header-group; }
         .table-responsive-wrapper th,
@@ -1038,14 +1040,12 @@
     $currentUrl  = request()->url();
 @endphp
 
-<!-- Overlay (mobile sidebar backdrop) -->
+{{-- Overlay untuk sidebar pada tampilan mobile --}}
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <div class="app-shell">
 
-    <!-- ============================================================
-         SIDEBAR
-    ============================================================ -->
+    {{-- Menampilkan navigasi sidebar --}}
     <aside class="sidebar" id="sidebar">
 
         <!-- Brand -->
@@ -1168,9 +1168,7 @@
         </div>
     </aside>
 
-    <!-- ============================================================
-         MAIN
-    ============================================================ -->
+    {{-- Wrapper utama untuk konten halaman --}}
     <div class="main-wrap">
 
         <!-- TOP BAR -->
@@ -1183,18 +1181,21 @@
                 </button>
 
                 <div>
-                    <div class="topbar-page-title">@yield('page_title', 'Dashboard')</div>
-                    <div class="topbar-breadcrumb">
-                        <i class="bi bi-house" style="font-size:11px"></i>
-                        <span>/</span>
-                        <span>@yield('page_title', 'Dashboard')</span>
-                    </div>
+                   <div class="topbar-page-title">
+    @yield('page_title', View::yieldContent('title', 'Dashboard'))
+</div>
+
+<div class="topbar-breadcrumb">
+    <i class="bi bi-house" style="font-size: 13px"></i>
+    <span>/</span>
+    <span>@yield('page_title', View::yieldContent('title', 'Dashboard'))</span>
+</div>
                 </div>
             </div>
 
             <div class="topbar-right">
                 <span class="topbar-badge">
-                    <i class="bi bi-building" style="font-size:11px"></i>
+                    <i class="bi bi-building" style="font-size: 13px"></i>
                     PLN ULP RIVAI
                 </span>
 
@@ -1202,7 +1203,7 @@
                     <div class="topbar-user" data-bs-toggle="dropdown" aria-expanded="false" role="button">
                         <div class="topbar-avatar">{{ $userInitial }}</div>
                         <span class="topbar-username">{{ $userName }}</span>
-                        <i class="bi bi-chevron-down" style="font-size:10px;color:var(--text-muted);margin-left:4px"></i>
+                        <i class="bi bi-chevron-down" style="font-size: 12px;color:var(--text-muted);margin-left:4px"></i>
                     </div>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li class="dropdown-user-info">
@@ -1221,7 +1222,7 @@
             </div>
         </header>
 
-        <!-- PAGE CONTENT -->
+        {{-- Area konten utama halaman --}}
         <main class="page-content">
             @yield('content')
         </main>
@@ -1229,9 +1230,10 @@
     </div>
 </div>
 
-<!-- Bootstrap JS -->
+{{-- Memuat script Bootstrap --}}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+{{-- Script untuk mengatur interaksi sidebar mobile --}}
 <script>
 (function () {
     const sidebar  = document.getElementById('sidebar');

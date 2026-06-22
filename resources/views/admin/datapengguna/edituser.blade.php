@@ -91,7 +91,7 @@
     }
 
     .form-card-hdr h2{
-        font-size:1.2rem;
+        font-size: 1.325rem;
         font-weight:700;
 
         margin:0 0 2px;
@@ -104,7 +104,7 @@
 
         color:var(--c-muted);
 
-        font-size:.875rem;
+        font-size: 1rem;
     }
 
     /* ── BODY ───────────────────────────────── */
@@ -122,7 +122,7 @@
 
         margin-bottom:7px;
 
-        font-size:.75rem;
+        font-size: 0.875rem;
         font-weight:700;
 
         text-transform:uppercase;
@@ -144,7 +144,7 @@
         background:#F8FAFC;
 
         color:var(--c-text);
-        font-size:.92rem;
+        font-size: 1.045rem;
 
         outline:none;
 
@@ -164,7 +164,7 @@
     .fg-hint{
         margin-top:6px;
 
-        font-size:.78rem;
+        font-size: 0.905rem;
 
         color:#94A3B8;
     }
@@ -224,7 +224,7 @@
 
         margin-bottom:20px;
 
-        font-size:.875rem;
+        font-size: 1rem;
     }
 
     .alert-custom div+div{
@@ -261,7 +261,7 @@
 
         border-radius:var(--radius-sm);
 
-        font-size:.9rem;
+        font-size: 1.025rem;
         font-weight:600;
 
         text-decoration:none;
@@ -354,7 +354,7 @@
         }
 
         .form-card-hdr h2{
-            font-size:1.05rem;
+            font-size: 1.175rem;
         }
 
         .fg input,
@@ -400,6 +400,7 @@
 
             </div>
 
+            {{-- Form pengiriman update data pengguna ke server --}}
             <form method="POST"
                   action="/datapengguna/update/{{ $user->id }}">
 
@@ -415,6 +416,7 @@
                     </div>
                     @endif
 
+                    {{-- Input nama lengkap pengguna --}}
                     <div class="fg">
                         <label>Nama Lengkap</label>
 
@@ -424,15 +426,7 @@
                                required>
                     </div>
 
-                    <div class="fg">
-                        <label>Email</label>
-
-                        <input type="email"
-                               name="email"
-                               value="{{ old('email', $user->email) }}"
-                               required>
-                    </div>
-
+                    {{-- Input password baru, kosongkan jika tidak ingin diubah --}}
                     <div class="fg">
 
                         <label>Password Baru</label>
@@ -470,6 +464,7 @@
 
                     </div>
 
+                    {{-- Baris form untuk mengubah Role dan Status --}}
                     <div class="fg-row">
 
                         <div class="fg">
@@ -521,6 +516,7 @@
 
                 </div>
 
+                {{-- Tombol aksi update data atau kembali --}}
                 <div class="form-footer">
 
                     <a href="/datapengguna"
@@ -565,6 +561,7 @@
 
 @push('scripts')
 <script>
+    // Script untuk menampilkan/menyembunyikan teks password
     function togglePwd(id)
     {
         const input = document.getElementById(id);

@@ -20,15 +20,15 @@
 
     /* ── PAGE HEADER ── */
     .page-hdr { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; }
-    .page-hdr-left h1 { font-size: 1.5rem; font-weight: 700; margin: 0 0 4px; }
-    .page-hdr-left p { font-size: .875rem; color: var(--c-muted); margin: 0; }
+    .page-hdr-left h1 { font-size: 1.625rem; font-weight: 700; margin: 0 0 4px; }
+    .page-hdr-left p { font-size: 1rem; color: var(--c-muted); margin: 0; }
     .page-hdr-right { display: flex; gap: 10px; align-items: flex-start; }
 
     .btn-gen {
         display: inline-flex; align-items: center; gap: 6px;
         padding: 8px 16px; border-radius: var(--radius-sm);
         background: var(--c-primary); color: #fff;
-        border: none; font-size: .8rem; font-weight: 600;
+        border: none; font-size: 0.925rem; font-weight: 600;
         cursor: pointer; transition: all .15s;
         white-space: nowrap;
     }
@@ -38,9 +38,9 @@
     /* ── STAT GRID ── */
     .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 28px; }
     .stat-card { background: #fff; border: 1px solid var(--c-border); border-radius: var(--radius-sm); padding: 16px; box-shadow: var(--shadow); }
-    .stat-card-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--c-muted); margin-bottom: 8px; }
-    .stat-card-val { font-size: 1.75rem; font-weight: 700; color: var(--c-text); line-height: 1; margin-bottom: 6px; }
-    .stat-card-sub { font-size: .75rem; color: var(--c-muted); }
+    .stat-card-label { font-size: 0.825rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--c-muted); margin-bottom: 8px; }
+    .stat-card-val { font-size: 1.875rem; font-weight: 700; color: var(--c-text); line-height: 1; margin-bottom: 6px; }
+    .stat-card-sub { font-size: 0.875rem; color: var(--c-muted); }
     .stat-card-val.danger  { color: #DC2626; }
     .stat-card-val.warning { color: #D97706; }
     .stat-card-val.success { color: #16A34A; }
@@ -48,13 +48,13 @@
     /* ── FILTER BAR ── */
     .filter-bar { background: #fff; border: 1px solid var(--c-border); border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 20px; box-shadow: var(--shadow); display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
     .fg { display: flex; flex-direction: column; gap: 4px; }
-    .fg label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--c-muted); }
-    .fg input, .fg select { height: 32px; padding: 0 10px; border: 1px solid var(--c-border); border-radius: var(--radius-sm); font-size: .8rem; color: var(--c-text); background: #fff; outline: none; transition: border-color .15s; min-width: 140px; }
+    .fg label { font-size: 0.825rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--c-muted); }
+    .fg input, .fg select { height: 32px; padding: 0 10px; border: 1px solid var(--c-border); border-radius: var(--radius-sm); font-size: 0.925rem; color: var(--c-text); background: #fff; outline: none; transition: border-color .15s; min-width: 140px; }
     .fg input:focus, .fg select:focus { border-color: var(--c-primary); }
-    .btn-filter { height: 32px; padding: 0 16px; border-radius: var(--radius-sm); border: 1px solid var(--c-border); background: #fff; font-size: .8rem; color: var(--c-muted); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
+    .btn-filter { height: 32px; padding: 0 16px; border-radius: var(--radius-sm); border: 1px solid var(--c-border); background: #fff; font-size: 0.925rem; color: var(--c-muted); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all .15s; white-space: nowrap; }
     .btn-filter:hover { background: var(--c-surface); color: var(--c-text); }
     .btn-filter svg { width: 13px; height: 13px; }
-    .btn-reset { height: 32px; padding: 0 12px; border-radius: var(--radius-sm); border: 1px solid var(--c-border); background: #fff; font-size: .8rem; color: var(--c-muted); cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; transition: background .15s; }
+    .btn-reset { height: 32px; padding: 0 12px; border-radius: var(--radius-sm); border: 1px solid var(--c-border); background: #fff; font-size: 0.925rem; color: var(--c-muted); cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; transition: background .15s; }
     .btn-reset:hover { background: var(--c-surface); }
 
     /* ── MAIN CARD ── */
@@ -62,17 +62,17 @@
 
     /* ── SECTION HEADER ── */
     .sec-hdr { padding: 16px; border-bottom: 1px solid var(--c-border); background: var(--c-surface); display: flex; justify-content: space-between; align-items: center; }
-    .sec-hdr h2 { font-size: .9rem; font-weight: 700; margin: 0; }
+    .sec-hdr h2 { font-size: 1.025rem; font-weight: 700; margin: 0; }
 
     /* ── TABLE ── */
     .tbl-wrap { overflow: auto; }
-    .result-tbl { width: 100%; border-collapse: collapse; font-size: .875rem; }
+    .result-tbl { width: 100%; border-collapse: collapse; font-size: 1rem; }
     .result-tbl thead { background: var(--c-surface); }
-    .result-tbl th { padding: 11px 12px; text-align: left; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--c-muted); white-space: nowrap; border-bottom: 2px solid var(--c-border); }
+    .result-tbl th { padding: 11px 12px; text-align: left; font-size: 0.825rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--c-muted); white-space: nowrap; border-bottom: 2px solid var(--c-border); }
     .result-tbl th.r { text-align: right; }
     .result-tbl td { padding: 10px 12px; border-bottom: 1px solid #F1F5F9; }
     .result-tbl td.r { text-align: right; }
-    .result-tbl td.mono { font-family: var(--mono); font-size: .8rem; }
+    .result-tbl td.mono { font-family: var(--mono); font-size: 0.925rem; }
     .result-tbl tr:hover td { background: #FAFAFA; }
     .result-tbl tr:last-child td { border-bottom: none; }
 
@@ -81,14 +81,14 @@
     .row-low    { border-left: 3px solid #16A34A; }
 
     /* ── RANK BADGE ── */
-    .rank-badge { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: var(--radius-sm); font-size: .75rem; font-weight: 700; }
+    .rank-badge { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 700; }
     .rank-1 { background: #FEF9C3; color: #92400E; border: 1px solid #FCD34D; }
     .rank-2 { background: #F3F4F6; color: #374151; border: 1px solid #D1D5DB; }
     .rank-3 { background: #FFF7ED; color: #9A3412; border: 1px solid #FED7AA; }
     .rank-n { background: var(--c-surface); color: var(--c-muted); border: 1px solid var(--c-border); }
 
     /* ── RISIKO PILL ── */
-    .risiko-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 99px; font-size: .75rem; font-weight: 600; }
+    .risiko-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 99px; font-size: 0.875rem; font-weight: 600; }
     .risiko-tinggi { background: #FEE2E2; color: #991B1B; }
     .risiko-sedang { background: #FEF9C3; color: #92400E; }
     .risiko-rendah { background: #D1FAE5; color: #065F46; }
@@ -97,41 +97,41 @@
     .vi-bar-wrap { display: flex; align-items: center; gap: 8px; }
     .vi-bar-bg { width: 80px; height: 5px; border-radius: 99px; background: #E2E8F0; overflow: hidden; flex-shrink: 0; }
     .vi-bar-fill { height: 100%; border-radius: 99px; }
-    .vi-val { font-size: .75rem; font-weight: 700; font-family: var(--mono); min-width: 40px; }
+    .vi-val { font-size: 0.875rem; font-weight: 700; font-family: var(--mono); min-width: 40px; }
 
     /* ── EMPTY STATE ── */
     .empty-box { padding: 60px 40px; text-align: center; background: var(--c-surface); }
     .empty-box-icon { opacity: .3; display: block; margin: 0 auto 16px; width: 52px; height: 52px; }
-    .empty-box h3 { font-size: 1rem; font-weight: 600; margin: 0 0 8px; color: var(--c-text); }
-    .empty-box p { font-size: .875rem; color: var(--c-muted); margin: 0 0 20px; line-height: 1.6; }
+    .empty-box h3 { font-size: 1.125rem; font-weight: 600; margin: 0 0 8px; color: var(--c-text); }
+    .empty-box p { font-size: 1rem; color: var(--c-muted); margin: 0 0 20px; line-height: 1.6; }
     .empty-box .btn-gen { margin: 0 auto; }
 
     /* ── COLLAPSIBLE ── */
     .collapsible-hdr { padding: 16px; background: var(--c-surface); border-bottom: 1px solid var(--c-border); display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
-    .collapsible-hdr h3 { font-size: .9rem; font-weight: 700; margin: 0; }
-    .collapsible-toggle { font-size: 1.2rem; transition: transform .2s; }
+    .collapsible-hdr h3 { font-size: 1.025rem; font-weight: 700; margin: 0; }
+    .collapsible-toggle { font-size: 1.325rem; transition: transform .2s; }
     .collapsible-toggle.open { transform: rotate(180deg); }
     .collapsible-body { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
     .collapsible-body.open { max-height: 1000px; }
     .collapsible-content { padding: 16px; }
 
     /* ── FORMULA STRIP ── */
-    .formula-strip { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius-sm); padding: 10px 14px; font-size: .75rem; color: var(--c-muted); margin-bottom: 12px; line-height: 1.8; overflow-x: auto; }
-    .formula-strip code { background: #E2E8F0; padding: 2px 6px; border-radius: 4px; font-size: .7rem; color: var(--c-text); font-family: var(--mono); white-space: nowrap; }
+    .formula-strip { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 0.875rem; color: var(--c-muted); margin-bottom: 12px; line-height: 1.8; overflow-x: auto; }
+    .formula-strip code { background: #E2E8F0; padding: 2px 6px; border-radius: 4px; font-size: 0.825rem; color: var(--c-text); font-family: var(--mono); white-space: nowrap; }
     .formula-strip strong { color: var(--c-text); }
 
     /* ── PAGINATION ── */
-    .pagination-wrap { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-top: 1px solid var(--c-border); background: var(--c-surface); font-size: .8rem; }
+    .pagination-wrap { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-top: 1px solid var(--c-border); background: var(--c-surface); font-size: 0.925rem; }
     .pagination-info { color: var(--c-muted); }
     .pagination-links { display: flex; gap: 4px; }
-    .pagination-links a, .pagination-links span { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border: 1px solid var(--c-border); border-radius: var(--radius-sm); font-size: .75rem; text-decoration: none; transition: all .15s; }
+    .pagination-links a, .pagination-links span { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border: 1px solid var(--c-border); border-radius: var(--radius-sm); font-size: 0.875rem; text-decoration: none; transition: all .15s; }
     .pagination-links a { color: var(--c-text); background: #fff; cursor: pointer; }
     .pagination-links a:hover { border-color: var(--c-primary); background: var(--c-surface); }
     .pagination-links span { color: var(--c-muted); background: var(--c-surface); }
     .pagination-links .active span { background: var(--c-primary); color: #fff; border-color: var(--c-primary); }
 
     /* ── ALERTS ── */
-    .alert { padding: 10px 14px; border-radius: var(--radius-sm); font-size: .875rem; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+    .alert { padding: 10px 14px; border-radius: var(--radius-sm); font-size: 1rem; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
     .alert-success { background: #ECFDF5; border: 1px solid #A7F3D0; color: #065F46; }
     .alert-danger  { background: #FEF2F2; border: 1px solid #FECACA; color: #991B1B; }
     .alert svg { width: 16px; height: 16px; flex-shrink: 0; }
@@ -140,35 +140,35 @@
     .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(249,250,251,.9); align-items: center; justify-content: center; z-index: 9999; }
     .loading-overlay.show { display: flex; }
     .loading-card { background: #fff; border: 1px solid var(--c-border); border-radius: var(--radius); padding: 28px 44px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,.1); }
-    .loading-card p { font-size: .875rem; color: var(--c-muted); margin: 12px 0 0; }
+    .loading-card p { font-size: 1rem; color: var(--c-muted); margin: 12px 0 0; }
     .spin { width: 32px; height: 32px; margin: 0 auto; border: 2.5px solid var(--c-border); border-top-color: var(--c-text); border-radius: 50%; animation: spin .75s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     @media (max-width: 1024px) {
         .page-wrap { padding: 20px 18px 40px; }
         .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .page-hdr h1 { font-size: 1.25rem; }
-        .result-tbl { font-size: 0.8rem; }
+        .page-hdr h1 { font-size: 1.375rem; }
+        .result-tbl { font-size: 0.925rem; }
         .result-tbl th, .result-tbl td { padding: 9px 10px; }
     }
     @media (max-width: 768px) {
         .page-wrap { padding: 16px 12px 32px; }
         .page-hdr { flex-direction: column; gap: 12px; }
-        .page-hdr h1 { font-size: 1.125rem; }
+        .page-hdr h1 { font-size: 1.25rem; }
         .page-hdr-right { width: 100%; flex-wrap: wrap; }
         .btn-gen { width: 100%; justify-content: center; }
         .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
         .stat-card { padding: 14px; }
-        .stat-card-val { font-size: 1.5rem; }
+        .stat-card-val { font-size: 1.625rem; }
         .filter-bar { flex-direction: column; gap: 10px; padding: 12px 14px; margin-bottom: 16px; }
         .fg { width: 100%; }
-        .fg input, .fg select { min-width: 100%; height: 40px; font-size: 0.8rem; }
+        .fg input, .fg select { min-width: 100%; height: 40px; font-size: 0.925rem; }
         .btn-filter, .btn-reset { width: 100%; }
         .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     }
     @media (max-width: 576px) {
         .stat-grid { grid-template-columns: 1fr; }
-        .result-tbl { font-size: 0.75rem; }
+        .result-tbl { font-size: 0.875rem; }
         .result-tbl th, .result-tbl td { padding: 6px 8px; }
     }
 </style>
@@ -176,6 +176,7 @@
 
 @section('content')
 
+{{-- Tampilan loading overlay saat generate data ranking --}}
 <div class="loading-overlay" id="loading">
     <div class="loading-card">
         <div class="spin"></div>
@@ -185,7 +186,7 @@
 
 <div class="page-wrap">
 
-    {{-- ── PAGE HEADER ── --}}
+    {{-- Header halaman hasil ranking dan tombol generate --}}
     <div class="page-hdr">
         <div class="page-hdr-left">
             <h1>Hasil Ranking SAW</h1>
@@ -193,8 +194,9 @@
         </div>
         <div class="page-hdr-right">
             @if($hasData)
-            <form method="POST" action="{{ route('hasilranking.generate') }}" style="margin:0">
+            <form method="POST" action="{{ route('hasilranking.generate') }}" style="margin:0; display:flex; gap:8px; align-items:center;">
                 @csrf
+                <input type="month" name="periode" required value="{{ request('periode') ?? date('Y-m') }}" style="height:32px; border:1px solid var(--c-border); border-radius:var(--radius-sm); padding:0 10px; font-size:0.925rem;">
                 <button type="submit" class="btn-gen"
                     onclick="document.getElementById('loading').classList.add('show');">
                     <svg fill="none" viewBox="0 0 24 24">
@@ -208,7 +210,7 @@
         </div>
     </div>
 
-    {{-- ── ALERTS ── --}}
+    {{-- Menampilkan notifikasi sukses atau error --}}
     @if(session('success'))
     <div class="alert alert-success">
         <svg fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -222,7 +224,7 @@
     </div>
     @endif
 
-    {{-- ── EMPTY STATE ── --}}
+    {{-- Tampilan jika data ranking masih kosong --}}
     @if(!$hasData)
     <div class="main-card">
         <div class="empty-box">
@@ -231,8 +233,9 @@
             </svg>
             <h3>Belum Ada Data Ranking</h3>
             <p>Klik tombol di bawah untuk generate ranking dari data penilaian yang sudah ada.</p>
-            <form method="POST" action="{{ route('hasilranking.generate') }}" style="display:inline">
+            <form method="POST" action="{{ route('hasilranking.generate') }}" style="display:inline-flex; gap:8px; align-items:center;">
                 @csrf
+                <input type="month" name="periode" required value="{{ request('periode') ?? date('Y-m') }}" style="height:32px; border:1px solid var(--c-border); border-radius:var(--radius-sm); padding:0 10px; font-size:0.925rem;">
                 <button type="submit" class="btn-gen"
                     onclick="document.getElementById('loading').classList.add('show');">
                     <svg fill="none" viewBox="0 0 24 24">
@@ -247,7 +250,7 @@
 
     @else
 
-    {{-- ── STATISTICS ── --}}
+    {{-- Menampilkan ringkasan total pelanggan dan kategori prioritas --}}
     <div class="stat-grid">
         <div class="stat-card">
             <div class="stat-card-label">Total Pelanggan</div>
@@ -271,7 +274,7 @@
         </div>
         <div class="stat-card">
             <div class="stat-card-label">Terakhir Generate</div>
-            <div class="stat-card-val" style="font-size: 1rem;">
+            <div class="stat-card-val" style="font-size: 1.125rem;">
                 @if($stats['generated_at'])
                     {{ \Carbon\Carbon::parse($stats['generated_at'])->format('d M Y H:i') }}
                 @else
@@ -282,10 +285,15 @@
         </div>
     </div>
 
-    {{-- ── FILTER BAR ── --}}
+    {{-- Form pencarian, filter data, dan tombol export --}}
     <div class="filter-bar">
         <form method="GET" action="{{ request()->url() }}"
               style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;width:100%">
+
+            <div class="fg">
+                <label>Periode</label>
+                <input type="month" name="periode" value="{{ request('periode') }}">
+            </div>
 
             <div class="fg">
                 <label>Cari IDPEL / Nama</label>
@@ -364,7 +372,7 @@
         </form>
     </div>
 
-    {{-- ── RANKING TABLE ── --}}
+    {{-- Tabel utama daftar hasil perhitungan ranking --}}
     <div class="main-card">
         <div class="sec-hdr">
             <h2>Peringkat Ranking (Vi = Σ wj × Rij)</h2>
@@ -372,7 +380,7 @@
 
         {{-- Bobot strip --}}
         <div style="padding: 14px 16px; background: var(--c-surface); border-bottom: 1px solid var(--c-border);
-                    font-size: .75rem; color: var(--c-muted); overflow-x: auto;">
+                    font-size: 0.875rem; color: var(--c-muted); overflow-x: auto;">
             @foreach($kriteria as $k)
                 <span style="display: inline-block; margin-right: 16px; white-space: nowrap;">
                     <strong>w{{ $loop->iteration }}</strong> = {{ $k->bobot }}% ({{ ucfirst($k->tipe) }})
@@ -391,6 +399,7 @@
                     <tr>
                         <th style="width: 8px;"></th>
                         <th style="width: 56px;">Rank</th>
+                        <th>Periode</th>
                         <th>IDPEL / Nama</th>
                         {{-- ✅ Unitap menggantikan RBM --}}
                         <th>Unitap</th>
@@ -404,6 +413,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                {{-- Looping baris data hasil ranking --}}
                 @foreach($ranking as $row)
                 @php
                     $n   = $normalisasi[$row->idpel] ?? null;
@@ -426,23 +436,28 @@
                     <td style="padding:0;width:3px;"></td>
                     <td><span class="rank-badge {{ $rc }}">{{ $row->ranking }}</span></td>
                     <td>
-                        <div style="font-weight:600; font-family:var(--mono); font-size:.8rem;">{{ $row->idpel }}</div>
+                        <span class="badge" style="background:#E2E8F0; color:#1E293B; padding:2px 6px; border-radius:4px; font-size:0.825rem;">
+                            {{ $row->periode }}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="font-weight:600; font-family:var(--mono); font-size: 0.925rem;">{{ $row->idpel }}</div>
                         @if($row->nama)
-                        <div style="font-size:.75rem; color:var(--c-muted);">{{ Str::limit($row->nama, 30) }}</div>
+                        <div style="font-size: 0.875rem; color:var(--c-muted);">{{ Str::limit($row->nama, 30) }}</div>
                         @endif
                     </td>
 
                     {{-- ✅ Unitap — ganti $row->rbm --}}
                     <td>
                         <span style="background:#E2E8F0; padding:2px 6px; border-radius:4px;
-                                     font-size:.7rem; font-weight:600;">
+                                     font-size: 0.825rem; font-weight:600;">
                             {{ $row->unitap ?: '-' }}
                         </span>
                     </td>
 
                     <td>
-                        <div style="font-weight:600; font-size:.8rem;">{{ $row->kode_petugas ?: '-' }}</div>
-                        <div style="font-size:.75rem; color:var(--c-muted);">{{ $row->nama_petugas ?: '-' }}</div>
+                        <div style="font-weight:600; font-size: 0.925rem;">{{ $row->kode_petugas ?: '-' }}</div>
+                        <div style="font-size: 0.875rem; color:var(--c-muted);">{{ $row->nama_petugas ?: '-' }}</div>
                     </td>
 
                     @if($n)
@@ -478,7 +493,7 @@
             @endif
         </div>
 
-        {{-- Pagination --}}
+        {{-- Link pagination tabel ranking --}}
         @if($ranking->hasPages())
         <div class="pagination-wrap">
             <div class="pagination-info">
@@ -510,7 +525,7 @@
         @endif
     </div>
 
-    {{-- ── NORMALISASI MATRIX (COLLAPSIBLE) ── --}}
+    {{-- Bagian tabel matriks normalisasi yang dapat dilipat --}}
     @if(!$normalisasi->isEmpty())
     <div class="main-card">
         <div class="collapsible-hdr" onclick="toggleNormalisasi()">
@@ -536,6 +551,7 @@
                             </tr>
                         </thead>
                         <tbody>
+                        {{-- Looping baris data normalisasi --}}
                         @foreach($normalisasi as $n)
                             <tr>
                                 <td class="mono" style="color:var(--c-muted);">{{ $loop->iteration }}</td>
@@ -549,7 +565,7 @@
                         </tbody>
                     </table>
                 </div>
-                <p style="font-size:.75rem; color:var(--c-muted); margin:12px 0 0;">
+                <p style="font-size: 0.875rem; color:var(--c-muted); margin:12px 0 0;">
                     Nilai normalisasi hasil perhitungan menggunakan metode SAW.
                 </p>
             </div>
@@ -565,6 +581,7 @@
 
 @push('scripts')
 <script>
+// Script untuk fungsi toggle lipatan tabel matriks normalisasi
 function toggleNormalisasi() {
     const body   = document.getElementById('norm-body');
     const toggle = document.getElementById('norm-toggle');

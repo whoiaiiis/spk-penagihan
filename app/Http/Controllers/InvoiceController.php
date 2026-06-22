@@ -53,11 +53,19 @@ class InvoiceController extends Controller
     public function index(Request $request)
     {
         try {
+            $periode = $request->get('periode');
+
             $query = DB::table('ranking')
-                ->join('pelanggan', 'ranking.idpel', '=', 'pelanggan.idpel')
+                ->join('pelanggan', function($join) {
+                    $join->on('ranking.idpel', '=', 'pelanggan.idpel')
+                         ->on('ranking.periode', '=', 'pelanggan.periode');
+                })
                 // ✅ Join petugas lewat kode_petugas, BUKAN petugas_id
                 ->leftJoin('petugas', 'pelanggan.kode_petugas', '=', 'petugas.kode_petugas')
-                ->leftJoin('invoice', 'ranking.idpel', '=', 'invoice.idpel')
+                ->leftJoin('invoice', function($join) {
+                    $join->on('ranking.idpel', '=', 'invoice.idpel')
+                         ->on('ranking.periode', '=', 'invoice.periode');
+                })
                 ->select(
                     'ranking.id as ranking_id',
                     'ranking.idpel',
@@ -117,6 +125,11 @@ class InvoiceController extends Controller
                 $query->where('pelanggan.kode_petugas', $request->kode_petugas);
             }
 
+            // Filter periode
+            if ($periode) {
+                $query->where('ranking.periode', $periode);
+            }
+
             // Clone query to compute global stats
             $statsQuery = clone $query;
             $totalCount = $statsQuery->count();
@@ -130,13 +143,14 @@ class InvoiceController extends Controller
             ];
 
             $petugasList = DB::table('petugas')->orderBy('nama')->get();
+            $periodeList = DB::table('ranking')->select('periode')->distinct()->orderBy('periode', 'desc')->pluck('periode');
 
             $invoice = $query
                 ->orderBy('ranking.ranking', 'asc')
                 ->paginate(20)
                 ->withQueryString();
 
-            return view('staff.invoice.index', compact('invoice', 'stats', 'petugasList'));
+            return view('staff.invoice.index', compact('invoice', 'stats', 'petugasList', 'periode', 'periodeList'));
 
         } catch (\Exception $e) {
             Log::error('[INVOICE] Index error: ' . $e->getMessage(), [
@@ -160,19 +174,19 @@ class InvoiceController extends Controller
     public function print(Request $request)
     {
         try {
-            $idpels = $this->resolveIdpels($request);
+            $rankingIds = $this->resolveRankingIds($request);
 
-            if (empty($idpels)) {
+            if (empty($rankingIds)) {
                 return back()->with('warning', 'Pilih minimal 1 pelanggan untuk dicetak.');
             }
 
             DB::beginTransaction();
 
-            $this->upsertInvoices($idpels, statusCetak: 'sudah');
+            $this->upsertInvoices($rankingIds, statusCetak: 'sudah');
 
             DB::commit();
 
-            $invoice = $this->fetchInvoiceData($idpels);
+            $invoice = $this->fetchInvoiceData($rankingIds);
 
             return view('staff.invoice.print', compact('invoice'));
 
@@ -194,19 +208,19 @@ class InvoiceController extends Controller
     public function exportPdf(Request $request)
     {
         try {
-            $idpels = $this->resolveIdpels($request);
+            $rankingIds = $this->resolveRankingIds($request);
 
-            if (empty($idpels)) {
+            if (empty($rankingIds)) {
                 return back()->with('warning', 'Pilih minimal 1 pelanggan untuk di-export.');
             }
 
             DB::beginTransaction();
 
-            $this->upsertInvoices($idpels, statusCetak: 'sudah');
+            $this->upsertInvoices($rankingIds, statusCetak: 'sudah');
 
             DB::commit();
 
-            $invoice = $this->fetchInvoiceData($idpels);
+            $invoice = $this->fetchInvoiceData($rankingIds);
 
             if ($invoice->isEmpty()) {
                 return back()->with('warning', 'Tidak ada data invoice untuk di-export.');
@@ -236,13 +250,23 @@ class InvoiceController extends Controller
     */
     public function generate(Request $request)
     {
+        $request->validate([
+            'periode' => 'required|date_format:Y-m',
+        ]);
+        $periode = $request->periode;
+
         try {
             DB::beginTransaction();
 
             $rankings = DB::table('ranking')
-                ->join('pelanggan', 'ranking.idpel', '=', 'pelanggan.idpel')
+                ->join('pelanggan', function($join) {
+                    $join->on('ranking.idpel', '=', 'pelanggan.idpel')
+                         ->on('ranking.periode', '=', 'pelanggan.periode');
+                })
+                ->where('ranking.periode', $periode)
                 ->select(
                     'ranking.idpel',
+                    'ranking.periode',
                     'ranking.ranking',
                     'pelanggan.rptag',
                     'pelanggan.rpbk'
@@ -261,6 +285,7 @@ class InvoiceController extends Controller
             foreach ($rankings as $item) {
                 $exists = DB::table('invoice')
                     ->where('idpel', $item->idpel)
+                    ->where('periode', $item->periode)
                     ->exists();
 
                 if ($exists) {
@@ -273,6 +298,7 @@ class InvoiceController extends Controller
 
                 $insert[] = [
                     'idpel'         => $item->idpel,
+                    'periode'       => $item->periode,
                     'nomor_surat'   => $nomorSurat,
                     'bulan'         => null,
                     'total_tagihan' => $totalTagihan,
@@ -346,22 +372,18 @@ class InvoiceController extends Controller
     */
 
     /**
-     * Ambil array idpel dari parameter request.
+     * Ambil array ranking_id dari parameter request.
      * ids = comma-separated ranking IDs (bulk)
-     * idpel = single idpel
+     * ranking_id = single ranking id
      */
-    private function resolveIdpels(Request $request): array
+    private function resolveRankingIds(Request $request): array
     {
         if ($request->filled('ids')) {
-            $rankingIds = array_filter(explode(',', $request->ids));
-            return DB::table('ranking')
-                ->whereIn('id', $rankingIds)
-                ->pluck('idpel')
-                ->toArray();
+            return array_filter(explode(',', $request->ids));
         }
 
-        if ($request->filled('idpel')) {
-            return [$request->idpel];
+        if ($request->filled('ranking_id')) {
+            return [$request->ranking_id];
         }
 
         return [];
@@ -383,13 +405,17 @@ class InvoiceController extends Controller
      * Insert invoice baru atau update status_cetak jika sudah ada.
      * Dipanggil dari print() dan exportPdf().
      */
-    private function upsertInvoices(array $idpels, string $statusCetak = 'sudah'): void
+    private function upsertInvoices(array $rankingIds, string $statusCetak = 'sudah'): void
     {
         $rankings = DB::table('ranking')
-            ->join('pelanggan', 'ranking.idpel', '=', 'pelanggan.idpel')
-            ->whereIn('ranking.idpel', $idpels)
+            ->join('pelanggan', function($join) {
+                $join->on('ranking.idpel', '=', 'pelanggan.idpel')
+                     ->on('ranking.periode', '=', 'pelanggan.periode');
+            })
+            ->whereIn('ranking.id', $rankingIds)
             ->select(
                 'ranking.idpel',
+                'ranking.periode',
                 'ranking.ranking',
                 'pelanggan.rptag',
                 'pelanggan.rpbk'
@@ -400,11 +426,13 @@ class InvoiceController extends Controller
         foreach ($rankings as $item) {
             $exists = DB::table('invoice')
                 ->where('idpel', $item->idpel)
+                ->where('periode', $item->periode)
                 ->exists();
 
             if (!$exists) {
                 DB::table('invoice')->insert([
                     'idpel'         => $item->idpel,
+                    'periode'       => $item->periode,
                     'nomor_surat'   => $this->buildNomorSurat($item->ranking),
                     'bulan'         => null,
                     'total_tagihan' => ($item->rptag ?? 0) + ($item->rpbk ?? 0),
@@ -417,6 +445,7 @@ class InvoiceController extends Controller
             } else {
                 DB::table('invoice')
                     ->where('idpel', $item->idpel)
+                    ->where('periode', $item->periode)
                     ->update([
                         'status_cetak'  => $statusCetak,
                         'tanggal_cetak' => $statusCetak === 'sudah' ? now() : null,
@@ -431,14 +460,20 @@ class InvoiceController extends Controller
      * ✅ Join petugas lewat kode_petugas
      * ✅ Tidak ada kolom rbm
      */
-    private function fetchInvoiceData(array $idpels)
+    private function fetchInvoiceData(array $rankingIds)
     {
-        return DB::table('invoice')
-            ->join('pelanggan', 'invoice.idpel', '=', 'pelanggan.idpel')
+        return DB::table('ranking')
+            ->whereIn('ranking.id', $rankingIds)
+            ->join('pelanggan', function($join) {
+                $join->on('ranking.idpel', '=', 'pelanggan.idpel')
+                     ->on('ranking.periode', '=', 'pelanggan.periode');
+            })
             // ✅ join petugas lewat kode_petugas
             ->leftJoin('petugas', 'pelanggan.kode_petugas', '=', 'petugas.kode_petugas')
-            ->join('ranking', 'invoice.idpel', '=', 'ranking.idpel')
-            ->whereIn('invoice.idpel', $idpels)
+            ->join('invoice', function($join) {
+                $join->on('ranking.idpel', '=', 'invoice.idpel')
+                     ->on('ranking.periode', '=', 'invoice.periode');
+            })
             ->select(
                 'invoice.id',
                 'invoice.idpel',

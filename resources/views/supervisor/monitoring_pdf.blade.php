@@ -12,7 +12,7 @@ resources/views/supervisor/monitoring_pdf.blade.php
 
         body{
             font-family: sans-serif;
-            font-size: 11px;
+            font-size: 13px;
         }
 
         .title{
@@ -48,7 +48,7 @@ resources/views/supervisor/monitoring_pdf.blade.php
         .table td{
             border:1px solid #000;
             padding:5px;
-            font-size:10px;
+            font-size: 12px;
         }
 
         .text-right{

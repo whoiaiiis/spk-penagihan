@@ -135,25 +135,41 @@ Route::get('/roles', function () {
         'role'
     ));
 
-})->middleware('permission:roles.view');
+})->middleware('permission:roles:view');
 
 // SIMPAN PERMISSION
 Route::post('/roles/save', function (Request $request) {
     try {
+        \Illuminate\Support\Facades\Log::info('=== SAVE PERMISSIONS REQUEST ===');
+        \Illuminate\Support\Facades\Log::info('Request data:', $request->all());
+
         DB::beginTransaction();
-        DB::table('role_permissions')->truncate();
+
+        // Use DELETE instead of TRUNCATE — TRUNCATE is DDL in MySQL and
+        // implicitly commits the transaction, making rollback impossible.
+        DB::table('role_permissions')->delete();
+
+        \Illuminate\Support\Facades\Log::info('Existing role_permissions deleted');
 
         if ($request->permissions) {
+            $insertCount = 0;
             foreach ($request->permissions as $role_id => $perms) {
                 foreach (array_unique($perms) as $perm_id) {
                     DB::table('role_permissions')->insert([
                         'role_id'       => $role_id,
                         'permission_id' => $perm_id
                     ]);
+                    $insertCount++;
                 }
             }
+            \Illuminate\Support\Facades\Log::info("Inserted $insertCount role_permissions records");
+        } else {
+            \Illuminate\Support\Facades\Log::info('No permissions sent — all cleared');
         }
+
         DB::commit();
+
+        \Illuminate\Support\Facades\Log::info('Transaction committed successfully');
 
         // Update current session permissions for immediate sidebar reflection
         $loggedInUser = Session::get('user');
@@ -166,6 +182,7 @@ Route::post('/roles/save', function (Request $request) {
                     ->pluck('permissions.name')
                     ->toArray();
                 Session::put('permissions', $newPermissions);
+                \Illuminate\Support\Facades\Log::info('Session permissions updated', $newPermissions);
             }
         }
 
@@ -179,6 +196,9 @@ Route::post('/roles/save', function (Request $request) {
         return back()->with('success', 'Berhasil disimpan');
     } catch (\Exception $e) {
         DB::rollBack();
+        \Illuminate\Support\Facades\Log::error('SAVE PERMISSIONS FAILED: ' . $e->getMessage());
+        \Illuminate\Support\Facades\Log::error($e->getTraceAsString());
+
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => false,

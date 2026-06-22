@@ -9,121 +9,93 @@ use Illuminate\Support\Facades\Log;
  * PelangganImportService
  *
  * Handles CSV parsing, row-level validation, and batch database upsert
- * for pelanggan data (format PLN). Uses native PHP fgetcsv — no external packages.
- *
- * ┌─────────────────────────────────────────────────────┐
- * │  FORMAT CSV PLN — MAPPING POSISI KOLOM              │
- * ├──────┬──────────┬──────────────────────────────────┤
- * │ Col  │ Index    │ Keterangan                        │
- * ├──────┼──────────┼──────────────────────────────────┤
- * │ A    │ 0        │ UNITAP                            │
- * │ B    │ 1        │ UNITUP (tidak dipakai)            │
- * │ C    │ 2        │ IDPEL                             │
- * │ D    │ 3        │ NAMA                              │
- * │ E    │ 4        │ (tidak dipakai)                   │
- * │ F    │ 5        │ DAYA                              │
- * │ G    │ 6        │ KOGOL (tidak dipakai)             │
- * │ H    │ 7        │ GARDU (tidak dipakai)             │
- * │ I    │ 8        │ ALAMAT (tidak dipakai)            │
- * │ J    │ 9        │ RBM → kode_petugas                │
- * │ K    │ 10       │ RPTAG                             │
- * │ L    │ 11       │ RPBK                              │
- * │ M    │ 12       │ LEMBAR                            │
- * └──────┴──────────┴──────────────────────────────────┘
- *
- * Catatan:
- *   - Delimiter default: titik koma (;)
- *   - kode_petugas diambil dari kolom J (RBM), bukan dari UNITAP
- *   - Jika kolom M (LEMBAR) kosong/tidak ada, default = 1
+ * for pelanggan data (format PLN). Uses native PHP fgetcsv.
  */
 class PelangganImportService
 {
-    // ─────────────────────────────────────────────────────────────────────────
-    // Mapping posisi kolom CSV PLN (0-based index)
-    // ─────────────────────────────────────────────────────────────────────────
-    private const COL_UNITAP  = 0;
-    private const COL_IDPEL   = 2;
-    private const COL_NAMA    = 3;
-    private const COL_DAYA    = 5;
-    private const COL_RBM     = 9;   // → kode_petugas
-    private const COL_RPTAG   = 10;
-    private const COL_RPBK    = 11;
-    private const COL_LEMBAR  = 12;
-
-    // Jumlah kolom minimum yang harus ada dalam satu baris
-    private const MIN_COLUMNS = 12;
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Header yang diharapkan di baris pertama CSV (lowercase, untuk validasi)
-    // Jika header tidak cocok, import tetap berjalan tapi dicatat sebagai warning.
-    // ─────────────────────────────────────────────────────────────────────────
-    private const EXPECTED_HEADERS = [
-        self::COL_UNITAP => 'unitap',
-        self::COL_IDPEL  => 'idpel',
-        self::COL_NAMA   => 'nama',
-        self::COL_DAYA   => 'daya',
-        self::COL_RBM    => 'rbm',
-        self::COL_RPTAG  => 'rptag',
-        self::COL_RPBK   => 'rpbk',
+    // Alias Header untuk Deteksi Kolom Dinamis
+    private const COLUMN_ALIASES = [
+        'unitap'       => ['unitap', 'unit_ap', 'ap'],
+        'idpel'        => ['idpel', 'id_pel', 'id_pelanggan'],
+        'nama'         => ['nama', 'nama_pelanggan'],
+        'daya'         => ['daya', 'tarif_daya'],
+        'kode_petugas' => ['rbm', 'kode_petugas', 'petugas'],
+        'rptag'        => ['rptag', 'tagihan', 'rp_tag'],
+        'rpbk'         => ['rpbk', 'bk', 'rp_bk'],
+        'lembar'       => ['lembar', 'lbr'],
     ];
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // PUBLIC: processFile
-    // ─────────────────────────────────────────────────────────────────────────
+    // Fallback index positional PLN default (jika header tidak sesuai)
+    private const FALLBACK_INDEX = [
+        'unitap'       => 0,
+        'idpel'        => 2,
+        'nama'         => 3,
+        'daya'         => 5,
+        'kode_petugas' => 9,
+        'rptag'        => 10,
+        'rpbk'         => 11,
+        'lembar'       => 12,
+    ];
 
     /**
      * Parse a CSV file and return structured result.
-     *
-     * @param  string $filePath  Absolute path ke file CSV
-     * @return array {
-     *   preview: array,   // Semua baris + metadata _row/_status/_errors
-     *   valid:   array,   // Baris yang lolos validasi
-     *   errors:  array,   // Pesan error per baris
-     *   stats:   array,   // total/valid/error/error_rows
-     *   fatal:   string,  // Error fatal (file tidak bisa dibuka, dll)
-     *   header_warning: string|null  // Warning jika header tidak sesuai
-     * }
      */
-    public function processFile(string $filePath): array
+    public function processFile(string $filePath, array $importMeta = []): array
     {
         $preview = [];
         $valid   = [];
         $errors  = [];
 
-        // ── Buka file ──────────────────────────────────────────────────────
         $handle = fopen($filePath, 'r');
         if (! $handle) {
             return $this->emptyResult('File tidak bisa dibuka.');
         }
 
-        // ── Deteksi delimiter ──────────────────────────────────────────────
         $delimiter = $this->detectDelimiter($handle);
 
-        // ── Baca & validasi header ─────────────────────────────────────────
         $rawHeader = fgetcsv($handle, 0, $delimiter);
         if (! $rawHeader) {
             fclose($handle);
             return $this->emptyResult('File CSV kosong atau header tidak ditemukan.');
         }
 
-        $headerWarning = $this->checkHeader($rawHeader);
+        // TAHAP 1: Buat riwayat Import Log tepat sebelum membaca file CSV
+        $importLogId = DB::table('import_logs')->insertGetId([
+            'type'        => 'pelanggan',
+            'filename'    => $importMeta['filename']    ?? 'import_' . now()->format('YmdHis'),
+            'imported_by' => $importMeta['imported_by'] ?? 'system',
+            'import_date' => $importMeta['import_date'] ?? now(),
+            'total_rows'  => 0, 
+            'created_at'  => now(),
+            'updated_at'  => now(),
+        ]);
 
-        // ── Ambil existing idpel dari DB untuk cek duplikat ────────────────
+        $colIndex = $this->resolveColumnIndex($rawHeader);
+
         $existingIds = DB::table('pelanggan')->pluck('idpel')->flip()->all();
         $seenInBatch = [];
+        $petugasCache = DB::table('petugas')->pluck('id', 'kode_petugas')->all();
 
-        // ── Baca baris data ────────────────────────────────────────────────
-        $rowNumber = 1; // baris 1 = header, data mulai baris 2
+        $rowNumber = 1; 
+        $detailedErrors = []; // Penampung untuk DB
+
         while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
             $rowNumber++;
 
-            // Skip baris kosong
             if (count(array_filter($row, fn($v) => trim($v) !== '')) === 0) {
                 continue;
             }
 
-            $data      = $this->extractRow($row, $rowNumber);
-            $rowErrors = $this->validateRow($data, $rowNumber, $existingIds, $seenInBatch);
+            $data = $this->extractRow($row, $colIndex);
+
+            if (!isset($petugasCache[$data['kode_petugas']])) {
+                $inferredFromUnitap = substr($data['unitap'], 0, 6);
+                if (isset($petugasCache[$inferredFromUnitap])) {
+                    $data['kode_petugas'] = $inferredFromUnitap;
+                }
+            }
+
+            $rowErrors = $this->validateRow($data, $petugasCache, $seenInBatch);
 
             $preview[] = array_merge($data, [
                 '_row'    => $rowNumber,
@@ -135,15 +107,42 @@ class PelangganImportService
                 $valid[]                      = $data;
                 $seenInBatch[$data['idpel']]  = true;
             } else {
-                foreach ($rowErrors as $msg) {
-                    $errors[] = "Baris {$rowNumber} – {$msg}";
-                }
+                $pesanError = implode(', ', $rowErrors);
+                $errors[] = "Baris {$rowNumber} – {$pesanError}";
+
+                // TAHAP 2: Kumpulkan struktur error spesifik untuk database
+                $detailedErrors[] = [
+                    'import_log_id' => $importLogId,
+                    'row_number'    => $rowNumber,
+                    'row_data'      => json_encode($data),
+                    'error_message' => $pesanError,
+                    'error_type'    => 'validation',
+                    'created_at'    => now(),
+                    'updated_at'    => now(),
+                ];
             }
         }
 
         fclose($handle);
 
+        // TAHAP 3: Simpan seluruh kumpulan error Preview ke tabel import_errors
+        if (!empty($detailedErrors)) {
+            foreach (array_chunk($detailedErrors, 500) as $chunk) {
+                DB::table('import_errors')->insert($chunk);
+            }
+        }
+
+        // TAHAP 4: Update jumlah baris di import_logs
+        DB::table('import_logs')
+            ->where('id', $importLogId)
+            ->update([
+                'total_rows' => count($preview),
+                'failed'     => count($detailedErrors),
+                'notes'      => 'Upload CSV selesai. Menunggu konfirmasi Save (bila ada data valid).',
+            ]);
+
         return [
+            'import_log_id'  => $importLogId,
             'preview'        => $preview,
             'valid'          => $valid,
             'errors'         => $errors,
@@ -154,29 +153,21 @@ class PelangganImportService
                 'error_rows' => count(array_filter($preview, fn($r) => $r['_status'] === 'error')),
             ],
             'fatal'          => null,
-            'header_warning' => $headerWarning,
+            'header_warning' => null,
         ];
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // PUBLIC: saveToDatabase
-    // ─────────────────────────────────────────────────────────────────────────
-
     /**
      * Batch-upsert valid rows into the database (INSERT or UPDATE).
-     *
-     * @param  array $validRows   Array of rows from processFile()['valid']
-     * @param  array $importMeta  Optional metadata: filename, imported_by, import_date
-     * @return array { inserted, updated, total, import_log_id }
      */
-    public function saveToDatabase(array $validRows, array $importMeta = []): array
+    public function saveToDatabase(array $validRows, int $importLogId, string $periode): array
     {
         if (empty($validRows)) {
             return [
                 'inserted'      => 0,
                 'updated'       => 0,
                 'total'         => 0,
-                'import_log_id' => null,
+                'import_log_id' => $importLogId,
             ];
         }
 
@@ -188,30 +179,20 @@ class PelangganImportService
             $updated  = 0;
             $failed   = 0;
 
-            // ── Buat import log ────────────────────────────────────────────
-            $importLogId = DB::table('import_logs')->insertGetId([
-                'type'        => 'pelanggan',
-                'filename'    => $importMeta['filename']    ?? 'import_' . now()->format('YmdHis'),
-                'imported_by' => $importMeta['imported_by'] ?? 'system',
-                'import_date' => $importMeta['import_date'] ?? now(),
-                'total_rows'  => count($validRows),
-                'created_at'  => $now,
-                'updated_at'  => $now,
-            ]);
-
-            // ── Cache petugas (kode_petugas → id) ─────────────────────────
-            // Satu query untuk semua petugas, menghindari N+1 query
             $petugasMap = DB::table('petugas')
                 ->pluck('id', 'kode_petugas')
                 ->all();
 
-            // ── Upsert per baris ───────────────────────────────────────────
+            $historiInsertData = [];
+            $periodeSekarang = date('Y-m');
+
             foreach ($validRows as $row) {
                 try {
                     $petugasId = $petugasMap[$row['kode_petugas']] ?? null;
 
                     $data = [
                         'idpel'        => $row['idpel'],
+                        'periode'      => $periode,
                         'nama'         => $row['nama'],
                         'unitap'       => $row['unitap'],
                         'kode_petugas' => $row['kode_petugas'],
@@ -225,11 +206,13 @@ class PelangganImportService
 
                     $exists = DB::table('pelanggan')
                         ->where('idpel', $row['idpel'])
+                        ->where('periode', $periode)
                         ->exists();
 
                     if ($exists) {
                         DB::table('pelanggan')
                             ->where('idpel', $row['idpel'])
+                            ->where('periode', $periode)
                             ->update($data);
                         $updated++;
                     } else {
@@ -237,20 +220,44 @@ class PelangganImportService
                         DB::table('pelanggan')->insert($data);
                         $inserted++;
                     }
+
+                    $historiInsertData[] = [
+                        'idpel'      => $row['idpel'],
+                        'periode'    => $periodeSekarang,
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
                 } catch (\Exception $rowEx) {
                     Log::warning("Gagal upsert idpel={$row['idpel']}: " . $rowEx->getMessage());
                     $failed++;
                 }
             }
 
-            // ── Update import log dengan hasil ─────────────────────────────
+            if (!empty($historiInsertData)) {
+                foreach (array_chunk($historiInsertData, 500) as $chunk) {
+                    DB::table('histori_tunggakan')->insertOrIgnore($chunk);
+                }
+            }
+
+            DB::statement("
+                UPDATE pelanggan 
+                SET historis_tunggakan = (
+                    SELECT COUNT(id) 
+                    FROM histori_tunggakan 
+                    WHERE histori_tunggakan.idpel = pelanggan.idpel 
+                      AND histori_tunggakan.periode >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 12 MONTH), '%Y-%m')
+                )
+                WHERE pelanggan.periode = ?
+            ", [$periodeSekarang]);
+
+            // 5. CUKUP UPDATE STATUS LOG YANG SUDAH DIBUAT SAAT UPLOAD
             DB::table('import_logs')
                 ->where('id', $importLogId)
                 ->update([
                     'inserted'   => $inserted,
                     'updated'    => $updated,
-                    'failed'     => $failed,
-                    'notes'      => "Inserted: {$inserted}, Updated: {$updated}, Failed: {$failed}",
+                    'failed'     => DB::raw("failed + {$failed}"),
+                    'notes'      => "Proses Save Selesai. Inserted: {$inserted}, Updated: {$updated}, DB Failed: {$failed}",
                     'updated_at' => $now,
                 ]);
 
@@ -269,15 +276,6 @@ class PelangganImportService
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // PRIVATE HELPERS
-    // ─────────────────────────────────────────────────────────────────────────
-
-    /**
-     * Deteksi delimiter CSV (titik koma atau koma).
-     * Membaca baris pertama, menghitung kemunculan ; dan ,
-     * lalu mengembalikan yang paling banyak.
-     */
     private function detectDelimiter($handle): string
     {
         $firstLine = fgets($handle);
@@ -289,147 +287,102 @@ class PelangganImportService
         return $semicolonCount >= $commaCount ? ';' : ',';
     }
 
-    /**
-     * Validasi header CSV.
-     * Mengembalikan string warning jika header tidak sesuai, atau null jika OK.
-     * Import tetap berjalan meski header tidak cocok (positional mapping).
-     */
-    private function checkHeader(array $rawHeader): ?string
+    private function resolveColumnIndex(array $rawHeader): array
     {
-        $normalised = array_map(fn($h) => strtolower(trim($h)), $rawHeader);
-        $mismatches = [];
+        $header = array_map(fn($h) => strtolower(trim($h)), $rawHeader);
+        $headerFlip = array_flip($header);
+        $resolved = [];
 
-        foreach (self::EXPECTED_HEADERS as $index => $expected) {
-            $actual = $normalised[$index] ?? '(tidak ada)';
-            if ($actual !== $expected) {
-                $mismatches[] = "Kolom " . ($index + 1) . ": diharapkan '{$expected}', ditemukan '{$actual}'";
+        foreach (self::COLUMN_ALIASES as $internalName => $aliases) {
+            $found = false;
+            foreach ($aliases as $alias) {
+                if (isset($headerFlip[$alias])) {
+                    $resolved[$internalName] = $headerFlip[$alias];
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                $resolved[$internalName] = self::FALLBACK_INDEX[$internalName] ?? 0;
             }
         }
 
-        if (empty($mismatches)) {
-            return null;
-        }
-
-        return 'Peringatan header: ' . implode('; ', $mismatches) .
-               '. Import tetap dilanjutkan menggunakan posisi kolom.';
+        return $resolved;
     }
 
-    /**
-     * Ekstrak satu baris CSV berdasarkan posisi kolom.
-     * Semua pembersihan format angka (titik pemisah ribuan) dilakukan di sini.
-     *
-     * @param  array $row       Baris CSV dari fgetcsv()
-     * @param  int   $rowNumber Nomor baris (untuk logging saja)
-     * @return array
-     */
-    private function extractRow(array $row, int $rowNumber): array
+    private function extractRow(array $row, array $colIndex): array
     {
-        // Helper: ambil nilai dari kolom berdasarkan index
-        $get = function (int $colIndex) use ($row): string {
-            $value = trim($row[$colIndex] ?? '');
-            // Bersihkan format angka PLN: "1.234.567" → "1234567"
+        $get = function (string $key) use ($row, $colIndex): string {
+            $idx = $colIndex[$key] ?? -1;
+            $value = isset($row[$idx]) ? trim($row[$idx]) : '';
             $value = str_replace('.', '', $value);
-            // Bersihkan koma desimal jika ada
             $value = str_replace(',', '', $value);
             return $value;
         };
 
-        // Helper: ambil teks (tanpa cleaning angka, uppercase)
-        $getText = function (int $colIndex) use ($row): string {
-            return strtoupper(trim($row[$colIndex] ?? ''));
+        $getText = function (string $key) use ($row, $colIndex): string {
+            $idx = $colIndex[$key] ?? -1;
+            return strtoupper(trim($row[$idx] ?? ''));
         };
 
-        $unitap      = $getText(self::COL_UNITAP);
-        $kodePetugas = $getText(self::COL_RBM);   // RBM = kode_petugas
-
-        // LEMBAR: kolom M (index 12), default 1 jika kosong atau tidak ada
-        $lembarRaw = $get(self::COL_LEMBAR);
-        $lembar    = ($lembarRaw !== '' && is_numeric($lembarRaw))
-                        ? $lembarRaw
-                        : '1';
+        $lembarRaw = $get('lembar');
+        $lembar    = ($lembarRaw !== '' && is_numeric($lembarRaw)) ? $lembarRaw : '1';
 
         return [
-            'idpel'        => $get(self::COL_IDPEL),
-            'nama'         => $getText(self::COL_NAMA),
-            'unitap'       => $unitap,
-            'kode_petugas' => $kodePetugas,
-            'daya'         => $get(self::COL_DAYA),
-            'rptag'        => $get(self::COL_RPTAG),
-            'rpbk'         => $get(self::COL_RPBK),
+            'idpel'        => $get('idpel'),
+            'nama'         => $getText('nama'),
+            'unitap'       => $getText('unitap'),
+            'kode_petugas' => $getText('kode_petugas'),
+            'daya'         => $get('daya'),
+            'rptag'        => $get('rptag'),
+            'rpbk'         => $get('rpbk'),
             'lembar'       => $lembar,
         ];
     }
 
-    /**
-     * Validasi satu baris data.
-     *
-     * @return string[] Array pesan error (kosong = valid)
-     */
-    private function validateRow(
-        array $data,
-        int   $rowNumber,
-        array $existingIds,
-        array $seenInBatch
-    ): array {
+    private function validateRow(array $data, array $petugasCache, array $seenInBatch): array
+    {
         $errors = [];
 
-        // ── IDPEL ──────────────────────────────────────────────────────────
         if ($data['idpel'] === '') {
             $errors[] = 'idpel wajib diisi';
         } elseif (isset($seenInBatch[$data['idpel']])) {
             $errors[] = "idpel '{$data['idpel']}' duplikat dalam file";
         }
-        // Catatan: duplikat dengan DB tidak dianggap error karena akan di-UPDATE
 
-        // ── NAMA ───────────────────────────────────────────────────────────
         if ($data['nama'] === '') {
             $errors[] = 'nama wajib diisi';
         }
 
-        // ── DAYA ───────────────────────────────────────────────────────────
         if ($data['daya'] === '' || ! is_numeric($data['daya'])) {
-            $errors[] = 'daya harus berupa angka (nilai: "' . $data['daya'] . '")';
+            $errors[] = 'daya harus berupa angka';
         }
 
-        // ── LEMBAR ─────────────────────────────────────────────────────────
         if ($data['lembar'] === '' || ! is_numeric($data['lembar'])) {
-            $errors[] = 'lembar harus berupa angka (nilai: "' . $data['lembar'] . '")';
+            $errors[] = 'lembar harus berupa angka';
         }
 
-        // ── RPTAG ──────────────────────────────────────────────────────────
         if ($data['rptag'] === '' || ! is_numeric($data['rptag'])) {
-            $errors[] = 'rptag harus berupa angka (nilai: "' . $data['rptag'] . '")';
+            $errors[] = 'rptag harus berupa angka';
         }
 
-        // ── RPBK ───────────────────────────────────────────────────────────
         if ($data['rpbk'] === '' || ! is_numeric($data['rpbk'])) {
-            $errors[] = 'rpbk harus berupa angka (nilai: "' . $data['rpbk'] . '")';
+            $errors[] = 'rpbk harus berupa angka';
         }
 
-        // ── UNITAP ─────────────────────────────────────────────────────────
         if ($data['unitap'] === '') {
             $errors[] = 'UNITAP wajib diisi';
         }
 
-        // ── KODE PETUGAS (RBM) ─────────────────────────────────────────────
         if ($data['kode_petugas'] === '') {
             $errors[] = 'Kode Petugas (kolom RBM) wajib diisi';
-        } else {
-            $petugasExists = DB::table('petugas')
-                ->where('kode_petugas', $data['kode_petugas'])
-                ->exists();
-
-            if (! $petugasExists) {
-                $errors[] = "Kode Petugas '{$data['kode_petugas']}' tidak ditemukan di data petugas";
-            }
+        } elseif (!isset($petugasCache[$data['kode_petugas']])) {
+            $errors[] = "Kode Petugas '{$data['kode_petugas']}' tidak ditemukan di data petugas";
         }
 
         return $errors;
     }
 
-    /**
-     * Return struktur kosong dengan pesan error fatal.
-     */
     private function emptyResult(string $fatalError = ''): array
     {
         return [

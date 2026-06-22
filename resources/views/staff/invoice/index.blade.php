@@ -34,20 +34,20 @@
     .page-wrap { max-width: 1280px; padding: 24px 20px 40px; }
 
     .page-header { margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px; }
-    .page-header-text h1 { font-size: 1.375rem; font-weight: 700; margin: 0 0 2px; letter-spacing: -.02em; }
-    .page-header-text p  { font-size: .875rem; color: var(--c-muted); margin: 0; }
+    .page-header-text h1 { font-size: 1.5rem; font-weight: 700; margin: 0 0 2px; letter-spacing: -.02em; }
+    .page-header-text p  { font-size: 1rem; color: var(--c-muted); margin: 0; }
     .page-header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
     /* Filter card */
     .filter-card { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 18px 22px; box-shadow: var(--shadow); margin-bottom: 20px; }
     .filter-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; }
     .fg { display: flex; flex-direction: column; gap: 5px; }
-    .fg label { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--c-muted); }
-    .fg select, .fg input { height: 38px; padding: 0 12px; border: 1px solid var(--c-border); border-radius: var(--radius-sm); font-size: .875rem; color: var(--c-text); background: #F8FAFC; outline: none; font-family: var(--font); transition: border-color .15s; min-width: 140px; }
+    .fg label { font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--c-muted); }
+    .fg select, .fg input { height: 38px; padding: 0 12px; border: 1px solid var(--c-border); border-radius: var(--radius-sm); font-size: 1rem; color: var(--c-text); background: #F8FAFC; outline: none; font-family: var(--font); transition: border-color .15s; min-width: 140px; }
     .fg select:focus, .fg input:focus { border-color: var(--c-primary); background: #fff; }
 
     /* Buttons */
-    .btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: var(--radius-sm); font-size: .875rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: all .15s; text-decoration: none; line-height: 1; height: 38px; font-family: var(--font); }
+    .btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 1rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: all .15s; text-decoration: none; line-height: 1; height: 38px; font-family: var(--font); }
     .btn svg { width: 15px; height: 15px; flex-shrink: 0; }
     .btn-primary { background: var(--c-primary); color: #fff; border-color: var(--c-primary); }
     .btn-primary:hover { background: var(--c-primary-dk); }
@@ -55,34 +55,34 @@
     .btn-success:hover { background: #15803D; }
     .btn-outline { background: #fff; color: var(--c-muted); border-color: var(--c-border); }
     .btn-outline:hover { background: #F8FAFC; color: var(--c-text); }
-    .btn-sm { padding: 6px 12px; font-size: .8125rem; height: auto; }
+    .btn-sm { padding: 6px 12px; font-size: 0.9375rem; height: auto; }
 
     /* Stats bar */
     .stats-bar { display: flex; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
     .stat-chip { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius-sm); padding: 10px 16px; display: flex; align-items: center; gap: 10px; box-shadow: var(--shadow); }
-    .stat-chip .sc-val { font-size: 1.25rem; font-weight: 700; font-family: var(--mono); }
-    .stat-chip .sc-lbl { font-size: .75rem; color: var(--c-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+    .stat-chip .sc-val { font-size: 1.375rem; font-weight: 700; font-family: var(--mono); }
+    .stat-chip .sc-lbl { font-size: 0.875rem; color: var(--c-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
     .stat-chip.blue .sc-val { color: var(--c-primary); }
 
     /* Table */
     .table-card { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
     .table-card-header { padding: 14px 20px; border-bottom: 1px solid var(--c-border); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-    .table-card-header h3 { font-size: .9375rem; font-weight: 600; margin: 0; }
+    .table-card-header h3 { font-size: 1.0625rem; font-weight: 600; margin: 0; }
     .tbl-wrap { overflow-x: auto; }
 
-    table { width: 100%; border-collapse: collapse; font-size: .875rem; }
-    thead th { background: #F8FAFC; padding: 10px 14px; text-align: left; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--c-muted); border-bottom: 1px solid var(--c-border); white-space: nowrap; }
+    table { width: 100%; border-collapse: collapse; font-size: 1rem; }
+    thead th { background: #F8FAFC; padding: 10px 14px; text-align: left; font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--c-muted); border-bottom: 1px solid var(--c-border); white-space: nowrap; }
     thead th.center { text-align: center; }
     thead th.right  { text-align: right; }
     tbody tr { border-bottom: 1px solid #F1F5F9; transition: background .1s; }
     tbody tr:hover { background: #F8FAFC; }
     tbody tr:last-child { border-bottom: none; }
     td { padding: 11px 14px; vertical-align: middle; white-space: nowrap; }
-    td.mono { font-family: var(--mono); font-size: .82rem; }
+    td.mono { font-family: var(--mono); font-size: 0.945rem; }
     td.right { text-align: right; }
     td.center { text-align: center; }
 
-    .pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 99px; font-size: .75rem; font-weight: 600; }
+    .pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 99px; font-size: 0.875rem; font-weight: 600; }
     .pill.sudah { background: var(--c-success-lt); color: var(--c-success); border: 1px solid var(--c-success-bd); }
     .pill.belum { background: var(--c-warning-lt); color: var(--c-warning); border: 1px solid #FDE68A; }
 
@@ -93,8 +93,8 @@
     /* Sticky action bar */
     .action-bar { display: none; position: sticky; bottom: 16px; background: var(--c-primary); color: #fff; border-radius: var(--radius); padding: 14px 20px; box-shadow: 0 8px 32px rgba(0,91,170,.35); align-items: center; justify-content: space-between; gap: 12px; z-index: 100; margin-top: 12px; }
     .action-bar.visible { display: flex; }
-    .action-bar span { font-size: .9375rem; font-weight: 600; }
-    .btn-white { background: #fff; color: var(--c-primary); border: none; padding: 8px 16px; border-radius: var(--radius-sm); font-size: .875rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: background .15s; }
+    .action-bar span { font-size: 1.0625rem; font-weight: 600; }
+    .btn-white { background: #fff; color: var(--c-primary); border: none; padding: 8px 16px; border-radius: var(--radius-sm); font-size: 1rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: background .15s; }
     .btn-white:hover { background: #EFF6FF; }
 
     .alert { padding: 12px 16px; border-radius: var(--radius-sm); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
@@ -105,7 +105,7 @@
 
     .empty-state { padding: 48px 24px; text-align: center; color: var(--c-muted); }
     .empty-state svg { opacity: .3; margin: 0 auto 12px; display: block; }
-    .empty-state p { margin: 0; font-size: .9375rem; }
+    .empty-state p { margin: 0; font-size: 1.0625rem; }
 
     @media (max-width: 768px) {
         .page-wrap { padding: 16px 12px 28px; }
@@ -121,10 +121,10 @@
     }
     @media (max-width: 576px) {
         .page-wrap { padding: 14px 10px 24px; }
-        .page-header-text h1 { font-size: 1rem; }
+        .page-header-text h1 { font-size: 1.125rem; }
         .stats-bar { gap: 8px; }
-        .stat-chip .sc-val { font-size: 1rem; }
-        table { font-size: 0.75rem; }
+        .stat-chip .sc-val { font-size: 1.125rem; }
+        table { font-size: 0.875rem; }
         td, thead th { padding: 8px 10px; }
     }
 </style>
@@ -133,7 +133,7 @@
 @section('content')
 <div class="px-4 py-4">
 
-    {{-- ── PAGE HEADER ── --}}
+    {{-- Header halaman daftar invoice dan tombol generate --}}
     <div class="page-header">
         <div class="page-header-text">
             <h1>Daftar Invoice</h1>
@@ -141,19 +141,22 @@
         </div>
         <div class="page-header-actions">
             <form action="{{ route('invoice.generate') }}" method="POST"
-                  onsubmit="return confirm('Generate semua invoice dari ranking?')">
+                  onsubmit="return confirm('Generate semua invoice dari ranking untuk periode ini?')">
                 @csrf
-                <button type="submit" class="btn btn-primary">
-                    <svg fill="none" viewBox="0 0 24 24">
-                        <path d="M12 5v14m7-7H5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                    Generate Semua Invoice
-                </button>
+                <div style="display:flex; gap:8px;">
+                    <input type="month" name="periode" required value="{{ $periode ?? date('Y-m') }}" style="height:38px; border:1px solid var(--c-border); border-radius:var(--radius-sm); padding:0 12px; font-family:var(--font);">
+                    <button type="submit" class="btn btn-primary">
+                        <svg fill="none" viewBox="0 0 24 24">
+                            <path d="M12 5v14m7-7H5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Generate Semua Invoice
+                    </button>
+                </div>
             </form>
         </div>
     </div>
 
-    {{-- ── ALERTS ── --}}
+    {{-- Menampilkan notifikasi sukses, error, atau peringatan --}}
     @if(session('success'))
     <div class="alert alert-success">
         <svg fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
@@ -173,10 +176,19 @@
     </div>
     @endif
 
-    {{-- ── FILTER ── --}}
+    {{-- Form pencarian dan filter daftar invoice --}}
     <div class="filter-card">
         <form method="GET" action="{{ route('invoice.index') }}">
             <div class="filter-row">
+                <div class="fg">
+                    <label>Periode</label>
+                    <select name="periode">
+                        <option value="">Semua Periode</option>
+                        @foreach($periodeList ?? [] as $p)
+                            <option value="{{ $p }}" {{ request('periode', $periode) === $p ? 'selected' : '' }}>{{ $p }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <div class="fg">
                     <label>Cari Pelanggan</label>
                     <input type="text" name="search" value="{{ request('search', '') }}" placeholder="Nama / IDPEL...">
@@ -217,7 +229,7 @@
         </form>
     </div>
 
-    {{-- ── STATS ── --}}
+    {{-- Menampilkan ringkasan total invoice dan status cetak --}}
     @if($invoice->total() > 0)
     <div class="stats-bar">
         <div class="stat-chip blue">
@@ -245,13 +257,14 @@
     </div>
     @endif
 
-    {{-- ── TABLE ── --}}
+    {{-- Tabel daftar invoice pelanggan dari hasil ranking --}}
     <form id="action-form">
         <div class="table-card">
+            {{-- Header tabel dan tombol aksi massal (Cetak Pilihan, Export PDF) --}}
             <div class="table-card-header">
                 <h3>Hasil Ranking Pelanggan ({{ $invoice->total() }})</h3>
                 <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-                    <label style="font-size:.8125rem;color:var(--c-muted);display:flex;align-items:center;gap:6px;cursor:pointer">
+                    <label style="font-size: 0.9375rem;color:var(--c-muted);display:flex;align-items:center;gap:6px;cursor:pointer">
                         <input type="checkbox" id="check-all" onchange="toggleAll(this)"> Pilih Semua
                     </label>
                     <button type="button" class="btn btn-success btn-sm" onclick="bulkPrint()">
@@ -304,6 +317,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {{-- Looping daftar invoice pelanggan --}}
                         @foreach($invoice as $inv)
                         <tr>
                             {{-- 1. Checkbox --}}
@@ -331,17 +345,17 @@
                             {{-- 5. Unitap (✅ ganti rbm) --}}
                             <td>
                                 <span style="background:#E2E8F0; padding:2px 6px; border-radius:4px;
-                                             font-size:.7rem; font-weight:600;">
+                                             font-size: 0.825rem; font-weight:600;">
                                     {{ $inv->unitap ?: '-' }}
                                 </span>
                             </td>
 
                             {{-- 6. Petugas --}}
                             <td>
-                                <div style="font-weight:600; font-size:.8rem;">
+                                <div style="font-weight:600; font-size: 0.925rem;">
                                     {{ $inv->kode_petugas ?: '-' }}
                                 </div>
-                                <div style="font-size:.75rem; color:var(--c-muted);">
+                                <div style="font-size: 0.875rem; color:var(--c-muted);">
                                     {{ $inv->nama_petugas ?: '-' }}
                                 </div>
                             </td>
@@ -405,7 +419,7 @@
                 </table>
             </div>
 
-            {{-- Pagination --}}
+            {{-- Link pagination tabel invoice --}}
             <div style="padding:14px 20px; border-top:1px solid var(--c-border);">
                 {{ $invoice->links() }}
             </div>
@@ -413,7 +427,7 @@
         </div>
     </form>
 
-    {{-- ── STICKY ACTION BAR ── --}}
+    {{-- Action bar yang muncul di bawah layar saat ada baris yang dipilih --}}
     <div class="action-bar" id="action-bar">
         <span id="selected-count">0 pelanggan dipilih</span>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -438,6 +452,7 @@
 
 @push('scripts')
 <script>
+// Script untuk mengatur fitur pilih semua (checkbox) dan aksi cetak/export massal
 let selectedIds = new Set();
 
 function toggleAll(cb) {

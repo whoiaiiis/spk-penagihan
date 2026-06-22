@@ -12,7 +12,7 @@
     background: linear-gradient(90deg, var(--pln-blue), #4A9FE8);
     transition: width .4s ease;
 }
-.bobot-val { font-size:12px; font-weight:600; color:var(--text-primary); white-space:nowrap; font-family:var(--font-mono); }
+.bobot-val { font-size: 14px; font-weight:600; color:var(--text-primary); white-space:nowrap; font-family:var(--font-mono); }
 .total-bobot-bar {
     height:8px; border-radius:99px; background:#E2E9F1; overflow:hidden;
 }
@@ -28,8 +28,8 @@
    RESPONSIVE — Tablet (768px – 1024px)
 ================================================================ */
 @media (max-width: 1024px) {
-    .stat-card-value { font-size: 20px; }
-    .pln-table { font-size: 12px; }
+    .stat-card-value { font-size: 22px; }
+    .pln-table { font-size: 14px; }
     .pln-table th,
     .pln-table td { padding: 10px 12px; }
 }
@@ -44,20 +44,20 @@
         gap: 12px;
     }
     
-    .page-header h1 { font-size: 18px; }
+    .page-header h1 { font-size: 20px; }
     
     .row { --bs-gutter-x: 0.75rem; }
     
     .stat-card { padding: 14px; }
-    .stat-card-value { font-size: 18px; }
-    .stat-card-label { font-size: 10px; }
+    .stat-card-value { font-size: 20px; }
+    .stat-card-label { font-size: 12px; }
     
     .pln-table-wrap {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
     
-    .pln-table { font-size: 11px; }
+    .pln-table { font-size: 13px; }
     .pln-table th,
     .pln-table td {
         padding: 8px 10px;
@@ -65,7 +65,7 @@
     }
     
     .bobot-bar-wrap { gap: 6px; }
-    .bobot-val { font-size: 11px; }
+    .bobot-val { font-size: 13px; }
 }
 
 /* ================================================================
@@ -77,27 +77,27 @@
         align-items: flex-start;
     }
     
-    .page-header h1 { font-size: 16px; }
+    .page-header h1 { font-size: 18px; }
     .page-header a { width: 100%; }
     
     .stat-card { padding: 12px; }
-    .stat-card-value { font-size: 16px; }
+    .stat-card-value { font-size: 18px; }
     
-    .pln-table { font-size: 10px; }
+    .pln-table { font-size: 12px; }
     .pln-table th,
     .pln-table td { padding: 6px 8px; }
     
-    .badge-neutral { font-size: 10px; }
+    .badge-neutral { font-size: 12px; }
 }
 
 /* ================================================================
    RESPONSIVE — Very Small (<= 400px)
 ================================================================ */
 @media (max-width: 400px) {
-    .page-header h1 { font-size: 14px; }
+    .page-header h1 { font-size: 16px; }
     .stat-card { padding: 10px; }
-    .stat-card-value { font-size: 14px; }
-    .pln-table { font-size: 9px; }
+    .stat-card-value { font-size: 16px; }
+    .pln-table { font-size: 11px; }
     .pln-table th,
     .pln-table td { padding: 5px 6px; }
 }
@@ -111,7 +111,7 @@
     </div>
 </div>
 
-{{-- HEADER --}}
+{{-- Header halaman data kriteria beserta tombol tambah --}}
 <div class="page-header d-flex align-items-center justify-content-between">
     <div>
         <h1>Data Kriteria</h1>
@@ -133,7 +133,7 @@
     </div>
 @endif
 
-{{-- SUMMARY CARDS --}}
+{{-- Menghitung total kriteria dan status bobot --}}
 @php
     $totalBobot   = $kriteria->sum('bobot');
     $totalKriteria = $kriteria->count();
@@ -181,14 +181,14 @@
     </div>
 </div>
 
-{{-- BOBOT PROGRESS --}}
+{{-- progress bar persentase total bobot --}}
 <div class="card mb-4">
     <div class="card-body" style="padding:16px 20px!important">
         <div class="d-flex align-items-center justify-content-between mb-2">
-            <span style="font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px">
+            <span style="font-size: 14px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px">
                 Distribusi Total Bobot
             </span>
-            <span style="font-size:13px;font-weight:700;color:var(--text-primary)">
+            <span style="font-size: 15px;font-weight:700;color:var(--text-primary)">
                 {{ $totalBobot }} / 100%
             </span>
         </div>
@@ -197,7 +197,7 @@
                  style="width:{{ min($totalBobot,100) }}%"></div>
         </div>
         @if($totalBobot != 100)
-            <p style="font-size:12px;color:{{ $totalBobot > 100 ? '#C0392B' : '#B7600A' }};margin-top:6px;margin-bottom:0">
+            <p style="font-size: 14px;color:{{ $totalBobot > 100 ? '#C0392B' : '#B7600A' }};margin-top:6px;margin-bottom:0">
                 <i class="bi bi-info-circle"></i>
                 Total bobot harus = 100% agar perhitungan SAW akurat.
                 Selisih: {{ abs(100 - $totalBobot) }}%
@@ -206,7 +206,7 @@
     </div>
 </div>
 
-{{-- TABLE --}}
+{{-- Tabel daftar kriteria SAW --}}
 <div class="card">
     <div class="card-header d-flex align-items-center justify-content-between">
         <span>Daftar Kriteria SAW</span>
@@ -227,10 +227,10 @@
             <tbody>
             @forelse($kriteria as $k)
                 <tr>
-                    <td style="color:var(--text-muted);font-size:12px">{{ $loop->iteration }}</td>
+                    <td style="color:var(--text-muted);font-size: 14px">{{ $loop->iteration }}</td>
                     <td>
                         <div style="font-weight:600;color:var(--text-primary)">{{ $k->nama }}</div>
-                        <div style="font-size:11px;color:var(--text-muted);margin-top:2px">ID: {{ $k->id }}</div>
+                        <div style="font-size: 13px;color:var(--text-muted);margin-top:2px">ID: {{ $k->id }}</div>
                     </td>
                     <td>
                         @if($k->tipe == 'benefit')
@@ -251,25 +251,26 @@
                             <span class="bobot-val">{{ $k->bobot }}%</span>
                         </div>
                     </td>
-                    <td style="color:var(--text-secondary);font-size:13px">
+                    <td style="color:var(--text-secondary);font-size: 15px">
                         {{ $k->keterangan ?? '—' }}
                     </td>
                     <td style="text-align:right">
                         <div style="display:flex;gap:6px;justify-content:flex-end">
                             @permission('kriteria:edit')
                             <a href="/datakriteria/edit/{{ $k->id }}"
-                               class="btn-pln-ghost" style="padding:5px 10px;font-size:12px"
+                               class="btn-pln-ghost" style="padding:5px 10px;font-size: 14px"
                                title="Edit">
                                 <i class="bi bi-pencil"></i>
                             </a>
                             @endpermission
                             @permission('kriteria:delete')
+                            {{-- Form untuk menghapus kriteria dengan konfirmasi alert --}}
                             <form action="/datakriteria/delete/{{ $k->id }}"
                                   method="POST" style="display:inline"
                                   onsubmit="return confirm('Yakin hapus kriteria \'{{ $k->nama }}\'?')">
                                 @csrf
                                 <button type="submit"
-                                        style="padding:5px 10px;font-size:12px;background:#FEE8E8;color:#C0392B;border:1px solid #F5AAAA;border-radius:var(--radius-md);cursor:pointer;display:inline-flex;align-items:center"
+                                        style="padding:5px 10px;font-size: 14px;background:#FEE8E8;color:#C0392B;border:1px solid #F5AAAA;border-radius:var(--radius-md);cursor:pointer;display:inline-flex;align-items:center"
                                         title="Hapus">
                                     <i class="bi bi-trash"></i>
                                 </button>
@@ -282,9 +283,9 @@
                 <tr>
                     <td colspan="6" style="padding:52px 24px;text-align:center">
                         <div style="width:40px;height:40px;background:var(--bg-body);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:var(--text-muted)">
-                            <i class="bi bi-sliders" style="font-size:18px"></i>
+                            <i class="bi bi-sliders" style="font-size: 20px"></i>
                         </div>
-                        <p style="font-size:13px;color:var(--text-muted);margin:0">
+                        <p style="font-size: 15px;color:var(--text-muted);margin:0">
                             Belum ada kriteria. <a href="/datakriteria/create" style="color:var(--pln-blue)">Tambah sekarang</a>
                         </p>
                     </td>
@@ -296,3 +297,4 @@
 </div>
 
 @endsection
+

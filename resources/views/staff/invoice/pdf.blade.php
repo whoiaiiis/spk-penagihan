@@ -1,10 +1,11 @@
-{{-- resources/views/staff/invoice/pdf.blade.php --}}
+{{-- C:\laragon\www\spk-penagihan\resources\views\staff\invoice\pdf.blade.php --}}
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <title>Invoice Tagihan PLN</title>
-        <style>
+    <style>
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         @page {
@@ -28,6 +29,7 @@
             display: flex;
             flex-direction: column;
             position: relative;
+            margin: 0 auto;
         }
 
         .invoice-pair {
@@ -37,9 +39,9 @@
         }
 
         .invoice {
-            height: 138mm; /* 2 * 138 = 276mm, fits perfectly within 287mm with a small gap */
-            padding: 8mm 12mm;
-            border: 1px dashed #666; /* clearer boundary */
+            height: 138mm;
+            padding: 6mm 10mm;
+            border: 1px dashed #666;
             display: flex;
             flex-direction: column;
             page-break-inside: avoid;
@@ -48,71 +50,72 @@
         }
 
         .divider {
-            height: 8mm; /* Gap between invoice 1 and 2 */
+            height: 8mm;
             margin: 0;
             border: none;
             background: transparent;
         }
 
         .invoice + .invoice {
-            margin-top: 8mm; /* For pdf.blade.php where .divider might not exist */
+            margin-top: 8mm;
         }
 
-        /* ================================================================
-           HEADER SECTION
-        ================================================================ */
-        .invoice-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8pt; border-bottom: 2pt solid #005baa; padding-bottom: 6pt; }
+        /* HEADER SECTION */
+        .invoice-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6pt; border-bottom: 2pt solid #005baa; padding-bottom: 4pt; }
         .logo-section { display: flex; align-items: center; gap: 8pt; }
-        .logo-box { width: 34pt; height: 34pt; background: #005baa; color: #fff; display: flex; align-items: center; justify-content: center; border-radius: 3pt; font-weight: bold; font-size: 16pt; }
-        .logo-text h2 { font-size: 12pt; font-weight: bold; color: #005baa; margin: 0; line-height: 1.1; }
-        .logo-text p { font-size: 7.5pt; color: #666; margin: 0; }
+        .logo-text h2 { font-size: 11pt; font-weight: bold; color: #005baa; margin: 0; line-height: 1.1; }
+        .logo-text p { font-size: 7pt; color: #666; margin: 0; }
         .nomor-section { text-align: right; }
-        .nomor-section label { font-size: 7.5pt; color: #666; text-transform: uppercase; font-weight: bold; }
-        .nomor-section .value { font-size: 10.5pt; font-weight: bold; color: #000; font-family: 'Courier New', monospace; margin-top: 2pt; }
+        .nomor-section label { font-size: 7pt; color: #666; text-transform: uppercase; font-weight: bold; }
+        .nomor-section .value { font-size: 9.5pt; font-weight: bold; color: #000; font-family: 'Courier New', monospace; margin-top: 2pt; }
 
-        /* ================================================================
-           WARNING SECTION
-        ================================================================ */
-        .warning-section { background: #fff3cd; border: 1pt solid #ffc107; border-radius: 2pt; padding: 6pt; margin-bottom: 8pt; display: flex; gap: 6pt; align-items: center; }
-        .warning-icon { font-size: 12pt; color: #ff9800; line-height: 1; margin-top: -2pt; }
-        .warning-text { font-size: 7.5pt; color: #d9730d; line-height: 1.3; font-weight: bold; }
+        /* TITLE SECTION */
+        .title-section { text-align: center; margin-bottom: 6pt; }
+        .title-section h3 { font-size: 9pt; font-weight: bold; color: #000; margin: 0; }
+        .title-section p { font-size: 7.5pt; font-style: italic; color: #d9730d; margin: 2pt 0 0 0; }
 
-        /* ================================================================
-           INVOICE DETAILS
-        ================================================================ */
-        .invoice-body { flex: 1; display: flex; flex-direction: column; gap: 6pt; }
-        .detail-section { display: grid; grid-template-columns: 1fr 1fr; gap: 6pt 16pt; }
-        .detail-group { display: flex; flex-direction: column; gap: 2pt; }
-        .detail-label { font-size: 7.5pt; color: #666; text-transform: uppercase; font-weight: bold; letter-spacing: 0.3pt; }
-        .detail-value { font-size: 9.5pt; font-weight: bold; color: #000; }
-        .detail-value.mono { font-family: 'Courier New', monospace; font-size: 8.5pt; }
-        .detail-value.big { font-size: 10.5pt; color: #005baa; }
-        .detail-group.full { grid-column: 1 / -1; }
+        /* WARNING SECTION */
+        .warning-section { background: #fff3cd; border: 1pt solid #ffc107; border-radius: 2pt; padding: 4pt 6pt; margin-bottom: 6pt; display: flex; gap: 6pt; align-items: center; }
+        .warning-icon { font-size: 11pt; color: #ff9800; line-height: 1; margin-top: -2pt; }
+        .warning-text { font-size: 7pt; color: #d9730d; line-height: 1.3; font-weight: bold; }
 
-        /* ================================================================
-           TAGIHAN SECTION
-        ================================================================ */
-        .tagihan-section { border-top: 1pt solid #ddd; border-bottom: 2pt solid #005baa; padding: 6pt 0; margin: 6pt 0; }
-        .tagihan-row { display: flex; justify-content: space-between; align-items: center; font-size: 9pt; padding: 3pt 0; border-bottom: 1pt dotted #ddd; }
+        /* INVOICE DETAILS */
+        .invoice-body { flex: 1; display: flex; flex-direction: column; gap: 4pt; }
+        .detail-table { width: 100%; font-size: 8pt; margin-bottom: 4pt; }
+        .detail-table td { padding: 2pt 4pt; vertical-align: top; }
+        .detail-table td:nth-child(1), .detail-table td:nth-child(4) { width: 18%; color: #666; font-weight: bold; font-size: 7pt; text-transform: uppercase; }
+        .detail-table td:nth-child(2), .detail-table td:nth-child(5) { width: 2%; }
+        .detail-table td:nth-child(3), .detail-table td:nth-child(6) { width: 30%; font-weight: bold; }
+        .detail-table .mono { font-family: 'Courier New', monospace; }
+        .detail-table .big { font-size: 9.5pt; color: #005baa; }
+
+        /* TAGIHAN SECTION */
+        .tagihan-section { border-top: 1pt solid #ddd; border-bottom: 2pt solid #005baa; padding: 4pt 0; margin: 4pt 0; }
+        .tagihan-row { display: flex; justify-content: space-between; align-items: center; font-size: 8.5pt; padding: 2pt 0; border-bottom: 1pt dotted #ddd; }
         .tagihan-row:last-child { border-bottom: none; }
         .tagihan-label { color: #666; }
         .tagihan-value { font-weight: bold; font-family: 'Courier New', monospace; color: #000; }
-        .tagihan-total { display: flex; justify-content: space-between; font-size: 10pt; font-weight: bold; padding: 4pt 0; margin-top: 4pt; border-top: 1pt solid #000; }
+        .tagihan-total { display: flex; justify-content: space-between; font-size: 9.5pt; font-weight: bold; padding: 4pt 0; margin-top: 2pt; border-top: 1pt solid #000; }
         .tagihan-total .label { color: #005baa; }
         .tagihan-total .value { color: #005baa; font-family: 'Courier New', monospace; }
 
-        /* ================================================================
-           SIGNATURE SECTION
-        ================================================================ */
-        .signature-section { display: flex; justify-content: space-between; margin-top: auto; padding-top: 6pt; border-top: 1pt solid #ddd; }
-        .signature-box { display: flex; flex-direction: column; align-items: center; gap: 24pt; text-align: center; min-width: 80pt; }
-        .signature-label { font-weight: bold; color: #000; font-size: 8pt; }
-        .signature-name { font-size: 8pt; color: #666; font-style: italic; }
+        /* EXTRA INFO SECTION */
+        .extra-info { font-size: 7pt; color: #333; text-align: justify; line-height: 1.3; margin-top: 4pt; }
+        .extra-info p { margin-bottom: 4pt; }
+        .extra-info strong { font-size: 8pt; }
 
-        /* ================================================================
-           FOOTER NOTE
-        ================================================================ */
-        .footer-note { font-size: 7.5pt; color: #999; text-align: center; margin-top: 6pt; border-top: 1pt solid #e0e0e0; padding-top: 4pt; line-height: 1.2; }
+        /* SIGNATURE SECTION */
+        .signature-section { display: flex; justify-content: space-between; margin-top: auto; padding-top: 4pt; border-top: 1pt solid #ddd; }
+        
+        .tembusan-box { font-size: 7pt; color: #333; width: 40%; }
+        .tembusan-box strong { display: block; margin-bottom: 2pt; }
+        
+        .signature-box { display: flex; flex-direction: column; align-items: center; text-align: center; width: 30%; }
+        .signature-label { font-size: 7.5pt; color: #000; margin-bottom: 20pt; }
+        .signature-name { font-size: 7.5pt; font-weight: bold; color: #000; border-bottom: 1px solid #000; display: inline-block; padding-bottom: 1pt; }
+
+        /* FOOTER NOTE */
+        .footer-note { font-size: 7pt; color: #999; text-align: center; margin-top: 4pt; border-top: 1pt solid #e0e0e0; padding-top: 2pt; line-height: 1.2; }
 
         @media print {
             body { background: #fff; margin: 0; padding: 0; }
@@ -122,29 +125,39 @@
         @media screen {
             body { background: #f0f0f0; padding: 20px 0; display: flex; flex-direction: column; align-items: center; gap: 20px; }
             .page { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+            .invoice { border: 1px dashed #ddd; background: #fff; }
         }
+
     </style>
 </head>
 <body>
 
+{{-- Looping per 2 invoice untuk dicetak di satu halaman (kertas A4 dibagi 2) --}}
 @foreach($invoice->chunk(2) as $pair)
     <div class="page">
-        {{-- First Invoice --}}
+        <div class="invoice-pair">
+
+
         @if(isset($pair[0]))
         <div class="invoice">
-            {{-- Header --}}
+            {{-- Header invoice --}}
             <div class="invoice-header">
                 <div class="logo-section">
-                    <div class="logo-box">PLN</div>
+                    <img src="{{ public_path('images/logo_pln.png') }}" alt="Logo PLN" style="height: 30pt; width: auto;">
                     <div class="logo-text">
-                        <h2>PLN Tagihan</h2>
-                        <p>Sistem Penunjang Keputusan</p>
+                        <h2>PT PLN (Persero) UID S2JB</h2>
+                        <p>UP3 Palembang - ULP RIVAI</p>
                     </div>
                 </div>
                 <div class="nomor-section">
                     <label>Nomor Surat</label>
                     <div class="value">{{ $pair[0]->nomor_surat }}</div>
                 </div>
+            </div>
+
+            <div class="title-section">
+                <h3>PEMBERITAHUAN INFORMASI TAGIHAN REKENING LISTRIK</h3>
+                <p>(ABAIKAN SURAT INI APABILA SUDAH DILAKUKAN PEMBAYARAN)</p>
             </div>
 
             {{-- Warning Section --}}
@@ -157,29 +170,36 @@
 
             {{-- Invoice Body --}}
             <div class="invoice-body">
-                {{-- Detail Pelanggan --}}
-                <div class="detail-section">
-                    <div class="detail-group">
-                        <div class="detail-label">ID Pelanggan (IDPEL)</div>
-                        <div class="detail-value mono">{{ $pair[0]->idpel }}</div>
-                    </div>
-                    <div class="detail-group">
-                        <div class="detail-label">Nama Pelanggan</div>
-                        <div class="detail-value">{{ $pair[0]->nama }}</div>
-                    </div>
-                    <div class="detail-group">
-                        <div class="detail-label">Petugas & RBM</div>
-                        <div class="detail-value">{{ $pair[0]->nama_petugas ?: '-' }} ({{ $pair[0]->rbm ?: '-' }})</div>
-                    </div>
-                    <div class="detail-group">
-                        <div class="detail-label">Daya Terpasang (VA)</div>
-                        <div class="detail-value big">{{ number_format($pair[0]->daya) }}</div>
-                    </div>
-                    <div class="detail-group">
-                        <div class="detail-label">Periode Tagihan</div>
-                        <div class="detail-value">{{ $pair[0]->bulan }}</div>
-                    </div>
-                </div>
+                {{-- Detail Pelanggan dengan Table agar rapi di dompdf --}}
+                <table class="detail-table">
+                    <tr>
+                        <td>ID Pelanggan</td>
+                        <td>:</td>
+                        <td class="mono">{{ $pair[0]->idpel }}</td>
+                        
+                        <td>Daya / Tarif</td>
+                        <td>:</td>
+                        <td class="big">{{ number_format($pair[0]->daya) }} VA / R1</td>
+                    </tr>
+                    <tr>
+                        <td>Nama Pelanggan</td>
+                        <td>:</td>
+                        <td>{{ $pair[0]->nama }}</td>
+                        
+                        <td>Periode</td>
+                        <td>:</td>
+                        <td>{{ $pair[0]->bulan }}</td>
+                    </tr>
+                    <tr>
+                        <td>Petugas</td>
+                        <td>:</td>
+                        <td>{{ $pair[0]->nama_petugas ?: '-' }} ({{ $pair[0]->kode_petugas ?: '-' }})</td>
+                        
+                        <td>Ranking / SAW</td>
+                        <td>:</td>
+                        <td class="big">{{ $pair[0]->ranking }} / {{ number_format($pair[0]->nilai_akhir, 6) }}</td>
+                    </tr>
+                </table>
 
                 {{-- Tagihan Details --}}
                 <div class="tagihan-section">
@@ -193,63 +213,68 @@
                     </div>
                     <div class="tagihan-total">
                         <span class="label">TOTAL TAGIHAN</span>
-                        <span class="value">Rp {{ number_format($pair[0]->total_tagihan, 0, ',', '.') }}</span>
+                        <span class="value">Rp {{ number_format($pair[0]->total_tagihan, 0, ',', '.') }},-</span>
                     </div>
                 </div>
 
-                {{-- Ranking & SAW --}}
-                <div class="detail-section">
-                    <div class="detail-group">
-                        <div class="detail-label">Ranking</div>
-                        <div class="detail-value big">{{ $pair[0]->ranking }}</div>
-                    </div>
-                    <div class="detail-group">
-                        <div class="detail-label">Nilai Akhir (SAW)</div>
-                        <div class="detail-value big">{{ number_format($pair[0]->nilai_akhir, 6) }}</div>
-                    </div>
+                {{-- Extra Info --}}
+                <div class="extra-info">
+                    <p>Melalui Surat pemberitahuan ini, Kami himbau agar para Pelanggan PLN dapat Disiplin membayar tagihan listrik tepat waktu sebelum tanggal <strong>20</strong> setiap bulannya untuk menghindari sanksi PEMUTUSAN SEMENTARA (SEGEL MCB / PUTUS KABEL / BONGKAR KWH DAN GANTI PRABAYAR) sesuai peraturan yang berlaku.</p>
+                    <p>Untuk informasi tagihan listrik bulanan silakan download PLN MOBILE. Demikian disampaikan, atas perhatiannya Kami ucapkan terima kasih.</p>
                 </div>
             </div>
 
             {{-- Signature Section --}}
             <div class="signature-section">
-                <div class="signature-box" style="margin-right: auto;">
-                    <div>
-                        <div class="signature-label">Pemberi Tagihan</div>
-                        <div class="signature-name">PT. PLN (Persero)</div>
-                    </div>
+                <div class="tembusan-box">
+                    <strong>TEMBUSAN :</strong>
+                    Yth. KEPALA KEJAKSAAN NEGERI<br>
+                    PALEMBANG
                 </div>
+                
                 <div class="signature-box" style="margin-left: auto;">
-                    <div>
-                        <div class="signature-label">Diketahui,</div>
-                        <div class="signature-name">Manajer Operasional</div>
+                    <div class="signature-label">
+                        Palembang, {{ strtoupper(\Carbon\Carbon::parse($pair[0]->tanggal_cetak ?: now())->translatedFormat('F Y')) }}<br>
+                        Manajer
                     </div>
+                    <div class="signature-name">ASYAUQI PUTRA IZZATI</div>
                 </div>
             </div>
 
             {{-- Footer Note --}}
             <div class="footer-note">
-                Dokumen ini dicetak oleh Sistem Penunjang Keputusan PLN pada {{ now()->format('d/m/Y H:i') }}<br>
-                Harap simpan dokumen ini sebagai bukti penerimaan tagihan
+                Dokumen ini dicetak oleh Sistem Penunjang Keputusan PLN pada {{ now()->format('d/m/Y H:i') }}
             </div>
         </div>
         @endif
 
-        {{-- Second Invoice --}}
+
+            {{-- Pemisah antara dua invoice --}}
+            @if(isset($pair[1]))
+            <div class="divider"></div>
+            @endif
+
+
         @if(isset($pair[1]))
         <div class="invoice">
-            {{-- Header --}}
+            {{-- Header invoice --}}
             <div class="invoice-header">
                 <div class="logo-section">
-                    <div class="logo-box">PLN</div>
+                    <img src="{{ public_path('images/logo_pln.png') }}" alt="Logo PLN" style="height: 30pt; width: auto;">
                     <div class="logo-text">
-                        <h2>PLN Tagihan</h2>
-                        <p>Sistem Penunjang Keputusan</p>
+                        <h2>PT PLN (Persero) UID S2JB</h2>
+                        <p>UP3 Palembang - ULP RIVAI</p>
                     </div>
                 </div>
                 <div class="nomor-section">
                     <label>Nomor Surat</label>
                     <div class="value">{{ $pair[1]->nomor_surat }}</div>
                 </div>
+            </div>
+
+            <div class="title-section">
+                <h3>PEMBERITAHUAN INFORMASI TAGIHAN REKENING LISTRIK</h3>
+                <p>(ABAIKAN SURAT INI APABILA SUDAH DILAKUKAN PEMBAYARAN)</p>
             </div>
 
             {{-- Warning Section --}}
@@ -262,29 +287,36 @@
 
             {{-- Invoice Body --}}
             <div class="invoice-body">
-                {{-- Detail Pelanggan --}}
-                <div class="detail-section">
-                    <div class="detail-group">
-                        <div class="detail-label">ID Pelanggan (IDPEL)</div>
-                        <div class="detail-value mono">{{ $pair[1]->idpel }}</div>
-                    </div>
-                    <div class="detail-group">
-                        <div class="detail-label">Nama Pelanggan</div>
-                        <div class="detail-value">{{ $pair[1]->nama }}</div>
-                    </div>
-                    <div class="detail-group">
-                        <div class="detail-label">Petugas & RBM</div>
-                        <div class="detail-value">{{ $pair[1]->nama_petugas ?: '-' }} ({{ $pair[1]->rbm ?: '-' }})</div>
-                    </div>
-                    <div class="detail-group">
-                        <div class="detail-label">Daya Terpasang (VA)</div>
-                        <div class="detail-value big">{{ number_format($pair[1]->daya) }}</div>
-                    </div>
-                    <div class="detail-group">
-                        <div class="detail-label">Periode Tagihan</div>
-                        <div class="detail-value">{{ $pair[1]->bulan }}</div>
-                    </div>
-                </div>
+                {{-- Detail Pelanggan dengan Table agar rapi di dompdf --}}
+                <table class="detail-table">
+                    <tr>
+                        <td>ID Pelanggan</td>
+                        <td>:</td>
+                        <td class="mono">{{ $pair[1]->idpel }}</td>
+                        
+                        <td>Daya / Tarif</td>
+                        <td>:</td>
+                        <td class="big">{{ number_format($pair[1]->daya) }} VA / R1</td>
+                    </tr>
+                    <tr>
+                        <td>Nama Pelanggan</td>
+                        <td>:</td>
+                        <td>{{ $pair[1]->nama }}</td>
+                        
+                        <td>Periode</td>
+                        <td>:</td>
+                        <td>{{ $pair[1]->bulan }}</td>
+                    </tr>
+                    <tr>
+                        <td>Petugas</td>
+                        <td>:</td>
+                        <td>{{ $pair[1]->nama_petugas ?: '-' }} ({{ $pair[1]->kode_petugas ?: '-' }})</td>
+                        
+                        <td>Ranking / SAW</td>
+                        <td>:</td>
+                        <td class="big">{{ $pair[1]->ranking }} / {{ number_format($pair[1]->nilai_akhir, 6) }}</td>
+                    </tr>
+                </table>
 
                 {{-- Tagihan Details --}}
                 <div class="tagihan-section">
@@ -298,48 +330,44 @@
                     </div>
                     <div class="tagihan-total">
                         <span class="label">TOTAL TAGIHAN</span>
-                        <span class="value">Rp {{ number_format($pair[1]->total_tagihan, 0, ',', '.') }}</span>
+                        <span class="value">Rp {{ number_format($pair[1]->total_tagihan, 0, ',', '.') }},-</span>
                     </div>
                 </div>
 
-                {{-- Ranking & SAW --}}
-                <div class="detail-section">
-                    <div class="detail-group">
-                        <div class="detail-label">Ranking</div>
-                        <div class="detail-value big">{{ $pair[1]->ranking }}</div>
-                    </div>
-                    <div class="detail-group">
-                        <div class="detail-label">Nilai Akhir (SAW)</div>
-                        <div class="detail-value big">{{ number_format($pair[1]->nilai_akhir, 6) }}</div>
-                    </div>
+                {{-- Extra Info --}}
+                <div class="extra-info">
+                    <p>Melalui Surat pemberitahuan ini, Kami himbau agar para Pelanggan PLN dapat Disiplin membayar tagihan listrik tepat waktu sebelum tanggal <strong>20</strong> setiap bulannya untuk menghindari sanksi PEMUTUSAN SEMENTARA (SEGEL MCB / PUTUS KABEL / BONGKAR KWH DAN GANTI PRABAYAR) sesuai peraturan yang berlaku.</p>
+                    <p>Untuk informasi tagihan listrik bulanan silakan download PLN MOBILE. Demikian disampaikan, atas perhatiannya Kami ucapkan terima kasih.</p>
                 </div>
             </div>
 
             {{-- Signature Section --}}
             <div class="signature-section">
-                <div class="signature-box" style="margin-right: auto;">
-                    <div>
-                        <div class="signature-label">Pemberi Tagihan</div>
-                        <div class="signature-name">PT. PLN (Persero)</div>
-                    </div>
+                <div class="tembusan-box">
+                    <strong>TEMBUSAN :</strong>
+                    Yth. KEPALA KEJAKSAAN NEGERI<br>
+                    PALEMBANG
                 </div>
+                
                 <div class="signature-box" style="margin-left: auto;">
-                    <div>
-                        <div class="signature-label">Diketahui,</div>
-                        <div class="signature-name">Manajer Operasional</div>
+                    <div class="signature-label">
+                        Palembang, {{ strtoupper(\Carbon\Carbon::parse($pair[1]->tanggal_cetak ?: now())->translatedFormat('F Y')) }}<br>
+                        Manajer
                     </div>
+                    <div class="signature-name">ASYAUQI PUTRA IZZATI</div>
                 </div>
             </div>
 
             {{-- Footer Note --}}
             <div class="footer-note">
-                Dokumen ini dicetak oleh Sistem Penunjang Keputusan PLN pada {{ now()->format('d/m/Y H:i') }}<br>
-                Harap simpan dokumen ini sebagai bukti penerimaan tagihan
+                Dokumen ini dicetak oleh Sistem Penunjang Keputusan PLN pada {{ now()->format('d/m/Y H:i') }}
             </div>
         </div>
         @endif
+
+
+        </div>
     </div>
 @endforeach
-
 </body>
 </html>

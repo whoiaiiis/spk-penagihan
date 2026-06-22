@@ -1,8 +1,6 @@
 @extends('layouts.app')
-
 @section('title', 'Master Data Pelanggan')
 @section('page_title', 'Master Data Pelanggan')
-
 @section('content')
 
 <style>
@@ -34,12 +32,12 @@
     body { background: var(--c-bg); font-family: var(--font); color: var(--c-text); }
     .page-wrap { max-width: 1400px; padding: 24px 20px 40px; margin: 0 auto; }
     .page-header { margin-bottom: 28px; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-    .page-header h1 { font-size: 1.5rem; font-weight: 700; margin: 0; color: var(--c-text); }
-    .page-header p  { font-size: .875rem; color: var(--c-muted); margin: 0; }
+    .page-header h1 { font-size: 1.875rem; font-weight: 700; margin: 0; color: var(--c-text); }
+    .page-header p  { font-size: 1rem; color: var(--c-muted); margin: 0; }
 
     .pln-alert {
         padding: 14px 16px; border-radius: var(--radius-sm); margin-bottom: 16px;
-        display: flex; align-items: flex-start; gap: 10px; font-size: .875rem; font-weight: 500;
+        display: flex; align-items: flex-start; gap: 10px; font-size: 1rem; font-weight: 500;
         animation: slideDown .3s ease;
     }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -55,16 +53,16 @@
     }
     .tab-btn {
         padding: 12px 16px; border: none; background: none; cursor: pointer;
-        font-size: .875rem; font-weight: 600; color: var(--c-muted);
+        font-size: 1rem; font-weight: 600; color: var(--c-muted);
         border-bottom: 3px solid transparent; transition: all .2s;
         display: flex; align-items: center; gap: 7px; white-space: nowrap;
         text-decoration: none;
     }
     .tab-btn:hover { color: var(--c-primary); }
     .tab-btn.active { color: var(--c-primary); border-bottom-color: var(--c-primary); }
-    .tab-btn i { font-size: 1rem; }
+    .tab-btn i { font-size: 1.125rem; }
     .tab-badge {
-        font-size: .75rem; padding: 2px 6px; border-radius: 4px; background: var(--c-primary-lt);
+        font-size: .875rem; padding: 2px 6px; border-radius: 4px; background: var(--c-primary-lt);
         color: var(--c-primary); font-weight: 700;
     }
     .tab-badge-danger { background: var(--c-danger-lt); color: var(--c-danger); }
@@ -85,9 +83,9 @@
     .summary-card.green::before  { background: var(--c-success); }
     .summary-card.red::before    { background: var(--c-danger); }
     .summary-card.orange::before { background: var(--c-warning); }
-    .summary-card-label { font-size: .8125rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--c-muted); margin-bottom: 4px; }
-    .summary-card-value { font-size: 1.5rem; font-weight: 700; color: var(--c-text); }
-    .summary-card-sub { font-size: .8125rem; color: var(--c-muted); margin-top: 4px; }
+    .summary-card-label { font-size: .9375rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--c-muted); margin-bottom: 4px; }
+    .summary-card-value { font-size: 1.875rem; font-weight: 700; color: var(--c-text); }
+    .summary-card-sub { font-size: .9375rem; color: var(--c-muted); margin-top: 4px; }
 
     .filter-bar {
         background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius-sm);
@@ -95,17 +93,17 @@
         box-shadow: var(--shadow); margin-bottom: 20px;
     }
     .filter-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 150px; }
-    .filter-group label { font-size: .8125rem; font-weight: 600; color: var(--c-muted); text-transform: uppercase; letter-spacing: .05em; }
+    .filter-group label { font-size: .9375rem; font-weight: 600; color: var(--c-muted); text-transform: uppercase; letter-spacing: .05em; }
     .filter-group input, .filter-group select {
         height: 38px; padding: 0 12px; border: 1px solid var(--c-border); border-radius: var(--radius-sm);
-        font-size: .875rem; color: var(--c-text); background: #F8FAFC; outline: none;
+        font-size: 1rem; color: var(--c-text); background: #F8FAFC; outline: none;
         transition: all .15s; font-family: var(--font);
     }
     .filter-group input:focus, .filter-group select:focus { border-color: var(--c-primary); background: white; }
 
     .btn {
         display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px;
-        border-radius: var(--radius-sm); font-size: .875rem; font-weight: 600;
+        border-radius: var(--radius-sm); font-size: 1rem; font-weight: 600;
         cursor: pointer; border: 1px solid transparent; transition: all .15s;
         text-decoration: none; line-height: 1; height: 38px;
     }
@@ -114,7 +112,7 @@
     .btn-primary:hover { background: var(--c-primary-dk); }
     .btn-outline  { background: white; color: var(--c-muted); border-color: var(--c-border); }
     .btn-outline:hover { background: #F8FAFC; color: var(--c-text); }
-    .btn-sm { padding: 6px 12px; font-size: .8125rem; height: auto; }
+    .btn-sm { padding: 6px 12px; font-size: .9375rem; height: auto; }
     .btn-danger { background: var(--c-danger); color: white; }
     .btn-danger:hover { background: #B91C1C; }
 
@@ -125,14 +123,14 @@
     }
     .drop-zone:hover, .drop-zone.dragover { border-color: var(--c-primary); background: var(--c-primary-lt); }
     .drop-icon { font-size: 2.5rem; color: var(--c-primary); margin-bottom: 12px; }
-    .drop-title { font-size: 1rem; font-weight: 600; color: var(--c-text); margin: 0 0 6px; }
-    .drop-sub { font-size: .875rem; color: var(--c-muted); margin: 0; }
-    .drop-or { font-size: .8125rem; color: var(--c-light); margin: 8px 0; display: block; }
+    .drop-title { font-size: 1.125rem; font-weight: 600; color: var(--c-text); margin: 0 0 6px; }
+    .drop-sub { font-size: 1rem; color: var(--c-muted); margin: 0; }
+    .drop-or { font-size: .9375rem; color: var(--c-light); margin: 8px 0; display: block; }
 
     .file-chip {
         display: none; align-items: center; gap: 8px; padding: 8px 12px;
         background: var(--c-success-lt); border: 1px solid var(--c-success-bd); border-radius: var(--radius-sm);
-        margin-top: 12px; font-size: .875rem; color: var(--c-success);
+        margin-top: 12px; font-size: 1rem; color: var(--c-success);
     }
     .chip-dot { width: 8px; height: 8px; background: var(--c-success); border-radius: 50%; }
 
@@ -142,14 +140,14 @@
     }
     .table-sticky { overflow-x: auto; }
     .table {
-        width: 100%; border-collapse: collapse; font-size: .875rem;
+        width: 100%; border-collapse: collapse; font-size: 1rem;
     }
     .table thead {
         background: #F8FAFC; border-bottom: 2px solid var(--c-border); position: sticky; top: 0; z-index: 10;
     }
     .table thead th {
         padding: 12px 16px; text-align: left; font-weight: 600; color: var(--c-muted);
-        text-transform: uppercase; font-size: .8125rem; letter-spacing: .05em;
+        text-transform: uppercase; font-size: .9375rem; letter-spacing: .05em;
     }
     .table tbody tr {
         border-bottom: 1px solid var(--c-border); transition: background .15s;
@@ -157,11 +155,11 @@
     .table tbody tr:hover { background: #F8FAFC; }
     .table tbody tr.error { background: var(--c-danger-lt); }
     .table td { padding: 12px 16px; vertical-align: middle; }
-    .table td.text-muted { color: var(--c-muted); font-size: .8125rem; }
+    .table td.text-muted { color: var(--c-muted); font-size: .9375rem; }
 
     .badge {
         display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px;
-        border-radius: 4px; font-size: .75rem; font-weight: 600;
+        border-radius: 4px; font-size: .875rem; font-weight: 600;
     }
     .badge-success { background: var(--c-success-lt); color: var(--c-success); }
     .badge-danger  { background: var(--c-danger-lt);  color: var(--c-danger); }
@@ -175,7 +173,7 @@
         display: inline-flex; align-items: center; justify-content: center;
         width: 36px; height: 36px; border: 1px solid var(--c-border);
         border-radius: var(--radius-sm); text-decoration: none; color: var(--c-text);
-        transition: all .15s; font-size: .875rem; font-weight: 500;
+        transition: all .15s; font-size: 1rem; font-weight: 500;
     }
     .page-link:hover { border-color: var(--c-primary); color: var(--c-primary); }
     .page-link.active { background: var(--c-primary); color: white; border-color: var(--c-primary); }
@@ -186,8 +184,8 @@
         border: 1px dashed var(--c-border); border-radius: var(--radius-sm);
     }
     .empty-icon { font-size: 3rem; color: var(--c-light); margin-bottom: 12px; }
-    .empty-title { font-size: 1.125rem; font-weight: 600; color: var(--c-text); margin: 0 0 4px; }
-    .empty-text { font-size: .875rem; color: var(--c-muted); margin: 0; }
+    .empty-title { font-size: 1.25rem; font-weight: 600; color: var(--c-text); margin: 0 0 4px; }
+    .empty-text { font-size: 1rem; color: var(--c-muted); margin: 0; }
 
     .action-cell {
         display: flex; gap: 6px; align-items: center;
@@ -195,7 +193,7 @@
     .action-btn {
         display: inline-flex; align-items: center; justify-content: center;
         width: 32px; height: 32px; border-radius: 6px; border: none;
-        cursor: pointer; transition: all .15s; font-size: .875rem;
+        cursor: pointer; transition: all .15s; font-size: 1rem;
     }
     .action-btn.view   { background: #EFF6FF; color: var(--c-primary); }
     .action-btn.edit   { background: #FEF3C7; color: var(--c-warning); }
@@ -219,68 +217,68 @@
 
     @media (max-width: 768px) {
         .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
-        .page-header h1 { font-size: 1.25rem; }
+        .page-header h1 { font-size: 1.5rem; }
         .filter-bar { flex-direction: column; }
         .filter-group { width: 100%; min-width: auto; }
         .filter-group input, .filter-group select { height: 40px; min-height: 40px; }
         .summary-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
         .summary-card { padding: 14px 16px; }
-        .summary-card-value { font-size: 1.25rem; }
+        .summary-card-value { font-size: 1.5rem; }
         .tab-bar { padding: 0; margin-bottom: 16px; border-radius: var(--radius-sm); }
-        .tab-btn { padding: 10px 12px; font-size: 0.8125rem; }
+        .tab-btn { padding: 10px 12px; font-size: 0.9375rem; }
         .table-wrap { margin-bottom: 16px; border-radius: var(--radius-sm); }
-        .table { font-size: 0.8125rem; }
+        .table { font-size: 0.9375rem; }
         .table thead th { padding: 10px 12px; }
         .table td { padding: 10px 12px; }
         .action-cell { gap: 4px; }
-        .action-btn { width: 28px; height: 28px; font-size: 0.75rem; }
-        .btn { padding: 8px 14px; font-size: 0.8125rem; min-height: 40px; }
+        .action-btn { width: 28px; height: 28px; font-size: 01rem; }
+        .btn { padding: 8px 14px; font-size: 0.9375rem; min-height: 40px; }
         .btn-sm { padding: 5px 10px; height: auto; min-height: auto; }
     }
 
     @media (max-width: 576px) {
         .page-wrap { padding: 16px 14px 32px; }
         .page-header { margin-bottom: 20px; }
-        .page-header h1 { font-size: 1.125rem; }
-        .pln-alert { font-size: 0.8125rem; padding: 12px 14px; }
+        .page-header h1 { font-size: 1.25rem; }
+        .pln-alert { font-size: 0.9375rem; padding: 12px 14px; }
         .summary-grid { grid-template-columns: 1fr; gap: 10px; }
         .summary-card { padding: 12px 14px; }
-        .summary-card-label { font-size: 0.75rem; }
-        .summary-card-value { font-size: 1.125rem; }
+        .summary-card-label { font-size: 01rem; }
+        .summary-card-value { font-size: 1.25rem; }
         .filter-bar { padding: 14px 16px; gap: 10px; }
         .filter-group { width: 100%; }
-        .filter-group input, .filter-group select { height: 40px; font-size: 0.8125rem; }
-        .btn { padding: 7px 12px; font-size: 0.75rem; min-height: 40px; }
-        .btn-sm { padding: 5px 10px; font-size: 0.7rem; }
+        .filter-group input, .filter-group select { height: 40px; font-size: 0.9375rem; }
+        .btn { padding: 7px 12px; font-size: 01rem; min-height: 40px; }
+        .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
         .tab-bar { padding: 0; margin-bottom: 14px; }
-        .tab-btn { padding: 9px 10px; font-size: 0.75rem; }
-        .tab-badge { font-size: 0.7rem; }
+        .tab-btn { padding: 9px 10px; font-size: 01rem; }
+        .tab-badge { font-size: 0.8rem; }
         .table-wrap { border-radius: var(--radius-sm); }
-        .table { font-size: 0.75rem; }
+        .table { font-size: 01rem; }
         .table thead th { padding: 8px 10px; }
         .table td { padding: 8px 10px; }
-        .action-btn { width: 26px; height: 26px; font-size: 0.7rem; }
+        .action-btn { width: 26px; height: 26px; font-size: 0.8rem; }
         .pagination { gap: 4px; }
-        .page-link { width: 32px; height: 32px; font-size: 0.75rem; }
+        .page-link { width: 32px; height: 32px; font-size: 01rem; }
     }
 
     @media (max-width: 400px) {
         .page-wrap { padding: 12px 10px 24px; }
-        .page-header h1 { font-size: 1rem; }
+        .page-header h1 { font-size: 1.125rem; }
         .summary-grid { grid-template-columns: 1fr; }
         .summary-card { padding: 10px 12px; }
-        .summary-card-value { font-size: 1rem; }
-        .table { font-size: 0.7rem; }
-        .table thead th { padding: 6px 8px; font-size: 0.7rem; }
+        .summary-card-value { font-size: 1.125rem; }
+        .table { font-size: 0.8rem; }
+        .table thead th { padding: 6px 8px; font-size: 0.8rem; }
         .table td { padding: 6px 8px; }
-        .btn { padding: 6px 10px; font-size: 0.7rem; }
-        .action-btn { width: 24px; height: 24px; font-size: 0.6rem; }
+        .btn { padding: 6px 10px; font-size: 0.8rem; }
+        .action-btn { width: 24px; height: 24px; font-size: 0.7rem; }
     }
 </style>
 
 <div class="page-wrap">
 
-    {{-- PAGE HEADER --}}
+    {{-- Header halaman data pelanggan dan tombol export --}}
     <div class="page-header">
         <div>
             <h1><i class="bi bi-people" style="margin-right: 8px;"></i>Master Data Pelanggan</h1>
@@ -297,7 +295,7 @@
         </div>
     </div>
 
-    {{-- ALERTS --}}
+    {{-- Menampilkan alert sukses atau error berdasarkan session --}}
     @if (session('save_success'))
         <div class="pln-alert pln-alert-success">
             <i class="bi bi-check-circle-fill"></i>
@@ -323,7 +321,7 @@
         </div>
     @endif
 
-    {{-- TABS --}}
+    {{-- Navigasi tab: Data Pelanggan, Import CSV, Error Logs --}}
     <div class="tab-bar">
         <button class="tab-btn {{ $activeTab === 'data' ? 'active' : '' }}" data-tab="data">
             <i class="bi bi-table"></i> Data Pelanggan
@@ -339,10 +337,10 @@
         </button>
     </div>
 
-    {{-- TAB: DATA PELANGGAN --}}
+    {{-- Konten Tab: Menampilkan Data Pelanggan --}}
     <div class="tab-pane {{ $activeTab === 'data' ? 'active' : '' }}" id="pane-data">
 
-        {{-- SUMMARY CARDS --}}
+        {{-- Menampilkan ringkasan total pelanggan, daya, dan rptag --}}
         <div class="summary-grid">
             <div class="summary-card blue">
                 <div class="summary-card-label">Total Pelanggan</div>
@@ -357,21 +355,12 @@
                 <div class="summary-card-label">Total Rptag</div>
                 <div class="summary-card-value">Rp {{ number_format($totalRptag, 0) }}</div>
             </div>
-            <div class="summary-card red">
-    <div class="summary-card-label">Terakhir Import</div>
-
-    <div class="summary-card-value" style="font-size: 1rem;">
-        @if (!empty($importLogs) && count($importLogs) > 0)
-            {{ $importLogs->first()->import_date?->diffForHumans() ?? '-' }}
-        @else
-            -
-        @endif
-    </div>
 </div>
+
 
 </div>
 
-        {{-- FILTER & SEARCH BAR --}}
+        {{-- Form untuk mencari dan memfilter data pelanggan --}}
         <form method="GET" action="{{ route('pelanggan.index', ['tab' => 'data']) }}" class="filter-bar" id="filter-form">
 
             <div class="filter-group" style="flex: 2;">
@@ -414,6 +403,11 @@
             </div>
 
             <div class="filter-group">
+                <label>Periode</label>
+                <input type="month" name="periode" value="{{ $periode }}">
+            </div>
+
+            <div class="filter-group">
                 <label>Petugas</label>
                 <select name="petugas_id">
                     <option value="">Semua</option>
@@ -444,7 +438,7 @@
 
         </form>
 
-        {{-- DATA TABLE --}}
+        {{-- Tabel daftar pelanggan --}}
         @if (collect($pelanggan)->isEmpty())
             <div class="empty-state">
                 <div class="empty-icon"><i class="bi bi-inbox"></i></div>
@@ -460,9 +454,11 @@
                                 <th style="width: 50px;">#</th>
                                 <th style="width: 110px;">IDPEL</th>
                                 <th>Nama</th>
+                                <th style="width: 90px;">Periode</th>
                                 <th style="width: 120px;">UNITAP</th>
-                                <th style="width: 100px;">Kode Petugas</th>
+                                <th style="width: 110px;">Kode Petugas</th>
                                 <th style="width: 150px;">Nama Petugas</th>
+                                <th style="width: 120px;">Historis Tunggakan</th>
                                 <th style="width: 90px;">Daya</th>
                                 <th style="width: 80px;">Lembar</th>
                                 <th style="width: 110px;">RPTAG</th>
@@ -472,21 +468,24 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {{-- Looping untuk menampilkan setiap baris data pelanggan dari database --}}
                             @php $no = ($pelanggan->currentPage() - 1) * $pelanggan->perPage() + 1; @endphp
                             @foreach ($pelanggan as $p)
                                 <tr>
                                     <td class="text-muted">{{ $no++ }}</td>
                                     <td><strong>{{ $p->idpel }}</strong></td>
                                     <td>{{ $p->nama }}</td>
+                                    <td><span class="badge" style="background:#E2E8F0; color:#1E293B;">{{ $p->periode }}</span></td>
                                     <td><span class="badge badge-success">{{ $p->unitap ?: '-' }}</span></td>
                                     <td>{{ $p->petugas ? $p->petugas->kode_petugas : '-' }}</td>
                                     <td>
                                         @if($p->petugas)
-                                            <strong style="font-size:.8125rem;">{{ $p->petugas->nama }}</strong>
+                                            <strong style="font-size:.9375rem;">{{ $p->petugas->nama }}</strong>
                                         @else
                                             <span class="text-muted">Tidak ditemukan</span>
                                         @endif
                                     </td>
+                                    <td>{{ $p->historis_tunggakan }}</td>
                                     <td>{{ number_format($p->daya) }} kW</td>
                                     <td>{{ $p->lembar }}</td>
                                     <td>Rp {{ number_format($p->rptag, 0) }}</td>
@@ -499,11 +498,11 @@
                                                 <i class="bi bi-eye"></i>
                                             </button>
                                             @endpermission
-                                            @permission('pelanggan:edit')
+                                            @if(Session::get('role') === 'admin')
                                             <button class="action-btn edit" title="Edit" onclick="editPelanggan({{ $p->id }})">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
-                                            @endpermission
+                                            @endif
                                             @permission('pelanggan:delete')
                                             <button class="action-btn delete" title="Hapus" onclick="deletePelanggan({{ $p->id }}, '{{ addslashes($p->nama) }}')">
                                                 <i class="bi bi-trash"></i>
@@ -518,9 +517,9 @@
                 </div>
             </div>
 
-            {{-- PAGINATION --}}
+            {{-- Link pagination untuk tabel pelanggan --}}
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; flex-wrap: wrap; gap: 12px;">
-                <p style="font-size: .875rem; color: var(--c-muted); margin: 0;">
+                <p style="font-size: 1rem; color: var(--c-muted); margin: 0;">
                     Menampilkan {{ $pelanggan->firstItem() }} - {{ $pelanggan->lastItem() }} dari {{ $pelanggan->total() }} data
                 </p>
                 {{ $pelanggan->links() }}
@@ -529,19 +528,25 @@
 
     </div>
 
-    {{-- TAB: IMPORT CSV --}}
+    {{-- Konten Tab: Form Upload Import CSV --}}
     @permission('pelanggan:create')
     <div class="tab-pane {{ $activeTab === 'import' ? 'active' : '' }}" id="pane-import">
 
         <div style="padding-bottom: 24px;">
-            <h3 style="font-size: 1.125rem; margin: 0 0 12px; color: var(--c-text);">Upload File CSV</h3>
-            <p style="font-size: .875rem; color: var(--c-muted); margin: 0;">
+            <h3 style="font-size: 1.25rem; margin: 0 0 12px; color: var(--c-text);">Upload File CSV</h3>
+            <p style="font-size: 1rem; color: var(--c-muted); margin: 0;">
                 Format: .csv atau .txt | Kolom: IDPEL, Nama, Daya, Lembar, RPTAG, RPBK | Maksimal 5 MB
             </p>
         </div>
 
+        {{-- Form untuk mengunggah file CSV ke server --}}
         <form method="POST" action="{{ route('pelanggan.upload') }}" enctype="multipart/form-data" id="upload-form">
             @csrf
+
+            <div class="filter-group" style="max-width: 300px; margin-bottom: 20px;">
+                <label>Periode Data Pelanggan <span style="color:var(--c-danger);">*</span></label>
+                <input type="month" id="upload_periode" name="periode" required value="{{ date('Y-m') }}" style="width: 100%; box-sizing: border-box; border-color: var(--c-primary); border-width: 2px;">
+            </div>
 
             <div class="drop-zone" id="drop-zone">
                 <input type="file" name="csv_file" id="csv-file" accept=".csv,.txt" style="display: none;">
@@ -559,17 +564,23 @@
             </div>
 
             @error('csv_file')
-               <pre>
-{{ print_r($errorList,true) }}
-</pre>
+                <div class="pln-alert pln-alert-danger" style="margin-top: 12px;">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    {{ $message }}
+                </div>
+            @enderror
+            @error('periode')
+                <div class="pln-alert pln-alert-danger" style="margin-top: 12px;">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    {{ $message }}
                 </div>
             @enderror
         </form>
 
-        {{-- PREVIEW SETELAH UPLOAD --}}
+        {{-- Menampilkan pratinjau data CSV sebelum disimpan ke database --}}
         @if (!empty($preview))
             <div style="margin-top: 28px; padding-top: 28px; border-top: 2px solid var(--c-border);">
-                <h3 style="font-size: 1.125rem; margin: 0 0 16px; color: var(--c-text);">Preview Data</h3>
+                <h3 style="font-size: 1.25rem; margin: 0 0 16px; color: var(--c-text);">Preview Data</h3>
 
                 {{-- STATS --}}
                 <div class="summary-grid">
@@ -656,7 +667,7 @@
     </div>
     @endpermission
 
-    {{-- TAB: ERROR LOGS --}}
+    {{-- Konten Tab: Menampilkan log error saat import CSV --}}
     <div class="tab-pane {{ $activeTab === 'errors' ? 'active' : '' }}" id="pane-errors">
 
         @if (isset($errorLogs) && $errorLogs->count() > 0)
@@ -678,7 +689,7 @@
                             @foreach ($errorLogs as $error)
                                 <tr>
                                     <td class="text-muted">{{ $no++ }}</td>
-                                    <td class="text-muted" style="font-size: .8125rem;">{{ $error->filename ?? '-' }}</td>
+                                    <td class="text-muted" style="font-size: .9375rem;">{{ $error->filename ?? '-' }}</td>
                                     <td class="text-muted">{{ $error->row_number ?? '-' }}</td>
                                     <td>{{ $error->error_message ?? '-' }}</td>
                                     <td>
@@ -703,12 +714,49 @@
 
 </div>
 
-{{-- LOADING INDICATOR --}}
+{{-- Indikator loading saat memproses unggahan file --}}
 <div id="pln-loading">
     <div class="spinner"></div>
 </div>
 
+<!-- Modal Edit Pelanggan -->
+<div id="modalEdit" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="background: white; width: 100%; max-width: 500px; border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); position: relative;">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 20px;">Edit Pelanggan</h2>
+        <form id="formEditPelanggan" onsubmit="submitEditPelanggan(event)">
+            @csrf
+            @method('PUT')
+            <input type="hidden" id="edit_id" name="id">
+            <div class="filter-group" style="margin-bottom: 12px; width: 100%;">
+                <label>Nama</label>
+                <input type="text" id="edit_nama" name="nama" required style="width: 100%; box-sizing: border-box;">
+            </div>
+            <div class="filter-group" style="margin-bottom: 12px; width: 100%;">
+                <label>Daya (kW)</label>
+                <input type="number" id="edit_daya" name="daya" required style="width: 100%; box-sizing: border-box;">
+            </div>
+            <div class="filter-group" style="margin-bottom: 12px; width: 100%;">
+                <label>Lembar</label>
+                <input type="number" id="edit_lembar" name="lembar" required style="width: 100%; box-sizing: border-box;">
+            </div>
+            <div class="filter-group" style="margin-bottom: 12px; width: 100%;">
+                <label>RPTAG (Rp)</label>
+                <input type="number" id="edit_rptag" name="rptag" required style="width: 100%; box-sizing: border-box;">
+            </div>
+            <div class="filter-group" style="margin-bottom: 20px; width: 100%;">
+                <label>RPBK (Rp)</label>
+                <input type="number" id="edit_rpbk" name="rpbk" required style="width: 100%; box-sizing: border-box;">
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button type="button" class="btn btn-outline" onclick="closeModalEdit()">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+    // Script untuk mengatur perpindahan tab, drag-and-drop file, dan fungsi CRUD pelanggan
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const tab = this.dataset.tab;
@@ -753,6 +801,14 @@
 
         function handleFileSelect() {
             const file = csvFile.files[0];
+            const periodeInput = document.getElementById('upload_periode');
+            
+            if (!periodeInput.value) {
+                alert('Silakan isi Periode Data Pelanggan terlebih dahulu.');
+                csvFile.value = ''; // reset file
+                return;
+            }
+
             if (file) {
                 fileName.textContent = file.name;
                 fileChip.style.display = 'flex';
@@ -776,7 +832,69 @@
     }
 
     function editPelanggan(id) {
-        alert('Edit form sedang dikembangkan. ID: ' + id);
+        document.getElementById('pln-loading').classList.add('show');
+        fetch(`/pelanggan/edit/${id}`)
+            .then(r => r.json())
+            .then(res => {
+                document.getElementById('pln-loading').classList.remove('show');
+                if (res.success) {
+                    const p = res.data;
+                    document.getElementById('edit_id').value = p.id;
+                    document.getElementById('edit_nama').value = p.nama;
+                    document.getElementById('edit_daya').value = p.daya;
+                    document.getElementById('edit_lembar').value = p.lembar;
+                    document.getElementById('edit_rptag').value = p.rptag;
+                    document.getElementById('edit_rpbk').value = p.rpbk;
+                    document.getElementById('modalEdit').style.display = 'flex';
+                } else {
+                    alert('Gagal mengambil data pelanggan');
+                }
+            })
+            .catch(e => {
+                document.getElementById('pln-loading').classList.remove('show');
+                alert('Error: ' + e.message);
+            });
+    }
+
+    function closeModalEdit() {
+        document.getElementById('modalEdit').style.display = 'none';
+    }
+
+    function submitEditPelanggan(e) {
+        e.preventDefault();
+        const id = document.getElementById('edit_id').value;
+        const data = {
+            nama: document.getElementById('edit_nama').value,
+            daya: document.getElementById('edit_daya').value,
+            lembar: document.getElementById('edit_lembar').value,
+            rptag: document.getElementById('edit_rptag').value,
+            rpbk: document.getElementById('edit_rpbk').value,
+            _token: document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}'
+        };
+
+        document.getElementById('pln-loading').classList.add('show');
+        fetch(`/pelanggan/update/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': data._token
+            },
+            body: JSON.stringify(data)
+        })
+        .then(r => r.json())
+        .then(res => {
+            document.getElementById('pln-loading').classList.remove('show');
+            if (res.success) {
+                alert(res.message);
+                location.reload();
+            } else {
+                alert('Error: ' + res.message);
+            }
+        })
+        .catch(e => {
+            document.getElementById('pln-loading').classList.remove('show');
+            alert('Error: ' + e.message);
+        });
     }
 
     function deletePelanggan(id, nama) {
@@ -802,3 +920,4 @@
 </script>
 
 @endsection
+

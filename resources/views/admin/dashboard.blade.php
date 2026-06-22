@@ -18,7 +18,7 @@
     }
 
     .dashboard-header h1 {
-        font-size: 22px;
+        font-size: 24px;
         font-weight: 700;
         color: var(--text-primary);
         margin: 0;
@@ -26,7 +26,7 @@
     }
 
     .dashboard-subtitle {
-        font-size: 13px;
+        font-size: 15px;
         color: var(--text-muted);
         margin-top: 2px; /* dikurangi dari 4px */
     }
@@ -45,7 +45,7 @@
         color: white;
         border: none;
         border-radius: var(--radius-md);
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 600;
         cursor: pointer;
         transition: background var(--transition);
@@ -88,7 +88,7 @@
     }
 
     .filter-label {
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 600;
         color: var(--text-secondary);
         text-transform: uppercase;
@@ -98,7 +98,7 @@
         padding: 6px 12px;
         border: 1px solid var(--border);
         border-radius: var(--radius-md);
-        font-size: 13px;
+        font-size: 15px;
         background: white;
         font-family: var(--font-sans);
     }
@@ -126,7 +126,7 @@
     }
 
     .kpi-label {
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 600;
         color: var(--text-muted);
         text-transform: uppercase;
@@ -135,7 +135,7 @@
     }
 
     .kpi-value {
-        font-size: 28px;
+        font-size: 30px;
         font-weight: 700;
         color: var(--text-primary);
         margin-bottom: 2px; /* dikurangi dari 4px */
@@ -143,7 +143,7 @@
     }
 
     .kpi-detail {
-        font-size: 12px;
+        font-size: 14px;
         color: var(--text-muted);
     }
 
@@ -157,7 +157,7 @@
     }
 
     .progress-section-title {
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 600;
         color: var(--text-primary);
         margin-bottom: 14px; /* dikurangi dari 16px */
@@ -174,7 +174,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 13px;
+        font-size: 15px;
     }
 
     .progress-stat-label {
@@ -202,7 +202,7 @@
         align-items: center;
         justify-content: center;
         color: white;
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 600;
     }
 
@@ -222,7 +222,7 @@
     }
 
     .chart-title {
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 600;
         color: var(--text-primary);
         margin-bottom: 16px;
@@ -238,7 +238,7 @@
     }
 
     .table-title {
-        font-size: 16px;
+        font-size: 18px;
         font-weight: 600;
         color: var(--text-primary);
         margin-bottom: 14px; /* dikurangi dari 16px */
@@ -247,7 +247,7 @@
     .admin-table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 13px;
+        font-size: 15px;
     }
 
     .admin-table thead tr {
@@ -291,14 +291,14 @@
         color: white;
         border-radius: 50%;
         font-weight: 700;
-        font-size: 12px;
+        font-size: 14px;
     }
 
     .badge-status {
         display: inline-block;
         padding: 4px 10px;
         border-radius: 12px;
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 600;
         text-transform: uppercase;
     }
@@ -334,19 +334,19 @@
     }
 
     .empty-state-icon {
-        font-size: 48px;
+        font-size: 50px;
         margin-bottom: 16px;
         opacity: 0.5;
     }
 
-    .empty-state-text { font-size: 14px; }
+    .empty-state-text { font-size: 16px; }
 
     /* ================================================================
        RESPONSIVE
     ================================================================ */
     @media (max-width: 1024px) {
         .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-        .dashboard-header h1 { font-size: 20px; }
+        .dashboard-header h1 { font-size: 22px; }
     }
 
     @media (max-width: 768px) {
@@ -356,7 +356,7 @@
             margin-bottom: 12px;
         }
 
-        .dashboard-header h1 { font-size: 18px; }
+        .dashboard-header h1 { font-size: 20px; }
 
         .filter-refresh-bar {
             flex-direction: column;
@@ -371,11 +371,11 @@
         }
 
         .kpi-card { padding: 14px 16px; }
-        .kpi-value { font-size: 22px; }
+        .kpi-value { font-size: 24px; }
 
         .charts-grid { grid-template-columns: 1fr; }
 
-        .admin-table { font-size: 12px; }
+        .admin-table { font-size: 14px; }
         .admin-table th,
         .admin-table td { padding: 8px 10px; }
 
@@ -390,32 +390,32 @@
 
     @media (max-width: 576px) {
         .dashboard-header { margin-bottom: 10px; }
-        .dashboard-header h1 { font-size: 16px; }
+        .dashboard-header h1 { font-size: 18px; }
 
         .kpi-grid { gap: 10px; }
         .kpi-card { padding: 12px; }
-        .kpi-value { font-size: 20px; }
+        .kpi-value { font-size: 22px; }
 
         .charts-grid { gap: 12px; }
         .chart-card { padding: 12px; }
         .table-section { padding: 14px 16px; }
 
-        .admin-table { font-size: 11px; }
+        .admin-table { font-size: 13px; }
         .admin-table th,
         .admin-table td { padding: 7px 8px; }
 
-        .filter-label { font-size: 11px; }
-        .filter-input { font-size: 12px; padding: 5px 10px; }
+        .filter-label { font-size: 13px; }
+        .filter-input { font-size: 14px; padding: 5px 10px; }
     }
 
     @media (max-width: 400px) {
         .dashboard-header { margin-bottom: 8px; }
-        .dashboard-header h1 { font-size: 14px; }
+        .dashboard-header h1 { font-size: 16px; }
 
         .kpi-card { padding: 10px; }
-        .kpi-value { font-size: 18px; }
+        .kpi-value { font-size: 20px; }
 
-        .admin-table { font-size: 10px; }
+        .admin-table { font-size: 12px; }
         .admin-table th,
         .admin-table td { padding: 6px 8px; }
 
@@ -425,7 +425,7 @@
 
 <div class="container-fluid" style="padding: 20px 32px;">
 
-    <!-- ========== HEADER ========== -->
+    {{-- Bagian Header Dashboard Admin --}}
     <div class="dashboard-header">
         <div>
             <h1><i class="bi bi-graph-up" style="margin-right: 10px;"></i>Dashboard Monitoring Penagihan</h1>
@@ -435,7 +435,7 @@
         </div>
     </div>
 
-    <!-- ========== FILTER + REFRESH SEJAJAR ========== -->
+    {{-- Form filter data berdasarkan bulan --}}
     <div class="filter-refresh-bar">
         <div class="filter-group">
             <span class="filter-label">Filter Bulan:</span>
@@ -448,7 +448,7 @@
         </div>
     </div>
 
-    <!-- ========== KPI CARDS ========== -->
+    {{-- Menampilkan kartu ringkasan data (KPI) --}}
     <div class="kpi-grid">
         <div class="kpi-card">
             <div class="kpi-label">
@@ -483,7 +483,7 @@
         </div>
     </div>
 
-    <!-- ========== PROGRESS REALISASI ========== -->
+    {{-- Bagian progress bar realisasi penagihan --}}
     <div class="progress-section">
         <div class="progress-section-title">
             <i class="bi bi-graph-up-arrow"></i> Progress Realisasi Penagihan
@@ -509,7 +509,7 @@
         </div>
     </div>
 
-    <!-- ========== CHARTS ========== -->
+    {{-- Tempat menampilkan grafik statistik --}}
     <div class="charts-grid">
         <div class="chart-card">
             <div class="chart-title">
@@ -533,7 +533,7 @@
         </div>
     </div>
 
-    <!-- ========== TOP PETUGAS TABLE ========== -->
+    {{-- Tabel peringkat 5 petugas terbaik --}}
     <div class="table-section">
         <div class="table-title">
             <i class="bi bi-trophy" style="margin-right: 8px;"></i> Top 5 Petugas Berdasarkan Penagihan
@@ -646,9 +646,10 @@
 
 </div>
 
-<!-- Chart.js Library -->
+{{-- Memuat library Chart.js untuk grafik --}}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 
+{{-- Konfigurasi dan inisialisasi grafik menggunakan Chart.js --}}
 <script>
     // ================================================================
     // RESPONSIVE CHART SETTINGS

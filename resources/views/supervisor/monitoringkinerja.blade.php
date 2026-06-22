@@ -37,15 +37,15 @@
     /* ── Layout ──────────────────────────────────────────────────────────── */
     .page-wrap { max-width: 1200px; padding: 24px 20px 40px; }
     .breadcrumb-bar {
-        font-size: .8125rem; color: var(--c-muted);
+        font-size: 0.9375rem; color: var(--c-muted);
         margin-bottom: 14px; display: flex; align-items: center; gap: 6px;
     }
     .breadcrumb-bar a { color: var(--c-primary); text-decoration: none; }
     .breadcrumb-bar .sep { color: var(--c-light); }
 
     .page-header { margin-bottom: 24px; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-    .page-header h1 { font-size: 1.375rem; font-weight: 700; letter-spacing: -.02em; margin: 0 0 2px; }
-    .page-header p  { font-size: .875rem; color: var(--c-muted); margin: 0; }
+    .page-header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; margin: 0 0 2px; }
+    .page-header p  { font-size: 1rem; color: var(--c-muted); margin: 0; }
 
     /* ── Filter bar ──────────────────────────────────────────────────────── */
     .filter-bar {
@@ -56,11 +56,11 @@
         box-shadow: var(--shadow); margin-bottom: 24px;
     }
     .filter-group { display: flex; flex-direction: column; gap: 5px; }
-    .filter-group label { font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--c-muted); }
+    .filter-group label { font-size: 0.905rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--c-muted); }
     .filter-group select,
     .filter-group input[type="month"] {
         height: 38px; padding: 0 12px; border: 1px solid var(--c-border);
-        border-radius: var(--radius-sm); font-size: .875rem; color: var(--c-text);
+        border-radius: var(--radius-sm); font-size: 1rem; color: var(--c-text);
         background: #F8FAFC; outline: none; transition: border-color .15s;
         font-family: var(--font);
     }
@@ -77,7 +77,7 @@
     .btn {
         display: inline-flex; align-items: center; gap: 7px;
         padding: 9px 18px; border-radius: var(--radius-sm);
-        font-size: .875rem; font-weight: 600; cursor: pointer;
+        font-size: 1rem; font-weight: 600; cursor: pointer;
         border: 1px solid transparent; transition: all .15s;
         text-decoration: none; line-height: 1; height: 38px;
     }
@@ -88,7 +88,7 @@
     .btn-outline:hover { background: #F8FAFC; color: var(--c-text); }
     .btn-danger   { background: var(--c-danger); color: #fff; border-color: var(--c-danger); }
     .btn-danger:hover { background: #B91C1C; }
-    .btn-sm { padding: 6px 12px; font-size: .8125rem; height: auto; }
+    .btn-sm { padding: 6px 12px; font-size: 0.9375rem; height: auto; }
 
     /* ── Summary cards ───────────────────────────────────────────────────── */
     .summary-grid {
@@ -122,9 +122,9 @@
     .sum-icon.purple { background: #F5F3FF; color: #7C3AED; }
     .sum-icon.teal   { background: #F0FDFA; color: #0D9488; }
 
-    .sum-label { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--c-muted); margin-bottom: 4px; }
-    .sum-value { font-size: 1.625rem; font-weight: 700; line-height: 1; color: var(--c-text); font-family: var(--mono); }
-    .sum-sub   { font-size: .8rem; color: var(--c-muted); margin-top: 4px; }
+    .sum-label { font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--c-muted); margin-bottom: 4px; }
+    .sum-value { font-size: 1.75rem; font-weight: 700; line-height: 1; color: var(--c-text); font-family: var(--mono); }
+    .sum-sub   { font-size: 0.925rem; color: var(--c-muted); margin-top: 4px; }
 
     /* ── Saldo summary (wide) ────────────────────────────────────────────── */
     .saldo-row {
@@ -136,8 +136,8 @@
         border-radius: var(--radius); padding: 18px 20px;
         box-shadow: var(--shadow);
     }
-    .saldo-card .s-label { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--c-muted); margin-bottom: 6px; }
-    .saldo-card .s-value { font-size: 1.375rem; font-weight: 700; font-family: var(--mono); }
+    .saldo-card .s-label { font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--c-muted); margin-bottom: 6px; }
+    .saldo-card .s-value { font-size: 1.5rem; font-weight: 700; font-family: var(--mono); }
     .saldo-card.rpta   .s-value { color: var(--c-text); }
     .saldo-card.tagih  .s-value { color: var(--c-success); }
     .saldo-card.sisa   .s-value { color: var(--c-danger); }
@@ -152,7 +152,7 @@
         border-radius: var(--radius); padding: 22px 24px;
         box-shadow: var(--shadow); margin-bottom: 24px;
     }
-    .chart-card h3 { font-size: .9375rem; font-weight: 600; margin: 0 0 16px; }
+    .chart-card h3 { font-size: 1.0625rem; font-weight: 600; margin: 0 0 16px; }
     .chart-wrap { position: relative; height: 260px; }
 
     /* ── Table card ──────────────────────────────────────────────────────── */
@@ -164,13 +164,13 @@
         padding: 16px 20px; border-bottom: 1px solid var(--c-border);
         display: flex; align-items: center; justify-content: space-between; gap: 12px;
     }
-    .table-card-header h3 { font-size: .9375rem; font-weight: 600; margin: 0; }
+    .table-card-header h3 { font-size: 1.0625rem; font-weight: 600; margin: 0; }
 
     .tbl-wrap { overflow-x: auto; }
-    .rank-table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+    .rank-table { width: 100%; border-collapse: collapse; font-size: 1rem; }
     .rank-table thead th {
         background: #F8FAFC; padding: 10px 14px;
-        text-align: left; font-size: .75rem; font-weight: 600;
+        text-align: left; font-size: 0.875rem; font-weight: 600;
         text-transform: uppercase; letter-spacing: .05em;
         color: var(--c-muted); border-bottom: 1px solid var(--c-border); white-space: nowrap;
     }
@@ -180,13 +180,13 @@
     .rank-table tbody tr:last-child { border-bottom: none; }
     .rank-table td { padding: 12px 14px; vertical-align: middle; white-space: nowrap; }
     .rank-table td.right { text-align: right; }
-    .rank-table td.mono { font-family: var(--mono); font-size: .82rem; }
+    .rank-table td.mono { font-family: var(--mono); font-size: 0.945rem; }
 
     /* Rank badge */
     .rank-badge {
         width: 28px; height: 28px; border-radius: 50%;
         display: inline-flex; align-items: center; justify-content: center;
-        font-size: .78rem; font-weight: 700; font-family: var(--mono);
+        font-size: 0.905rem; font-weight: 700; font-family: var(--mono);
     }
     .rank-badge.gold   { background: #FEF9C3; color: #A16207; border: 1.5px solid #FDE047; }
     .rank-badge.silver { background: #F1F5F9; color: #475569; border: 1.5px solid #CBD5E1; }
@@ -201,7 +201,7 @@
     .progress-fill.green  { background: var(--c-success); }
     .progress-fill.yellow { background: var(--c-warning); }
     .progress-fill.red    { background: var(--c-danger); }
-    .progress-pct { font-size: .82rem; font-weight: 700; font-family: var(--mono); min-width: 40px; text-align: right; }
+    .progress-pct { font-size: 0.945rem; font-weight: 700; font-family: var(--mono); min-width: 40px; text-align: right; }
     .progress-pct.green  { color: var(--c-success); }
     .progress-pct.yellow { color: var(--c-warning); }
     .progress-pct.red    { color: var(--c-danger); }
@@ -209,7 +209,7 @@
     /* Status pill */
     .pill {
         display: inline-flex; align-items: center; gap: 4px;
-        padding: 3px 10px; border-radius: 99px; font-size: .75rem; font-weight: 600;
+        padding: 3px 10px; border-radius: 99px; font-size: 0.875rem; font-weight: 600;
     }
     .pill.baik   { background: var(--c-success-lt); color: var(--c-success); border: 1px solid var(--c-success-bd); }
     .pill.cukup  { background: var(--c-warning-lt); color: var(--c-warning); border: 1px solid var(--c-warning-bd); }
@@ -218,7 +218,7 @@
     /* Empty state */
     .empty-state { padding: 48px 24px; text-align: center; color: var(--c-muted); }
     .empty-state svg { opacity: .3; margin-bottom: 12px; display: block; margin-left: auto; margin-right: auto; }
-    .empty-state p { margin: 0; font-size: .9375rem; }
+    .empty-state p { margin: 0; font-size: 1.0625rem; }
 
     /* ── Responsive ──────────────────────────────────────────────────────── */
     @media (max-width: 900px) {
@@ -360,7 +360,7 @@
     <div class="table-card">
         <div class="table-card-header">
             <h3>Ranking Kinerja Petugas</h3>
-            <span style="font-size:.8125rem;color:var(--c-muted)">
+            <span style="font-size: 0.9375rem;color:var(--c-muted)">
                 {{ count($kinerja) }} petugas · Bulan {{ \Carbon\Carbon::createFromFormat('Y-m',$bulan)->translatedFormat('F Y') }}
             </span>
         </div>
@@ -401,7 +401,7 @@
                         <td><span class="rank-badge {{ $rClass }}">{{ $rank }}</span></td>
                         <td>
                             <div style="font-weight:600">{{ $p->nama }}</div>
-                            <div style="font-size:.78rem;color:var(--c-muted);font-family:var(--mono)">{{ $p->kode_petugas }}</div>
+                            <div style="font-size: 0.905rem;color:var(--c-muted);font-family:var(--mono)">{{ $p->kode_petugas }}</div>
                         </td>
                         <td>{{ $p->wilayah }}</td>
                         <td class="right mono">{{ number_format($p->total_ditagih) }}</td>
@@ -415,9 +415,9 @@
                                 <span class="progress-pct {{ $pClass }}">{{ $p->persen }}%</span>
                             </div>
                         </td>
-                        <td class="right mono" style="font-size:.8rem">{{ number_format($p->total_rptag, 0, ',', '.') }}</td>
-                        <td class="right mono" style="font-size:.8rem;color:var(--c-success)">{{ number_format($p->total_tagih, 0, ',', '.') }}</td>
-                        <td class="right mono" style="font-size:.8rem;color:var(--c-danger)">{{ number_format($p->sisa_saldo, 0, ',', '.') }}</td>
+                        <td class="right mono" style="font-size: 0.925rem">{{ number_format($p->total_rptag, 0, ',', '.') }}</td>
+                        <td class="right mono" style="font-size: 0.925rem;color:var(--c-success)">{{ number_format($p->total_tagih, 0, ',', '.') }}</td>
+                        <td class="right mono" style="font-size: 0.925rem;color:var(--c-danger)">{{ number_format($p->sisa_saldo, 0, ',', '.') }}</td>
                         <td><span class="pill {{ $pPill }}">{{ $p->kategori }}</span></td>
                         <td>
                             <a href="{{ route('monitoring.detail', ['id' => $p->id, 'bulan' => $bulan]) }}"

@@ -12,18 +12,25 @@ use Illuminate\Support\Facades\Auth;
 
 class RankingController extends Controller
 {
+    // jumlah baris per halaman di tabel ranking
     private const PAGINATION_LIMIT = 25;
 
-    /**
-     * Display ranking dashboard
-     */
+    // halaman utama ranking — kalau belum ada data, tampilkan state kosong
     public function index(Request $request)
     {
-        $kriteria = DB::table('kriteria')->orderBy('id')->get();
+        $kriteria    = DB::table('kriteria')->orderBy('id')->get();
         $petugasList = DB::table('petugas')->orderBy('nama')->get();
+        $periode     = $request->get('periode');
 
-        $rankingCount = DB::table('ranking')->count();
+        $queryCount = DB::table('ranking');
+        if ($periode) {
+            $queryCount->where('periode', $periode);
+        }
+        $rankingCount = $queryCount->count();
 
+        $periodeList = DB::table('ranking')->select('periode')->distinct()->orderBy('periode', 'desc')->pluck('periode');
+
+        // belum pernah di-generate, kirim view dengan flag hasData = false
         if ($rankingCount === 0) {
             return view('staff.hasilranking.hasilranking', [
                 'ranking'     => collect(),
@@ -33,6 +40,8 @@ class RankingController extends Controller
                 'hasData'     => false,
                 'filters'     => $this->getActiveFilters($request),
                 'petugasList' => $petugasList,
+                'periode'     => $periode,
+                'periodeList' => $periodeList,
             ]);
         }
 
@@ -48,36 +57,39 @@ class RankingController extends Controller
             'hasData'     => true,
             'filters'     => $this->getActiveFilters($request),
             'petugasList' => $petugasList,
+            'periode'     => $periode,
+            'periodeList' => $periodeList,
         ]);
     }
 
-    /**
-     * Base query — TANPA pelanggan.rbm (sudah dihapus dari skema)
-     * Kolom pengganti: pelanggan.unitap, pelanggan.kode_petugas
-     */
+    // query utama ranking — join ke penilaian, pelanggan, dan petugas
     private function getBaseRankingQuery(Request $request)
     {
         $query = DB::table('ranking')
-            ->join('penilaian', 'penilaian.idpel', '=', 'ranking.idpel')
+            ->join('penilaian', function($join) {
+                $join->on('penilaian.idpel', '=', 'ranking.idpel')
+                     ->on('penilaian.periode', '=', 'ranking.periode');
+            })
             ->leftJoin(
                 'pelanggan',
-                DB::raw('CAST(pelanggan.idpel AS CHAR)'),
-                '=',
-                DB::raw('CAST(ranking.idpel AS CHAR)')
+                function($join) {
+                    $join->on(DB::raw('CAST(pelanggan.idpel AS CHAR)'), '=', DB::raw('CAST(ranking.idpel AS CHAR)'))
+                         ->on('pelanggan.periode', '=', 'ranking.periode');
+                }
             )
             ->leftJoin('petugas', 'pelanggan.petugas_id', '=', 'petugas.id')
             ->select(
                 'ranking.id',
                 'ranking.idpel',
+                'ranking.periode',          // ← diperlukan oleh getNormalisasiData()
                 'ranking.nilai_akhir',
                 'ranking.ranking',
                 'ranking.updated_at',
 
-                // ✅ KOLOM BARU — rbm sudah tidak ada
                 'pelanggan.nama',
-                'pelanggan.unitap',          // ✅ ganti rbm
-                'pelanggan.kode_petugas',    // ✅ tetap ada
-                'pelanggan.petugas_id',      // ✅ tambahkan petugas_id
+                'pelanggan.unitap',
+                'pelanggan.kode_petugas',
+                'pelanggan.petugas_id',
                 'pelanggan.status_penagihan',
 
                 'petugas.kode_petugas as kode_petugas_petugas',
@@ -93,6 +105,7 @@ class RankingController extends Controller
                 'penilaian.c4',
                 'penilaian.kategori'
             )
+            // hanya tampilkan yang belum lunas
             ->where(function ($q) {
                 $q->whereNull('pelanggan.status_penagihan')
                   ->orWhere('pelanggan.status_penagihan', '!=', 'berhasil');
@@ -105,9 +118,7 @@ class RankingController extends Controller
         return $query;
     }
 
-    /**
-     * Get paginated ranking data
-     */
+    // bungkus query ranking ke dalam paginator manual
     private function getPaginatedRanking(Request $request)
     {
         $query = $this->getBaseRankingQuery($request);
@@ -128,9 +139,7 @@ class RankingController extends Controller
         );
     }
 
-    /**
-     * Export ranking to CSV
-     */
+    // export ke CSV — pakai BOM UTF-8 supaya Excel tidak rusak enkodingnya
     public function exportCsv(Request $request)
     {
         $ranking   = $this->getBaseRankingQuery($request)->get();
@@ -147,18 +156,17 @@ class RankingController extends Controller
             'Expires'             => '0',
         ];
 
-        // ✅ Header CSV — rbm diganti unitap
         $columns = [
             'Ranking', 'IDPEL', 'Nama Pelanggan', 'Unitap',
             'Kode Petugas', 'Nama Petugas',
-            'C1', 'C2', 'C3', 'C4',
+            'C1 (Historis Tunggakan)', 'C2 (Besar Tunggakan)',
+            'C3 (Lama Tunggakan)', 'C4 (Total Tagihan)',
             'Nilai Vi', 'Persentase', 'Risiko / Prioritas', 'Tanggal Generate',
         ];
 
         $callback = function () use ($ranking, $columns, $max_nilai) {
             $file = fopen('php://output', 'w');
-            // BOM UTF-8 agar Excel tidak rusak encoding-nya
-            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF)); // BOM
             fputcsv($file, $columns, ';');
 
             foreach ($ranking as $row) {
@@ -167,10 +175,10 @@ class RankingController extends Controller
                 fputcsv($file, [
                     $row->ranking,
                     $row->idpel,
-                    $row->nama ?? '-',
-                    $row->unitap ?? '-',              // ✅ ganti rbm
-                    $row->kode_petugas ?? '-',
-                    $row->nama_petugas ?? '-',
+                    $row->nama          ?? '-',
+                    $row->unitap        ?? '-',
+                    $row->kode_petugas  ?? '-',
+                    $row->nama_petugas  ?? '-',
                     $row->c1 ?? 0,
                     $row->c2 ?? 0,
                     $row->c3 ?? 0,
@@ -188,9 +196,7 @@ class RankingController extends Controller
         return response()->streamDownload($callback, $fileName, $headers);
     }
 
-    /**
-     * Export ranking to PDF
-     */
+    // export ke PDF landscape — pakai DomPDF, view terpisah khusus PDF
     public function exportPdf(Request $request)
     {
         $ranking = $this->getBaseRankingQuery($request)->get();
@@ -207,16 +213,16 @@ class RankingController extends Controller
         return $pdf->download('Laporan-Hasil-Ranking-' . date('Y-m-d') . '.pdf');
     }
 
-    /**
-     * Apply filters to query
-     */
+    // terapkan filter dari query string ke query ranking
     private function applyFilters($query, Request $request)
     {
+        // filter kategori prioritas
         $kategori = $request->get('kategori');
         if ($kategori) {
             $query->where('penilaian.kategori', $kategori);
         }
 
+        // pencarian idpel atau nama pelanggan
         $search = $request->get('search');
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -225,54 +231,75 @@ class RankingController extends Controller
             });
         }
 
+        // batasi hanya top-N ranking
         $top = $request->get('top');
         if ($top && is_numeric($top)) {
             $query->limit((int) $top);
         }
 
+        // filter per petugas
         $petugasId = $request->get('petugas_id');
         if ($petugasId) {
             $query->where('pelanggan.petugas_id', $petugasId);
         }
+
+        // filter per periode
+        $periode = $request->get('periode');
+        if ($periode) {
+            $query->where('ranking.periode', $periode);
+        }
     }
 
-    /**
-     * Get normalisasi data for displayed ranking rows
-     */
     private function getNormalisasiData($ranking)
     {
         if ($ranking->isEmpty()) {
             return collect();
         }
 
-        $idpels = $ranking->pluck('idpel')->toArray();
+        // kita perlu match by idpel and periode
+        $conditions = $ranking->map(function($r) {
+            return "('{$r->idpel}', '{$r->periode}')";
+        })->unique()->toArray();
 
-        return DB::table('normalisasi')
-            ->whereIn('idpel', $idpels)
-            ->get()
-            ->keyBy('idpel');
+        // jika ranking tidak return periode, kita ambil dari periode request aja kalau ada.
+        // wait, kita bisa gunakan array of (idpel, periode) atau gunakan WHERE idpel IN (...) jika periode difilter secara global.
+        $idpels = $ranking->pluck('idpel')->toArray();
+        $periode = request()->get('periode');
+
+        $query = DB::table('normalisasi')->whereIn('idpel', $idpels);
+        if ($periode) {
+            $query->where('periode', $periode);
+        }
+
+        return $query->get()->keyBy('idpel'); // asumsikan satu periode saat difilter
     }
 
-    /**
-     * Get statistics for dashboard cards
-     */
+    // hitung statistik kartu ringkasan — bisa difilter per petugas
     private function getStatistics(Request $request = null)
     {
         $query = DB::table('ranking')
-            ->join('penilaian', 'penilaian.idpel', '=', 'ranking.idpel');
+            ->join('penilaian', function($join) {
+                $join->on('penilaian.idpel', '=', 'ranking.idpel')
+                     ->on('penilaian.periode', '=', 'ranking.periode');
+            });
 
+        // kalau ada filter petugas, perlu join ke pelanggan dulu
         if ($request && $request->get('petugas_id')) {
             $query->leftJoin(
                 'pelanggan',
-                DB::raw('CAST(pelanggan.idpel AS CHAR)'),
-                '=',
-                DB::raw('CAST(ranking.idpel AS CHAR)')
+                function($join) {
+                    $join->on(DB::raw('CAST(pelanggan.idpel AS CHAR)'), '=', DB::raw('CAST(ranking.idpel AS CHAR)'))
+                         ->on('pelanggan.periode', '=', 'ranking.periode');
+                }
             )
             ->where('pelanggan.petugas_id', $request->get('petugas_id'));
         }
 
-        $allRanking = $query->select('ranking.*', 'penilaian.kategori')->get();
+        if ($request && $request->get('periode')) {
+            $query->where('ranking.periode', $request->get('periode'));
+        }
 
+        $allRanking = $query->select('ranking.*', 'penilaian.kategori')->get();
         $categories = $allRanking->groupBy('kategori');
 
         return [
@@ -286,13 +313,12 @@ class RankingController extends Controller
         ];
     }
 
-    /**
-     * Get active filters array
-     */
+    // kumpulkan filter aktif — termasuk resolve nama petugas dari ID-nya
     private function getActiveFilters(Request $request)
     {
-        $petugasId = $request->get('petugas_id');
+        $petugasId   = $request->get('petugas_id');
         $petugasNama = null;
+
         if ($petugasId) {
             $petugas = DB::table('petugas')->where('id', $petugasId)->first();
             if ($petugas) {
@@ -306,26 +332,29 @@ class RankingController extends Controller
             'top'          => $request->get('top'),
             'petugas_id'   => $petugasId,
             'petugas_nama' => $petugasNama,
+            'periode'      => $request->get('periode'),
         ];
     }
 
-    /**
-     * Generate ranking from penilaian data
-     */
-    public function generate()
+    // generate ranking dari data penilaian yang sudah ada
+    public function generate(Request $request)
     {
-        try {
+        $request->validate([
+            'periode' => 'required|date_format:Y-m',
+        ]);
+        $periode = $request->periode;
 
+        try {
             set_time_limit(300);
 
             Log::info('[RANKING] Generate dimulai.');
 
-            $penilaian = $this->getPenilaianData();
+            $penilaian = $this->getPenilaianData($periode);
 
             if ($penilaian->isEmpty()) {
                 Log::warning('[RANKING] Data penilaian kosong.');
                 return redirect()->route('hasilranking.index')
-                    ->with('error', 'Belum ada data penilaian. Silakan generate penilaian terlebih dahulu.');
+                    ->with('error', 'Belum ada data penilaian pada periode tersebut. Silakan generate penilaian terlebih dahulu.');
             }
 
             Log::info('[RANKING] Data penilaian diambil.', ['total' => $penilaian->count()]);
@@ -344,34 +373,27 @@ class RankingController extends Controller
                 'ranking'     => count($rankingRows),
             ]);
 
-            try {
+            DB::table('normalisasi')->where('periode', $periode)->delete();
+            DB::table('ranking')->where('periode', $periode)->delete();
 
-                // ✅ Pakai TRUNCATE agar lebih cepat
-                DB::table('normalisasi')->truncate();
-                DB::table('ranking')->truncate();
-
-                foreach (array_chunk($normRows, 500) as $i => $chunk) {
-                    DB::table('normalisasi')->insert($chunk);
-                    Log::info('[RANKING] Normalisasi chunk ke-' . ($i + 1) . ' diinsert.');
-                }
-
-                foreach (array_chunk($rankingRows, 500) as $i => $chunk) {
-                    DB::table('ranking')->insert($chunk);
-                    Log::info('[RANKING] Ranking chunk ke-' . ($i + 1) . ' diinsert.');
-                }
-
-                Log::info('[RANKING] Generate selesai.', ['total' => count($rankingRows)]);
-
-                return redirect()->route('hasilranking.index')
-                    ->with('success', 'Berhasil generate ranking untuk ' . count($rankingRows) . ' pelanggan.')
-                    ->with('active_tab', 'hasil');
-
-            } catch (\Throwable $e) {
-                throw $e;
+            // insert per chunk 500 baris supaya tidak timeout
+            foreach (array_chunk($normRows, 500) as $i => $chunk) {
+                DB::table('normalisasi')->insert($chunk);
+                Log::info('[RANKING] Normalisasi chunk ke-' . ($i + 1) . ' diinsert.');
             }
 
-        } catch (\Throwable $e) {
+            foreach (array_chunk($rankingRows, 500) as $i => $chunk) {
+                DB::table('ranking')->insert($chunk);
+                Log::info('[RANKING] Ranking chunk ke-' . ($i + 1) . ' diinsert.');
+            }
 
+            Log::info('[RANKING] Generate selesai.', ['total' => count($rankingRows)]);
+
+            return redirect()->route('hasilranking.index')
+                ->with('success', 'Berhasil generate ranking untuk ' . count($rankingRows) . ' pelanggan.')
+                ->with('active_tab', 'hasil');
+
+        } catch (\Throwable $e) {
             Log::error('[RANKING] Generate GAGAL.', [
                 'message' => $e->getMessage(),
                 'file'    => $e->getFile(),
@@ -384,13 +406,15 @@ class RankingController extends Controller
         }
     }
 
-    /**
-     * Ambil data penilaian (pelanggan belum lunas)
-     */
-    private function getPenilaianData()
+    // ambil data penilaian — exclude pelanggan yang status_penagihannya sudah 'berhasil'
+    private function getPenilaianData($periode)
     {
         return DB::table('penilaian')
-            ->join('pelanggan', 'penilaian.idpel', '=', 'pelanggan.idpel')
+            ->join('pelanggan', function($join) {
+                $join->on('penilaian.idpel', '=', 'pelanggan.idpel')
+                     ->on('penilaian.periode', '=', 'pelanggan.periode');
+            })
+            ->where('penilaian.periode', $periode)
             ->where(function ($q) {
                 $q->whereNull('pelanggan.status_penagihan')
                   ->orWhere('pelanggan.status_penagihan', '!=', 'sudah');
@@ -400,9 +424,7 @@ class RankingController extends Controller
             ->get();
     }
 
-    /**
-     * Build rows untuk tabel normalisasi
-     */
+    // petakan hasil penilaian ke format baris tabel normalisasi
     private function buildNormalisasiRows($penilaian)
     {
         $rows = [];
@@ -410,6 +432,7 @@ class RankingController extends Controller
         foreach ($penilaian as $row) {
             $rows[] = [
                 'idpel'      => $row->idpel,
+                'periode'    => $row->periode,
                 'r1'         => $row->norm_c1 ?? 0,
                 'r2'         => $row->norm_c2 ?? 0,
                 'r3'         => $row->norm_c3 ?? 0,
@@ -422,9 +445,7 @@ class RankingController extends Controller
         return $rows;
     }
 
-    /**
-     * Build rows untuk tabel ranking, diurutkan nilai_akhir DESC
-     */
+    // hitung nilai_akhir lalu urutkan descending dan assign nomor ranking
     private function buildRankingRows($penilaian)
     {
         $rows = [];
@@ -432,17 +453,17 @@ class RankingController extends Controller
         foreach ($penilaian as $row) {
             $rows[] = [
                 'idpel'       => $row->idpel,
+                'periode'     => $row->periode,
                 'nilai_akhir' => $row->total_nilai ?? 0,
-                'ranking'     => 0,
+                'ranking'     => 0, // diisi setelah sorting
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ];
         }
 
-        // Urutkan nilai tertinggi = ranking 1
+        // nilai tertinggi = ranking 1
         usort($rows, fn ($a, $b) => (float) $b['nilai_akhir'] <=> (float) $a['nilai_akhir']);
 
-        // Assign nomor ranking
         foreach ($rows as $i => &$row) {
             $row['ranking'] = $i + 1;
         }

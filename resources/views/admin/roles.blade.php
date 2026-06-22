@@ -42,18 +42,18 @@
         border-radius: var(--radius-sm);
         display: flex; align-items: center; justify-content: center;
         color: var(--c-navy);
-        font-size: 1.1rem;
+        font-size: 1.225rem;
         flex-shrink: 0;
     }
     .header-title {
-        font-size: 1rem;
+        font-size: 1.125rem;
         font-weight: 700;
         color: var(--c-text);
         letter-spacing: -0.01em;
         margin: 0;
     }
     .header-subtitle {
-        font-size: 0.78rem;
+        font-size: 0.905rem;
         color: var(--c-muted);
         margin: 2px 0 0;
     }
@@ -61,7 +61,7 @@
     /* ─── SEARCH & TOOLBAR ────────────────────────────────────────── */
     .toolbar-input {
         height: 32px;
-        font-size: 0.78rem;
+        font-size: 0.905rem;
         border: 1px solid var(--c-border);
         border-radius: 6px;
         padding: 0 10px;
@@ -77,7 +77,7 @@
     }
     .toolbar-btn {
         height: 32px;
-        font-size: 0.75rem;
+        font-size: 0.875rem;
         font-weight: 500;
         padding: 0 12px;
         border: 1px solid var(--c-border);
@@ -97,7 +97,7 @@
 
     /* ─── TABLE ───────────────────────────────────────────────────── */
     .perm-table {
-        font-size: 0.8rem;
+        font-size: 0.925rem;
         border-collapse: separate;
         border-spacing: 0;
         width: 100%;
@@ -105,7 +105,7 @@
     .perm-table thead th {
         background: var(--c-surface);
         font-weight: 600;
-        font-size: 0.68rem;
+        font-size: 0.805rem;
         letter-spacing: 0.4px;
         text-transform: uppercase;
         color: var(--c-text-soft);
@@ -157,7 +157,7 @@
     /* ─── ROLE BADGE ──────────────────────────────────────────────── */
     .role-badge {
         display: inline-block;
-        font-size: 0.68rem;
+        font-size: 0.805rem;
         font-weight: 600;
         letter-spacing: 0.3px;
         text-transform: uppercase;
@@ -173,7 +173,7 @@
         background: var(--c-surface) !important;
         color: var(--c-muted);
         font-weight: 600;
-        font-size: 0.65rem;
+        font-size: 0.775rem;
         letter-spacing: 0.8px;
         text-transform: uppercase;
         padding: 6px 12px;
@@ -190,7 +190,7 @@
         user-select: none;
     }
     .category-toggle:hover { color: var(--c-navy); }
-    .category-toggle .bi { font-size: 0.6rem; transition: transform .15s; }
+    .category-toggle .bi { font-size: 0.725rem; transition: transform .15s; }
     .collapsed-row { display: none !important; }
 
     /* ─── CHECKBOXES (all monochrome) ────────────────────────────── */
@@ -218,7 +218,7 @@
 
     /* ─── ACTION LABELS ──────────────────────────────────────────── */
     .action-label {
-        font-size: 0.65rem;
+        font-size: 0.775rem;
         font-weight: 700;
         color: var(--c-muted);
         display: block;
@@ -238,7 +238,7 @@
         accent-color: var(--c-check);
     }
     .sa-role-lbl {
-        font-size: 0.6rem;
+        font-size: 0.725rem;
         color: var(--c-muted);
         user-select: none;
         cursor: pointer;
@@ -263,14 +263,14 @@
     @media (max-width: 768px) { .save-footer { left: 0; } }
 
     .footer-info {
-        font-size: 0.75rem;
+        font-size: 0.875rem;
         color: var(--c-muted);
     }
     .footer-info strong { color: var(--c-text); }
 
     .btn-reset {
         height: 32px;
-        font-size: 0.78rem;
+        font-size: 0.905rem;
         font-weight: 500;
         padding: 0 16px;
         border: 1px solid var(--c-border-md);
@@ -286,7 +286,7 @@
     }
     .btn-save {
         height: 32px;
-        font-size: 0.78rem;
+        font-size: 0.905rem;
         font-weight: 600;
         padding: 0 18px;
         border: none;
@@ -315,13 +315,13 @@
         align-items: center;
         justify-content: space-between;
         cursor: pointer;
-        font-size: 0.82rem;
+        font-size: 0.945rem;
         font-weight: 600;
         color: var(--c-text);
         border-bottom: 1px solid var(--c-border);
     }
     .m-cat-header {
-        font-size: 0.62rem;
+        font-size: 0.745rem;
         font-weight: 700;
         letter-spacing: 0.6px;
         text-transform: uppercase;
@@ -333,21 +333,21 @@
     .m-menu-item {
         padding: 9px 12px;
         border-bottom: 1px solid var(--c-border);
-        font-size: 0.8rem;
+        font-size: 0.925rem;
     }
     .m-menu-item:last-child { border-bottom: none; }
     .m-menu-name {
         font-weight: 500;
         color: var(--c-text);
         margin-bottom: 6px;
-        font-size: 0.78rem;
+        font-size: 0.905rem;
     }
 
     /* Mobile action pill buttons */
     .m-action-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
     .m-cb-input { display: none; }
     .m-cb-label {
-        font-size: 0.7rem;
+        font-size: 0.825rem;
         font-weight: 600;
         padding: 3px 10px;
         border-radius: 4px;
@@ -368,7 +368,7 @@
     /* ─── TOAST ───────────────────────────────────────────────────── */
     .ent-toast {
         min-width: 280px;
-        font-size: 0.8rem;
+        font-size: 0.925rem;
         border-radius: var(--radius-sm);
         border: 1px solid var(--c-border);
         background: var(--c-white);
@@ -412,7 +412,7 @@
         </div>
     </div>
 
-    {{-- PHP DATA SETUP --}}
+    {{-- Setup data konfigurasi menu dan aksi (permissions) --}}
     @php
         $categories = [
             'MASTER DATA' => [
@@ -445,6 +445,7 @@
         ];
     @endphp
 
+    {{-- Form utama untuk penyimpanan hak akses --}}
     <form id="permissionForm" method="POST" action="/roles/save">
         @csrf
 
@@ -454,7 +455,7 @@
                 <table class="perm-table">
 
                     <thead>
-                        {{-- Row 1: Role names --}}
+                        {{-- Baris header pertama: Menampilkan nama-nama role --}}
                         <tr>
                             <th rowspan="2" class="col-menu" style="padding-left:16px;">
                                 MENU
@@ -509,7 +510,7 @@
                                     data-menu-name="{{ $menuLabel }}">
 
                                     <td class="col-menu" style="padding-left:24px;">
-                                        <span class="text-muted me-1" style="font-size:.65rem;">›</span>
+                                        <span class="text-muted me-1" style="font-size: 0.775rem;">›</span>
                                         {{ $menuLabel }}
                                     </td>
 
@@ -531,7 +532,7 @@
                                                            data-menu="{{ $menuKey }}"
                                                            @if(isset($rolePermissions[$role->id]) && in_array($perm->id, $rolePermissions[$role->id])) checked @endif>
                                                 @else
-                                                    <span style="color:var(--c-border-md);font-size:.7rem;">—</span>
+                                                    <span style="color:var(--c-border-md);font-size: 0.825rem;">—</span>
                                                 @endif
                                             </td>
                                         @endforeach
@@ -564,7 +565,7 @@
                                    id="m_sa_{{ $role->id }}"
                                    data-role-id="{{ $role->id }}">
                             <label class="sa-role-lbl" for="m_sa_{{ $role->id }}">Semua</label>
-                            <i class="bi bi-chevron-down" style="font-size:.7rem;color:var(--c-muted);"></i>
+                            <i class="bi bi-chevron-down" style="font-size: 0.825rem;color:var(--c-muted);"></i>
                         </div>
                     </div>
 
@@ -637,7 +638,7 @@
     <div id="permissionToast" class="toast ent-toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex align-items-center p-3 gap-2">
             <i id="toastIcon" class="bi fs-5"></i>
-            <span id="toastMessage" class="flex-grow-1" style="font-size:.8rem;"></span>
+            <span id="toastMessage" class="flex-grow-1" style="font-size: 0.925rem;"></span>
             <button type="button" class="btn-close btn-close-sm ms-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
     </div>
@@ -646,6 +647,7 @@
 
 @push('scripts')
 <script>
+// Script untuk mengatur checkbox, sinkronisasi desktop-mobile, dan pencarian menu
 document.addEventListener('DOMContentLoaded', function () {
 
     /* ── SYNC DESKTOP ↔ MOBILE ─────────────────────────── */
@@ -816,17 +818,50 @@ document.addEventListener('DOMContentLoaded', function () {
         spin.classList.remove('d-none');
         icon.classList.add('d-none');
 
+        const formData = new FormData(this);
+
+        // Debug: log what's being sent
+        console.log('=== SAVE PERMISSIONS REQUEST ===');
+        console.log('Action URL:', this.action);
+        console.log('CSRF Token:', document.querySelector('meta[name="csrf-token"]')?.content || 'NOT FOUND!');
+        for (let [key, val] of formData.entries()) {
+            console.log(`  ${key} = ${val}`);
+        }
+
         fetch(this.action, {
             method: 'POST',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
             },
-            body: new FormData(this)
+            body: formData
         })
-        .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-        .then(d  => showToast(d.success, d.message || (d.success ? 'Hak akses berhasil disimpan.' : 'Gagal menyimpan hak akses.')))
-        .catch(() => showToast(false, 'Terjadi kesalahan sistem.'))
+        .then(async r => {
+            console.log('Response status:', r.status);
+            const text = await r.text();
+            console.log('Response body:', text);
+
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (parseErr) {
+                // Non-JSON response (e.g. 419 CSRF mismatch returns HTML)
+                if (r.status === 419) {
+                    throw new Error('CSRF token tidak valid. Silakan refresh halaman dan coba lagi.');
+                }
+                throw new Error('Server error (HTTP ' + r.status + ')');
+            }
+
+            if (!r.ok) {
+                throw new Error(data.message || 'Server error (HTTP ' + r.status + ')');
+            }
+
+            showToast(data.success, data.message || (data.success ? 'Hak akses berhasil disimpan.' : 'Gagal menyimpan hak akses.'));
+        })
+        .catch(err => {
+            console.error('Save permission error:', err);
+            showToast(false, err.message || 'Terjadi kesalahan sistem.');
+        })
         .finally(() => {
             btn.disabled = false;
             spin.classList.add('d-none');
