@@ -230,8 +230,8 @@ class InvoiceController extends Controller
                 ->setPaper('a4', 'portrait');
 
             $firstInvoice = $invoice->first();
-            $periodeBulan = $firstInvoice && $firstInvoice->bulan ? \Carbon\Carbon::createFromFormat('Y-m', $firstInvoice->bulan)->locale('id')->translatedFormat('F_Y') : \Carbon\Carbon::now()->locale('id')->translatedFormat('F_Y');
-            $filename = 'InputPenagihan_' . $periodeBulan . '.pdf';
+            $periodeBulan = $firstInvoice && $firstInvoice->bulan ? \Carbon\Carbon::createFromFormat('Y-m', $firstInvoice->bulan)->locale('id')->translatedFormat('F_Y') : 'Semua_Periode';
+            $filename = 'Input-Penagihan_' . $periodeBulan . '.pdf';
 
             return $pdf->download($filename);
 

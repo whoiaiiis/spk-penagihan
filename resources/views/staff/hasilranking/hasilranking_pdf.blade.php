@@ -97,7 +97,7 @@
             </tr>
             <tr>
                 <td class="meta-label">Periode</td>
-                <td colspan="3">: <strong>{{ !empty($filters['periode']) ? \Carbon\Carbon::createFromFormat('Y-m', $filters['periode'])->translatedFormat('F Y') : 'Semua Periode' }}</strong></td>
+                <td colspan="3">: <strong>{{ !empty($filters['periode']) ? \Carbon\Carbon::createFromFormat('Y-m', $filters['periode'])->locale('id')->translatedFormat('F Y') : 'Semua Periode' }}</strong></td>
             </tr>
         </table>
     </div>

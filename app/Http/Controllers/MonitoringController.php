@@ -282,7 +282,8 @@ class MonitoringController extends Controller
      */
     public function exportPdf(Request $request)
     {
-        $bulan   = $request->get('bulan', date('Y-m'));
+        $bulanParam = $request->get('bulan');
+        $bulan   = $bulanParam ?: date('Y-m');
         $wilayah = $request->get('wilayah', '');
 
         $data = $this->getMonitoringData($bulan, $wilayah);
@@ -299,15 +300,15 @@ class MonitoringController extends Controller
         $pdf = Pdf::loadView(
             'supervisor.monitoring_pdf',
             array_merge($data, [
-                'bulan'   => $bulan,
+                'bulan'   => $bulanParam,
                 'wilayah' => $wilayah,
                 'tanggal' => now(),
             ])
         )->setPaper('a4', 'landscape');
 
         // Nama file
-        $periodeFilename = \Carbon\Carbon::createFromFormat('Y-m', $bulan)->locale('id')->translatedFormat('F_Y');
-        $filename = 'Monitoring_' . $periodeFilename . '.pdf';
+        $periodeFilename = $bulanParam ? \Carbon\Carbon::createFromFormat('Y-m', $bulanParam)->locale('id')->translatedFormat('F_Y') : 'Semua_Periode';
+        $filename = 'Monitoring_Kinerja_' . $periodeFilename . '.pdf';
 
         return $pdf->download($filename);
     }

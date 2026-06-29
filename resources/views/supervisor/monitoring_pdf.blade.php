@@ -87,7 +87,7 @@ resources/views/supervisor/monitoring_pdf.blade.php
 
     <div>
         Periode:
-        {{ \Carbon\Carbon::createFromFormat('Y-m', $bulan)->translatedFormat('F Y') }}
+        {{ !empty($bulan) ? \Carbon\Carbon::createFromFormat('Y-m', $bulan)->locale('id')->translatedFormat('F Y') : 'Semua Periode' }}
     </div>
 
     <div>

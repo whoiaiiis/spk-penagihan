@@ -147,7 +147,7 @@ class RankingController extends Controller
         $max_nilai = $stats['max_nilai'] > 0 ? $stats['max_nilai'] : 1;
 
         $periode = $request->get('periode');
-        $periodeFilename = $periode ? \Carbon\Carbon::createFromFormat('Y-m', $periode)->locale('id')->translatedFormat('F_Y') : \Carbon\Carbon::now()->locale('id')->translatedFormat('F_Y');
+        $periodeFilename = $periode ? \Carbon\Carbon::createFromFormat('Y-m', $periode)->locale('id')->translatedFormat('F_Y') : 'Semua_Periode';
         $fileName = 'Ranking_' . $periodeFilename . '.csv';
 
         $headers = [
@@ -195,7 +195,7 @@ class RankingController extends Controller
                     number_format($pct, 2, ',', '') . '%',
                     $row->kategori ?? 'Rendah',
                     $row->periode,
-                    \Carbon\Carbon::parse($row->updated_at)->format('d-m-Y H:i'),
+                    \Carbon\Carbon::parse($row->updated_at, 'UTC')->setTimezone('Asia/Jakarta')->format('d-m-Y H:i'),
                 ], ';');
             }
 
@@ -220,7 +220,7 @@ class RankingController extends Controller
         ])->setPaper('a4', 'landscape');
 
         $periode = $request->get('periode');
-        $periodeFilename = $periode ? \Carbon\Carbon::createFromFormat('Y-m', $periode)->locale('id')->translatedFormat('F_Y') : \Carbon\Carbon::now()->locale('id')->translatedFormat('F_Y');
+        $periodeFilename = $periode ? \Carbon\Carbon::createFromFormat('Y-m', $periode)->locale('id')->translatedFormat('F_Y') : 'Semua_Periode';
         return $pdf->download('Ranking_' . $periodeFilename . '.pdf');
     }
 

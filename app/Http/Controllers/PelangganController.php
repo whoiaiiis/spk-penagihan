@@ -439,8 +439,7 @@ class PelangganController extends Controller
     {
         try {
             $pelanggan = Pelanggan::orderBy('created_at', 'desc')->get();
-            $periodeFilename = \Carbon\Carbon::now()->locale('id')->translatedFormat('F_Y');
-            $filename = 'Pelanggan_' . $periodeFilename . '.csv';
+            $filename = 'Pelanggan_Semua_Periode.csv';
 
             $handle = fopen('php://output', 'w');
 

@@ -276,7 +276,7 @@
             <div class="stat-card-label">Terakhir Generate</div>
             <div class="stat-card-val" style="font-size: 1.125rem;">
                 @if($stats['generated_at'])
-                    {{ \Carbon\Carbon::parse($stats['generated_at'])->format('d M Y H:i') }}
+                    {{ \Carbon\Carbon::parse($stats['generated_at'], 'UTC')->setTimezone('Asia/Jakarta')->format('d M Y H:i') }}
                 @else
                     —
                 @endif
@@ -417,8 +417,9 @@
                 @foreach($ranking as $row)
                 @php
                     $n   = $normalisasi[$row->idpel] ?? null;
-                    $rc  = $row->ranking <= 3
-                        ? ['rank-1','rank-2','rank-3'][$row->ranking - 1]
+                    $displayRank = $ranking->firstItem() + $loop->index;
+                    $rc  = $displayRank <= 3
+                        ? ['rank-1','rank-2','rank-3'][$displayRank - 1]
                         : 'rank-n';
                     $pct = $stats['max_nilai'] > 0
                         ? ($row->nilai_akhir / $stats['max_nilai']) * 100
@@ -434,7 +435,7 @@
                 @endphp
                 <tr class="{{ $catInfo['class'] }}">
                     <td style="padding:0;width:3px;"></td>
-                    <td><span class="rank-badge {{ $rc }}">{{ $row->ranking }}</span></td>
+                    <td><span class="rank-badge {{ $rc }}">{{ $displayRank }}</span></td>
                     <td>
                         <span class="badge" style="background:#E2E8F0; color:#1E293B; padding:2px 6px; border-radius:4px; font-size:0.825rem;">
                             {{ $row->periode }}
