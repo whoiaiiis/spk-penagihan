@@ -206,8 +206,13 @@ class RankingController extends Controller
     }
 
     // export ke PDF landscape — pakai DomPDF, view terpisah khusus PDF
+    // Nama file diambil dari parameter periode filter, bukan tanggal sistem
     public function exportPdf(Request $request)
     {
+        if (function_exists('opcache_invalidate')) {
+            opcache_invalidate(__FILE__, true);
+        }
+
         $ranking = $this->getBaseRankingQuery($request)->get();
         $stats   = $this->getStatistics($request);
         $filters = $this->getActiveFilters($request);
@@ -219,8 +224,12 @@ class RankingController extends Controller
             'user'    => Auth::user() ?? (object) ['name' => 'System User'],
         ])->setPaper('a4', 'landscape');
 
+        // Ambil periode dari filter, konversi ke nama bulan Indonesia
         $periode = $request->get('periode');
-        $periodeFilename = $periode ? \Carbon\Carbon::createFromFormat('Y-m', $periode)->locale('id')->translatedFormat('F_Y') : 'Semua_Periode';
+        $periodeFilename = $periode
+            ? \Carbon\Carbon::createFromFormat('Y-m', $periode)->locale('id')->translatedFormat('F_Y')
+            : 'Semua_Periode';
+
         return $pdf->download('Ranking_' . $periodeFilename . '.pdf');
     }
 
