@@ -287,7 +287,7 @@
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             @if ($activeTab === 'data')
                 @permission('pelanggan:export')
-                <a href="{{ route('pelanggan.export') }}" class="btn btn-outline btn-sm">
+                <a href="{{ route('pelanggan.export', array_filter(['periode' => $periode])) }}" class="btn btn-outline btn-sm">
                     <i class="bi bi-download"></i> Export CSV
                 </a>
                 @endpermission

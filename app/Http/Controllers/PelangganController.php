@@ -434,28 +434,41 @@ class PelangganController extends Controller
         }
     }
 
-    // export semua data pelanggan ke CSV — langsung stream ke browser
-    public function export()
+    // export data pelanggan ke CSV — langsung stream ke browser
+    // Nama file mengikuti periode filter yang dipilih pengguna
+    public function export(Request $request)
     {
         try {
-            $pelanggan = Pelanggan::orderBy('created_at', 'desc')->get();
-            $filename = 'Pelanggan_Semua_Periode.csv';
+            $periode = $request->get('periode');
+
+            $query = Pelanggan::orderBy('created_at', 'desc');
+            if ($periode) {
+                $query->where('periode', $periode);
+            }
+            $pelanggan = $query->get();
+
+            // Nama file dari periode filter (bukan tanggal sistem)
+            $filename = 'Pelanggan_' . periode_ke_nama_file($periode) . '.csv';
 
             $handle = fopen('php://output', 'w');
 
             header('Content-Type: text/csv; charset=utf-8');
             header('Content-Disposition: attachment; filename="' . $filename . '"');
 
-            // baris header laporan (jika diperlukan)
-            // fputcsv($handle, ['Periode : Semua Periode'], ';'); // Optional if they want it
-            
-            // baris header kolom
+            // BOM UTF-8 agar Excel tidak rusak enkodingnya
+            fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            // Baris info periode di awal file
+            fputcsv($handle, ['Periode : ' . periode_ke_label($periode)], ';');
+            fputcsv($handle, [], ';');
+
+            // Baris header kolom
             fputcsv($handle, [
                 'ID', 'IDPEL', 'NAMA', 'HISTORIS TUNGGAKAN',
                 'DAYA', 'LEMBAR', 'RPTAG', 'RPBK', 'PERIODE', 'Dibuat Pada',
             ], ';');
 
-            // tulis satu per satu
+            // Tulis data baris per baris
             foreach ($pelanggan as $p) {
                 fputcsv($handle, [
                     $p->id,

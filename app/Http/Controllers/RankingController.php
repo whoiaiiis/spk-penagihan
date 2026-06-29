@@ -146,13 +146,13 @@ class RankingController extends Controller
         $stats     = $this->getStatistics($request);
         $max_nilai = $stats['max_nilai'] > 0 ? $stats['max_nilai'] : 1;
 
-        $periode = $request->get('periode');
-        $periodeFilename = $periode ? \Carbon\Carbon::createFromFormat('Y-m', $periode)->locale('id')->translatedFormat('F_Y') : 'Semua_Periode';
-        $fileName = 'Ranking_' . $periodeFilename . '.csv';
+        // Nama file dari periode filter yang dipilih pengguna (bukan tanggal sistem)
+        $periode  = $request->get('periode');
+        $fileName = 'Ranking_' . periode_ke_nama_file($periode) . '.csv';
 
         $headers = [
             'Content-type'        => 'text/csv',
-            'Content-Disposition' => "attachment; filename=$fileName",
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
             'Pragma'              => 'no-cache',
             'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
             'Expires'             => '0',
@@ -166,13 +166,12 @@ class RankingController extends Controller
             'Nilai Vi', 'Persentase', 'Risiko / Prioritas', 'Periode', 'Tanggal Generate',
         ];
 
-        $callback = function () use ($ranking, $columns, $max_nilai, $request) {
+        $callback = function () use ($ranking, $columns, $max_nilai, $periode) {
             $file = fopen('php://output', 'w');
-            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF)); // BOM
-            
-            $periode = $request->get('periode');
-            $periodeHeader = $periode ? \Carbon\Carbon::createFromFormat('Y-m', $periode)->locale('id')->translatedFormat('F Y') : 'Semua Periode';
-            fputcsv($file, ['Periode : ' . $periodeHeader], ';');
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF)); // BOM UTF-8
+
+            // Baris header laporan
+            fputcsv($file, ['Periode : ' . periode_ke_label($periode)], ';');
             fputcsv($file, [], ';');
 
             fputcsv($file, $columns, ';');
@@ -206,31 +205,25 @@ class RankingController extends Controller
     }
 
     // export ke PDF landscape — pakai DomPDF, view terpisah khusus PDF
-    // Nama file diambil dari parameter periode filter, bukan tanggal sistem
+    // Nama file diambil dari parameter periode filter yang dipilih pengguna
     public function exportPdf(Request $request)
     {
-        if (function_exists('opcache_invalidate')) {
-            opcache_invalidate(__FILE__, true);
-        }
-
         $ranking = $this->getBaseRankingQuery($request)->get();
         $stats   = $this->getStatistics($request);
         $filters = $this->getActiveFilters($request);
 
+        $periode = $request->get('periode');
+
         $pdf = Pdf::loadView('staff.hasilranking.hasilranking_pdf', [
-            'ranking' => $ranking,
-            'stats'   => $stats,
-            'filters' => $filters,
-            'user'    => Auth::user() ?? (object) ['name' => 'System User'],
+            'ranking'       => $ranking,
+            'stats'         => $stats,
+            'filters'       => $filters,
+            'periodeLabel'  => periode_ke_label($periode),
+            'user'          => Auth::user() ?? (object) ['name' => 'System User'],
         ])->setPaper('a4', 'landscape');
 
-        // Ambil periode dari filter, konversi ke nama bulan Indonesia
-        $periode = $request->get('periode');
-        $periodeFilename = $periode
-            ? \Carbon\Carbon::createFromFormat('Y-m', $periode)->locale('id')->translatedFormat('F_Y')
-            : 'Semua_Periode';
-
-        return $pdf->download('Ranking_' . $periodeFilename . '.pdf');
+        // Nama file dari filter periode yang dipilih pengguna (bukan tanggal sistem)
+        return $pdf->download('Ranking_' . periode_ke_nama_file($periode) . '.pdf');
     }
 
     // terapkan filter dari query string ke query ranking

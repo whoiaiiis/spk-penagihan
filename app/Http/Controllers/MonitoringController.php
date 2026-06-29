@@ -306,9 +306,8 @@ class MonitoringController extends Controller
             ])
         )->setPaper('a4', 'landscape');
 
-        // Nama file
-        $periodeFilename = $bulanParam ? \Carbon\Carbon::createFromFormat('Y-m', $bulanParam)->locale('id')->translatedFormat('F_Y') : 'Semua_Periode';
-        $filename = 'Monitoring_Kinerja_' . $periodeFilename . '.pdf';
+        // Nama file dari filter bulan yang dipilih pengguna (bukan tanggal sistem)
+        $filename = 'Monitoring_Kinerja_' . periode_ke_nama_file($bulanParam) . '.pdf';
 
         return $pdf->download($filename);
     }

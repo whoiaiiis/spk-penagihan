@@ -229,9 +229,10 @@ class InvoiceController extends Controller
             $pdf = Pdf::loadView('staff.invoice.pdf', compact('invoice'))
                 ->setPaper('a4', 'portrait');
 
+            // Nama file dari bulan invoice (periode filter yang dipilih pengguna)
             $firstInvoice = $invoice->first();
-            $periodeBulan = $firstInvoice && $firstInvoice->bulan ? \Carbon\Carbon::createFromFormat('Y-m', $firstInvoice->bulan)->locale('id')->translatedFormat('F_Y') : 'Semua_Periode';
-            $filename = 'Input-Penagihan_' . $periodeBulan . '.pdf';
+            $periodeInv   = $firstInvoice ? $firstInvoice->bulan : null;
+            $filename = 'InputPenagihan_' . periode_ke_nama_file($periodeInv) . '.pdf';
 
             return $pdf->download($filename);
 
