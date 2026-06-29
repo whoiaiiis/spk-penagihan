@@ -75,8 +75,8 @@
     <div class="meta-info">
         <table>
             <tr>
-                <td class="meta-label">Tanggal Export</td>
-                <td>: {{ \Carbon\Carbon::now()->format('d F Y H:i') }}</td>
+                <td class="meta-label">Tanggal Cetak</td>
+                <td>: {{ \Carbon\Carbon::now('Asia/Jakarta')->format('d F Y H:i') }} WIB</td>
                 <td class="meta-label">Total Data</td>
                 <td>: {{ count($ranking) }} Pelanggan</td>
             </tr>
@@ -152,7 +152,7 @@
                             <td class="center">
                                 <span class="badge {{ $badgeClass }}">{{ $kat }}</span>
                             </td>
-                            <td class="center">{{ $row->periode }}</td>
+                            <td class="center">{{ periode_ke_label($row->periode) }}</td>
                         </tr>
                     @endforeach
                 @else
