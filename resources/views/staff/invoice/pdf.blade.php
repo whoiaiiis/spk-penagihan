@@ -153,7 +153,7 @@
                     <label>Nomor Surat</label>
                     <div class="value">{{ $pair[0]->nomor_surat }}</div>
                     <label style="display:block; margin-top:4pt;">Periode</label>
-                    <div class="value">{{ \Carbon\Carbon::createFromFormat('Y-m', $pair[0]->bulan)->locale('id')->translatedFormat('F Y') }}</div>
+                    <div class="value">{{ periode_ke_label($pair[0]->periode ?? $pair[0]->bulan) }}</div>
                 </div>
             </div>
 
@@ -190,7 +190,7 @@
                         
                         <td>Periode</td>
                         <td>:</td>
-                        <td>{{ \Carbon\Carbon::createFromFormat('Y-m', $pair[0]->bulan)->locale('id')->translatedFormat('F Y') }}</td>
+                        <td>{{ periode_ke_label($pair[0]->periode ?? $pair[0]->bulan) }}</td>
                     </tr>
                     <tr>
                         <td>Petugas</td>
@@ -272,7 +272,7 @@
                     <label>Nomor Surat</label>
                     <div class="value">{{ $pair[1]->nomor_surat }}</div>
                     <label style="display:block; margin-top:4pt;">Periode</label>
-                    <div class="value">{{ \Carbon\Carbon::createFromFormat('Y-m', $pair[1]->bulan)->locale('id')->translatedFormat('F Y') }}</div>
+                    <div class="value">{{ periode_ke_label($pair[1]->periode ?? $pair[1]->bulan) }}</div>
                 </div>
             </div>
 
@@ -309,7 +309,7 @@
                         
                         <td>Periode</td>
                         <td>:</td>
-                        <td>{{ \Carbon\Carbon::createFromFormat('Y-m', $pair[1]->bulan)->locale('id')->translatedFormat('F Y') }}</td>
+                        <td>{{ periode_ke_label($pair[1]->periode ?? $pair[1]->bulan) }}</td>
                     </tr>
                     <tr>
                         <td>Petugas</td>

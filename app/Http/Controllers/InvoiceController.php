@@ -303,7 +303,7 @@ class InvoiceController extends Controller
                     'idpel'         => $item->idpel,
                     'periode'       => $item->periode,
                     'nomor_surat'   => $nomorSurat,
-                    'bulan'         => null,
+                    'bulan'         => $item->periode, // ✅ ambil dari ranking.periode (format Y-m)
                     'total_tagihan' => $totalTagihan,
                     'ranking'       => $item->ranking,
                     'status_cetak'  => 'belum',
@@ -437,7 +437,7 @@ class InvoiceController extends Controller
                     'idpel'         => $item->idpel,
                     'periode'       => $item->periode,
                     'nomor_surat'   => $this->buildNomorSurat($item->ranking),
-                    'bulan'         => null,
+                    'bulan'         => $item->periode, // ✅ ambil dari ranking.periode (format Y-m)
                     'total_tagihan' => ($item->rptag ?? 0) + ($item->rpbk ?? 0),
                     'ranking'       => $item->ranking,
                     'status_cetak'  => $statusCetak,
@@ -491,12 +491,13 @@ class InvoiceController extends Controller
                 'pelanggan.daya',
                 'pelanggan.rptag',
                 'pelanggan.rpbk',
-                'pelanggan.unitap',       
+                'pelanggan.unitap',
 
                 'petugas.kode_petugas',
                 'petugas.nama as nama_petugas',
 
-                'ranking.nilai_akhir'
+                'ranking.nilai_akhir',
+                'ranking.periode' // ✅ sumber periode yang valid untuk tampilan invoice
             )
             ->orderBy('ranking.ranking', 'asc')
             ->get();

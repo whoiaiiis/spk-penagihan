@@ -188,7 +188,7 @@
                         
                         <td>Periode</td>
                         <td>:</td>
-                        <td>{{ $pair[0]->bulan }}</td>
+                        <td>{{ periode_ke_label($pair[0]->periode ?? $pair[0]->bulan) }}</td>
                     </tr>
                     <tr>
                         <td>Petugas</td>
@@ -305,7 +305,7 @@
                         
                         <td>Periode</td>
                         <td>:</td>
-                        <td>{{ $pair[1]->bulan }}</td>
+                        <td>{{ periode_ke_label($pair[1]->periode ?? $pair[1]->bulan) }}</td>
                     </tr>
                     <tr>
                         <td>Petugas</td>
