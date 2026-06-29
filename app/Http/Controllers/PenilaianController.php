@@ -106,12 +106,16 @@ class PenilaianController extends Controller
 
             DB::beginTransaction();
 
-            // ambil nilai MAX langsung dari DB, bukan di PHP — lebih hemat RAM
-            // pakai fallback 1 supaya tidak ada pembagian dengan nol
-            $maxC1 = DB::table('pelanggan')->where('periode', $periode)->max('historis_tunggakan') ?: 1;
-            $maxC2 = DB::table('pelanggan')->where('periode', $periode)->max('rptag')              ?: 1;
-            $maxC3 = DB::table('pelanggan')->where('periode', $periode)->max('lembar')             ?: 1;
-            $maxC4 = DB::table('pelanggan')->where('periode', $periode)->max('rpbk')               ?: 1;
+            $pelangganQuery = DB::table('pelanggan')
+                ->where('periode', $periode)
+                ->where(function($q) {
+                    $q->whereNull('status_penagihan')->orWhere('status_penagihan', '!=', 'berhasil');
+                });
+
+            $maxC1 = (clone $pelangganQuery)->max('historis_tunggakan') ?: 1;
+            $maxC2 = (clone $pelangganQuery)->max('rptag')              ?: 1;
+            $maxC3 = (clone $pelangganQuery)->max('lembar')             ?: 1;
+            $maxC4 = (clone $pelangganQuery)->max('rpbk')               ?: 1;
 
             Log::info('[SAW] Nilai MAX kriteria.', [
                 'maxC1 (historis)' => $maxC1,
@@ -120,17 +124,17 @@ class PenilaianController extends Controller
                 'maxC4 (rpbk)'     => $maxC4,
             ]);
 
-            // bobot SAW per kriteria — total harus = 1.0
-            $w1 = 0.40; // historis tunggakan
-            $w2 = 0.35; // rptag (tagihan)
-            $w3 = 0.20; // lembar
-            $w4 = 0.05; // rpbk
+            // ambil bobot dari tabel kriteria
+            $kriteriaDB = DB::table('kriteria')->orderBy('id')->get();
+            $w1 = ($kriteriaDB->firstWhere('id', 1)->bobot ?? 40) / 100; // historis tunggakan
+            $w2 = ($kriteriaDB->firstWhere('id', 2)->bobot ?? 35) / 100; // rptag (tagihan)
+            $w3 = ($kriteriaDB->firstWhere('id', 3)->bobot ?? 20) / 100; // lembar
+            $w4 = ($kriteriaDB->firstWhere('id', 4)->bobot ?? 5) / 100;  // rpbk
 
             $totalProcessed = 0;
 
             // chunk 500 baris sekaligus supaya PHP tidak OOM waktu proses data besar
-            DB::table('pelanggan')
-                ->where('periode', $periode)
+            $pelangganQuery
                 ->select('idpel', 'rptag', 'lembar', 'rpbk', 'historis_tunggakan')
                 ->orderBy('idpel')
                 ->chunk(500, function ($pelangganChunk) use ($maxC1, $maxC2, $maxC3, $maxC4, $w1, $w2, $w3, $w4, &$totalProcessed, $periode) {
@@ -158,11 +162,11 @@ class PenilaianController extends Controller
                             ($norm_c4 * $w4);
 
                         // tentukan kategori berdasarkan threshold total nilai
-                        if ($total_nilai >= 0.80) {
+                        if ($total_nilai >= 0.75) {
                             $kategori = 'Sangat Prioritas';
-                        } elseif ($total_nilai >= 0.60) {
+                        } elseif ($total_nilai >= 0.50) {
                             $kategori = 'Prioritas';
-                        } elseif ($total_nilai >= 0.40) {
+                        } elseif ($total_nilai >= 0.25) {
                             $kategori = 'Sedang';
                         } else {
                             $kategori = 'Rendah';

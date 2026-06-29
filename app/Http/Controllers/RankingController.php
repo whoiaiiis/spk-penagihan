@@ -146,7 +146,9 @@ class RankingController extends Controller
         $stats     = $this->getStatistics($request);
         $max_nilai = $stats['max_nilai'] > 0 ? $stats['max_nilai'] : 1;
 
-        $fileName = 'hasil-ranking-saw-' . date('Y-m-d') . '.csv';
+        $periode = $request->get('periode');
+        $periodeFilename = $periode ? \Carbon\Carbon::createFromFormat('Y-m', $periode)->locale('id')->translatedFormat('F_Y') : \Carbon\Carbon::now()->locale('id')->translatedFormat('F_Y');
+        $fileName = 'Ranking_' . $periodeFilename . '.csv';
 
         $headers = [
             'Content-type'        => 'text/csv',
@@ -161,12 +163,18 @@ class RankingController extends Controller
             'Kode Petugas', 'Nama Petugas',
             'C1 (Historis Tunggakan)', 'C2 (Besar Tunggakan)',
             'C3 (Lama Tunggakan)', 'C4 (Total Tagihan)',
-            'Nilai Vi', 'Persentase', 'Risiko / Prioritas', 'Tanggal Generate',
+            'Nilai Vi', 'Persentase', 'Risiko / Prioritas', 'Periode', 'Tanggal Generate',
         ];
 
-        $callback = function () use ($ranking, $columns, $max_nilai) {
+        $callback = function () use ($ranking, $columns, $max_nilai, $request) {
             $file = fopen('php://output', 'w');
             fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF)); // BOM
+            
+            $periode = $request->get('periode');
+            $periodeHeader = $periode ? \Carbon\Carbon::createFromFormat('Y-m', $periode)->locale('id')->translatedFormat('F Y') : 'Semua Periode';
+            fputcsv($file, ['Periode : ' . $periodeHeader], ';');
+            fputcsv($file, [], ';');
+
             fputcsv($file, $columns, ';');
 
             foreach ($ranking as $row) {
@@ -186,7 +194,8 @@ class RankingController extends Controller
                     number_format($row->nilai_akhir, 4, ',', ''),
                     number_format($pct, 2, ',', '') . '%',
                     $row->kategori ?? 'Rendah',
-                    Carbon::parse($row->updated_at)->format('d-m-Y H:i'),
+                    $row->periode,
+                    \Carbon\Carbon::parse($row->updated_at)->format('d-m-Y H:i'),
                 ], ';');
             }
 
@@ -210,7 +219,9 @@ class RankingController extends Controller
             'user'    => Auth::user() ?? (object) ['name' => 'System User'],
         ])->setPaper('a4', 'landscape');
 
-        return $pdf->download('Laporan-Hasil-Ranking-' . date('Y-m-d') . '.pdf');
+        $periode = $request->get('periode');
+        $periodeFilename = $periode ? \Carbon\Carbon::createFromFormat('Y-m', $periode)->locale('id')->translatedFormat('F_Y') : \Carbon\Carbon::now()->locale('id')->translatedFormat('F_Y');
+        return $pdf->download('Ranking_' . $periodeFilename . '.pdf');
     }
 
     // terapkan filter dari query string ke query ranking
@@ -417,7 +428,7 @@ class RankingController extends Controller
             ->where('penilaian.periode', $periode)
             ->where(function ($q) {
                 $q->whereNull('pelanggan.status_penagihan')
-                  ->orWhere('pelanggan.status_penagihan', '!=', 'sudah');
+                  ->orWhere('pelanggan.status_penagihan', '!=', 'berhasil');
             })
             ->select('penilaian.*')
             ->orderBy('penilaian.idpel')

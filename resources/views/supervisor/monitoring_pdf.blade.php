@@ -86,7 +86,7 @@ resources/views/supervisor/monitoring_pdf.blade.php
     <br>
 
     <div>
-        Bulan:
+        Periode:
         {{ \Carbon\Carbon::createFromFormat('Y-m', $bulan)->translatedFormat('F Y') }}
     </div>
 
@@ -145,6 +145,7 @@ resources/views/supervisor/monitoring_pdf.blade.php
             <th>NO</th>
             <th>NAMA PETUGAS</th>
             <th>WILAYAH</th>
+            <th>PERIODE</th>
             <th>TARGET</th>
             <th>SUDAH</th>
             <th>BELUM</th>
@@ -172,6 +173,10 @@ resources/views/supervisor/monitoring_pdf.blade.php
 
             <td>
                 {{ $p->wilayah }}
+            </td>
+
+            <td class="text-center">
+                {{ \Carbon\Carbon::createFromFormat('Y-m', $bulan)->translatedFormat('F Y') }}
             </td>
 
             <td class="text-right">

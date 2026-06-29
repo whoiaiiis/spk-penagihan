@@ -306,10 +306,8 @@ class MonitoringController extends Controller
         )->setPaper('a4', 'landscape');
 
         // Nama file
-        $filename =
-            'monitoring-kinerja-petugas-' .
-            $bulan .
-            '.pdf';
+        $periodeFilename = \Carbon\Carbon::createFromFormat('Y-m', $bulan)->locale('id')->translatedFormat('F_Y');
+        $filename = 'Monitoring_' . $periodeFilename . '.pdf';
 
         return $pdf->download($filename);
     }

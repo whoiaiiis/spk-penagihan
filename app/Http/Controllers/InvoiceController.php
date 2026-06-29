@@ -229,7 +229,9 @@ class InvoiceController extends Controller
             $pdf = Pdf::loadView('staff.invoice.pdf', compact('invoice'))
                 ->setPaper('a4', 'portrait');
 
-            $filename = 'Invoice_' . Carbon::now()->format('YmdHis') . '.pdf';
+            $firstInvoice = $invoice->first();
+            $periodeBulan = $firstInvoice && $firstInvoice->bulan ? \Carbon\Carbon::createFromFormat('Y-m', $firstInvoice->bulan)->locale('id')->translatedFormat('F_Y') : \Carbon\Carbon::now()->locale('id')->translatedFormat('F_Y');
+            $filename = 'InputPenagihan_' . $periodeBulan . '.pdf';
 
             return $pdf->download($filename);
 

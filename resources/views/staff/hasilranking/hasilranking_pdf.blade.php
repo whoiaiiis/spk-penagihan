@@ -95,6 +95,10 @@
                     {{ count($filterTexts) > 0 ? implode(' | ', $filterTexts) : 'Semua Data' }}
                 </td>
             </tr>
+            <tr>
+                <td class="meta-label">Periode</td>
+                <td colspan="3">: <strong>{{ !empty($filters['periode']) ? \Carbon\Carbon::createFromFormat('Y-m', $filters['periode'])->translatedFormat('F Y') : 'Semua Periode' }}</strong></td>
+            </tr>
         </table>
     </div>
 
@@ -114,6 +118,7 @@
                     <th class="right" style="width:70px;">Nilai Vi</th>
                     <th class="center" style="width:80px;">%</th>
                     <th class="center" style="width:100px;">Kategori</th>
+                    <th class="center" style="width:60px;">Periode</th>
                 </tr>
             </thead>
             <tbody>
@@ -147,11 +152,12 @@
                             <td class="center">
                                 <span class="badge {{ $badgeClass }}">{{ $kat }}</span>
                             </td>
+                            <td class="center">{{ $row->periode }}</td>
                         </tr>
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="11" class="center" style="padding:20px;">
+                        <td colspan="12" class="center" style="padding:20px;">
                             Tidak ada data yang sesuai dengan filter.
                         </td>
                     </tr>

@@ -439,18 +439,21 @@ class PelangganController extends Controller
     {
         try {
             $pelanggan = Pelanggan::orderBy('created_at', 'desc')->get();
-
-            $filename = 'pelanggan_' . now()->format('YmdHis') . '.csv';
+            $periodeFilename = \Carbon\Carbon::now()->locale('id')->translatedFormat('F_Y');
+            $filename = 'Pelanggan_' . $periodeFilename . '.csv';
 
             $handle = fopen('php://output', 'w');
 
             header('Content-Type: text/csv; charset=utf-8');
             header('Content-Disposition: attachment; filename="' . $filename . '"');
 
+            // baris header laporan (jika diperlukan)
+            // fputcsv($handle, ['Periode : Semua Periode'], ';'); // Optional if they want it
+            
             // baris header kolom
             fputcsv($handle, [
                 'ID', 'IDPEL', 'NAMA', 'HISTORIS TUNGGAKAN',
-                'DAYA', 'LEMBAR', 'RPTAG', 'RPBK', 'Dibuat Pada',
+                'DAYA', 'LEMBAR', 'RPTAG', 'RPBK', 'PERIODE', 'Dibuat Pada',
             ], ';');
 
             // tulis satu per satu
@@ -464,6 +467,7 @@ class PelangganController extends Controller
                     $p->lembar,
                     $p->rptag,
                     $p->rpbk,
+                    $p->periode,
                     $p->created_at->format('Y-m-d H:i:s'),
                 ], ';');
             }
